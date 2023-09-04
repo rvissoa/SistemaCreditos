@@ -1,0 +1,34 @@
+﻿@{
+    ViewData["Title"] = "Login";
+    Layout = "~/Views/Shared/_LayoutLogin.cshtml";
+}
+@using System.Security.Principal
+@if (User.Identity?.IsAuthenticated == true)
+{
+    <script>window.location.href = '@Url.Action("Index", "Home")';</script>
+}
+else
+{
+    <div class="login-box">
+        <!-- /.login-logo -->
+        <div class="card card-outline card-primary">
+            <div class="card-header text-center">
+                <a href="../../index2.html" class="h1"><b>Créditos</b>Diego</a>
+            </div>
+            <div class="card-body">
+                <div class="text-center">
+                    <img src="~/img/logocd.jpeg" height="150px" />
+                </div>
+
+                <div class="social-auth-links text-center mt-2 mb-3">
+                    <a asp-area ="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn" class="btn btn-block btn-primary">
+                        <i class="fab fa-microsoft"></i>    Iniciar Sesión
+                    </a>
+                </div>
+            </div>
+            <!-- /.card-body -->
+        </div>
+        <!-- /.card -->
+    </div>
+    <!-- /.login-box -->
+}

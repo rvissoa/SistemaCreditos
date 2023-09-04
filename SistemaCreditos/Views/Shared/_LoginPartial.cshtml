@@ -1,0 +1,18 @@
+﻿@using System.Security.Principal
+
+<ul class="navbar-nav">
+@if (User.Identity?.IsAuthenticated == true)
+{
+        <span class="d-block" style="color:white">@User.Claims.ToArray()[1].Value</span>
+        <li class="nav-item">
+            <a class="nav-link text-white" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">Cerrar Sesión</a>
+        </li>
+}
+else
+{
+        <script>window.location.href = '@Url.Action("Login", "Acceso")';</script>
+        <li class="nav-item">
+            <a class="nav-link text-dark" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignIn">Entrar</a>
+        </li>
+}
+</ul>
