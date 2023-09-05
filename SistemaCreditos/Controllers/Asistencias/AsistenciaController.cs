@@ -23,7 +23,7 @@ namespace SistemaCreditos.Controllers.Asistencias
             DateTime DateLima = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, cstZone);
 
             //Determinar usaurio
-            var usuario = @User.Claims.ToArray()[3].Value;
+            var usuario = @User?.Claims.Where(e => e.Type == "preferred_username").Select(e => e.Value).FirstOrDefault();
             var IdTrabajador = db.Trabajadors.Where(e => usuario.Contains(e.Usuario)).Select(e => e.IdTrabajador).FirstOrDefault();
 
             //Validar asistencia de hoy
@@ -33,7 +33,7 @@ namespace SistemaCreditos.Controllers.Asistencias
             if (modeloHoy!=null)
             {
                 //Variable que determina si tiene marca
-                ViewBag.FechaAsistencia = modeloHoy.FechaAsistencia.Value.ToString("dd/MMM/yyyy");
+                ViewBag.FechaAsistencia = modeloHoy.FechaAsistencia?.ToString("dd/MMM/yyyy");
                 ViewBag.HoraEntrada = modeloHoy.HoraEntrada;
                 ViewBag.HoraAlmuerzo = modeloHoy.HoraAlmuerzo;
                 ViewBag.HoraAlmuerzoRegreso = modeloHoy.HoraAlmuerzoRegreso;
@@ -52,6 +52,41 @@ namespace SistemaCreditos.Controllers.Asistencias
 
             return View();
         }
+        [HttpPost]
+        public IActionResult ConsultaMarcacion()
+        {
+            //Zona horaria
+            DateTime timeUtc = DateTime.UtcNow;
+            TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("SA Pacific Standard Time");
+            DateTime DateLima = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, cstZone);
+
+            //Determinar usaurio
+            var usuario = @User?.Claims.Where(e => e.Type == "preferred_username").Select(e => e.Value).FirstOrDefault();
+            var IdTrabajador = db.Trabajadors.Where(e => usuario.Contains(e.Usuario)).Select(e => e.IdTrabajador).FirstOrDefault();
+
+            //Validar asistencia de hoy
+            var fechaHoy = DateLima;
+            var modeloHoy = db.Asistencia.Where(e => e.FechaAsistencia.Value.Date == fechaHoy.Date && e.IdTrabajador == IdTrabajador).FirstOrDefault();
+
+            var FechaAsistencia = "";
+            var HoraEntrada = "";
+            var HoraAlmuerzo = "";
+            var HoraAlmuerzoRegreso = "";
+            var HoraSalida = "";
+
+            if (modeloHoy != null)
+            {
+                //Variable que determina si tiene marca
+                FechaAsistencia = modeloHoy.FechaAsistencia?.ToString("dd/MMM/yyyy");
+                HoraEntrada = modeloHoy.HoraEntrada;
+                HoraAlmuerzo = modeloHoy.HoraAlmuerzo;
+                HoraAlmuerzoRegreso = modeloHoy.HoraAlmuerzoRegreso;
+                HoraSalida = modeloHoy.HoraSalida;
+            }
+
+
+            return new JsonResult(new { success = true, FechaAsistencia, HoraEntrada, HoraAlmuerzo, HoraAlmuerzoRegreso, HoraSalida });
+        }
 
         [HttpPost]
         public IActionResult InsertEntrada()
@@ -64,7 +99,7 @@ namespace SistemaCreditos.Controllers.Asistencias
                 DateTime DateLima = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, cstZone);
 
                 //Determinar usaurio
-                var usuario = @User.Claims.ToArray()[3].Value;
+                var usuario = @User?.Claims.Where(e => e.Type == "preferred_username").Select(e => e.Value).FirstOrDefault();
                 var IdTrabajador = db.Trabajadors.Where(e => usuario.Contains(e.Usuario)).Select(e => e.IdTrabajador).FirstOrDefault();
 
                 //Validar asistencia de hoy
@@ -109,7 +144,7 @@ namespace SistemaCreditos.Controllers.Asistencias
                 DateTime DateLima = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, cstZone);
 
                 //Determinar usaurio
-                var usuario = @User.Claims.ToArray()[3].Value;
+                var usuario = @User?.Claims.Where(e => e.Type == "preferred_username").Select(e => e.Value).FirstOrDefault();
                 var IdTrabajador = db.Trabajadors.Where(e => usuario.Contains(e.Usuario)).Select(e => e.IdTrabajador).FirstOrDefault();
 
                 //Validar asistencia de hoy
@@ -147,7 +182,7 @@ namespace SistemaCreditos.Controllers.Asistencias
                 DateTime DateLima = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, cstZone);
 
                 //Determinar usaurio
-                var usuario = @User.Claims.ToArray()[3].Value;
+                var usuario = @User?.Claims.Where(e => e.Type == "preferred_username").Select(e => e.Value).FirstOrDefault();
                 var IdTrabajador = db.Trabajadors.Where(e => usuario.Contains(e.Usuario)).Select(e => e.IdTrabajador).FirstOrDefault();
 
                 //Validar asistencia de hoy
@@ -184,7 +219,7 @@ namespace SistemaCreditos.Controllers.Asistencias
                 DateTime DateLima = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, cstZone);
 
                 //Determinar usaurio
-                var usuario = @User.Claims.ToArray()[3].Value;
+                var usuario = @User?.Claims.Where(e => e.Type == "preferred_username").Select(e => e.Value).FirstOrDefault();
                 var IdTrabajador = db.Trabajadors.Where(e => usuario.Contains(e.Usuario)).Select(e => e.IdTrabajador).FirstOrDefault();
 
                 //Validar asistencia de hoy
@@ -213,3 +248,4 @@ namespace SistemaCreditos.Controllers.Asistencias
 
     }
 }
+

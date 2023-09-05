@@ -3,7 +3,7 @@
 <ul class="navbar-nav">
 @if (User.Identity?.IsAuthenticated == true)
 {
-        <span class="d-block" style="color:white">@User.Claims.ToArray()[1].Value</span>
+        <span class="d-block" style="color:white">@User?.Claims.Where(e => e.Type == "name").Select(e => e.Value).FirstOrDefault()</span>
         <li class="nav-item">
             <a class="nav-link text-white" asp-area="MicrosoftIdentity" asp-controller="Account" asp-action="SignOut">Cerrar Sesión</a>
         </li>
