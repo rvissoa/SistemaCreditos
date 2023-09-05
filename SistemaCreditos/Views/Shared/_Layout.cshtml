@@ -4,18 +4,21 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Créditos Diego - SistemaCreditos</title>
+    <link rel="shortcut icon" href="~/img/logocd.jpeg">
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SistemaCreditos.styles.css" asp-append-version="true" />
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
     <!-- Font Awesome -->
-    <link rel="stylesheet" href="~/adminLte/plugins/fontawesome-free/css/a">
+    <link rel="stylesheet" href="~/adminLte/plugins/fontawesome-free/css/all.min.css">
     <!-- icheck bootstrap -->
     <link rel="stylesheet" href="~/adminLte/plugins/icheck-bootstrap/icheck-bootstrap.min.css">
     <!-- Theme style -->
     <link rel="stylesheet" href="~/adminLte/dist/css/adminlte.min.css">
     <link rel="stylesheet" href="~/adminLte/plugins/fontawesome-free/css/all.min.css">
+    <link rel="stylesheet" href="~/adminLte/plugins/toastr/toastr.min.css">
+    <link rel="stylesheet" href="~/adminLte/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
 </head>
 <body>
     
@@ -23,7 +26,7 @@
 
         <!-- Preloader -->
         <div class="preloader flex-column justify-content-center align-items-center">
-            <img class="animation__shake" src="dist/img/AdminLTELogo.png" alt="AdminLTELogo" height="60" width="60">
+            <img class="animation__shake" src="~/img/logocd.jpeg" alt="AdminLTELogo" height="60" width="60">
         </div>
 
         <!-- Navbar -->
@@ -34,7 +37,7 @@
                     <a class="nav-link" data-widget="pushmenu" href="#" role="button"><i class="fas fa-bars"></i></a>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
-                    <a href="index3.html" class="nav-link">Inicio</a>
+                    <a asp-controller="Home" asp-action="Index" class="nav-link">Inicio</a>
                 </li>
                 <li class="nav-item d-none d-sm-inline-block">
                     <a href="#" class="nav-link">Reportar error</a>
@@ -51,7 +54,7 @@
                     <div class="navbar-search-block">
                         <form class="form-inline">
                             <div class="input-group input-group-sm">
-                                <input class="form-control form-control-navbar" type="search" placeholder="Search" aria-label="Search">
+                                <input class="form-control form-control-navbar" type="search" placeholder="Buscar" aria-label="Search">
                                 <div class="input-group-append">
                                     <button class="btn btn-navbar" type="submit">
                                         <i class="fas fa-search"></i>
@@ -117,7 +120,7 @@
                         <!-- Asistencia -->
                         <li class="nav-header">ASISTENCIA</li>
                         <li class="nav-item">
-                            <a href="pages/calendar.html" class="nav-link">
+                            <a asp-controller="Asistencia" asp-action="Marcar" class="nav-link">
                                 <i class="nav-icon far fa-calendar-alt"></i>
                                 <p>
                                     Marcar asistencia
@@ -137,13 +140,13 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="pages/forms/general.html" class="nav-link">
+                                    <a href="#" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Nuevo Préstamo</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="pages/forms/advanced.html" class="nav-link">
+                                    <a href="#" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Lista de Préstamos</p>
                                     </a>
@@ -162,13 +165,13 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="pages/search/simple.html" class="nav-link">
+                                    <a href="#" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Nuevo Cliente</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="pages/search/enhanced.html" class="nav-link">
+                                    <a href="#" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Lista de Clientes</p>
                                     </a>
@@ -187,13 +190,13 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a href="pages/examples/invoice.html" class="nav-link">
+                                    <a href="#" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Reporte</p>
                                     </a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="pages/examples/profile.html" class="nav-link">
+                                    <a href="#" class="nav-link">
                                         <i class="far fa-circle nav-icon"></i>
                                         <p>Profile</p>
                                     </a>
@@ -211,6 +214,14 @@
         <div class="content-wrapper">
             @RenderBody()
          </div>
+        <!-- Footer -->
+        <footer class="main-footer">
+            <strong>Copyright &copy; 2023 <a href="https://creditosdiego.com">Sistema <b> Créditos Diego</b></a>.</strong>
+            Todos los derechos reservados.
+            <div class="float-right d-none d-sm-inline-block">
+                <b>Version</b> 1.0.1
+            </div>
+        </footer>
   <!-- /.content-wrapper -->
     </div>
     @*<div class="container">
@@ -218,12 +229,11 @@
             @RenderBody()
         </main>
     </div>*@
-
-    <footer class="border-top footer text-muted">
+    @*<footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2023 - SistemaCreditos - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
-    </footer>
+    </footer>*@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
@@ -233,7 +243,10 @@
     <script src="~/adminLte/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- AdminLTE App -->
     <script src="~/adminLte/dist/js/adminlte.min.js"></script>
-
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vue/2.5.9/vue.min.js"></script>
+    <script src="~/adminLte/plugins/sweetalert2/sweetalert2.min.js"></script>
+    <!-- Toastr -->
+    <script src="~/adminLte/plugins/toastr/toastr.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

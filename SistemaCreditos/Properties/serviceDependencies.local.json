@@ -5,6 +5,12 @@
       "type": "identityapp.default",
       "connectionId": "AzureAD:ClientSecret",
       "dynamicId": null
+    },
+    "secrets1": {
+      "secretStore": null,
+      "resourceId": "/subscriptions/[parameters('subscriptionId')]/resourceGroups/[parameters('resourceGroupName')]/providers/Microsoft.KeyVault/vaults/suscription-key",
+      "type": "secrets.keyVault",
+      "connectionId": "VaultBDUser"
     }
   }
 }
