@@ -29,13 +29,26 @@ namespace SistemaCreditos.Controllers.Asistencias
             //Validar asistencia de hoy
             var fechaHoy = DateLima;
             var modeloHoy = db.Asistencia.Where(e => e.FechaAsistencia.Value.Date == fechaHoy.Date && e.IdTrabajador == IdTrabajador).FirstOrDefault();
+
+            if (modeloHoy!=null)
+            {
+                //Variable que determina si tiene marca
+                ViewBag.FechaAsistencia = modeloHoy.FechaAsistencia.Value.ToString("dd/MMM/yyyy");
+                ViewBag.HoraEntrada = modeloHoy.HoraEntrada;
+                ViewBag.HoraAlmuerzo = modeloHoy.HoraAlmuerzo;
+                ViewBag.HoraAlmuerzoRegreso = modeloHoy.HoraAlmuerzoRegreso;
+                ViewBag.HoraSalida = modeloHoy.HoraSalida;
+            }
+            else
+            {
+                //Variable que determina si tiene marca
+                ViewBag.FechaAsistencia = null;
+                ViewBag.HoraEntrada = null;
+                ViewBag.HoraAlmuerzo = null;
+                ViewBag.HoraAlmuerzoRegreso = null;
+                ViewBag.HoraSalida = null;
+            }
             
-            //Variable que determina si tiene marca
-            ViewBag.FechaAsistencia = modeloHoy.FechaAsistencia.Value.ToString("dd/MMM/yyyy");
-            ViewBag.HoraEntrada = modeloHoy.HoraEntrada;
-            ViewBag.HoraAlmuerzo = modeloHoy.HoraAlmuerzo;
-            ViewBag.HoraAlmuerzoRegreso = modeloHoy.HoraAlmuerzoRegreso;
-            ViewBag.HoraSalida = modeloHoy.HoraSalida;
 
             return View();
         }
