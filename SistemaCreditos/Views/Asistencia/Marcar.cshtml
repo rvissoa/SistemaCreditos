@@ -109,53 +109,6 @@
                     </div>
                 </div>
                 <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch flex-column">
-                    <div class="card bg-gradient-indigo d-flex flex-fill">
-                        <div class="card-body pt-0">
-                            <div class="row">
-                                @if (ViewBag.HoraSalida != null)
-                                {
-                                    <div class="col-7">
-                                        <br />
-                                        <h2 class="lead"><b>SALIDA REGISTRADA</b></h2>
-                                        <hr />
-                                        <ul class="ml-4 mb-0 fa-ul text-white">
-                                            <li class="l-1"><span class="fa-li"><i class="fas fa-lg fa-calendar"></i></span>Día: <b> @ViewBag.FechaAsistencia</b>  </li>
-                                            <br />
-                                            <li class="l-1"><span class="fa-li"><i class="fas fa-lg fa-clock"></i></span> Hora: <b>@ViewBag.HoraSalida</b> </li>
-                                        </ul>
-                                    </div>
-                                    <div class="col-5 text-center">
-                                        <br><br><br><br>
-                                        <i class="fas fa-4x fa-check"></i>
-                                    </div>
-                                }
-                                else
-                                {
-                                    <div class="col-7">
-                                        <br />
-                                        <h2 class="lead"><b>MARCAR SALIDA</b></h2>
-                                        <hr />
-                                        <ul class="ml-4 mb-0 fa-ul text-white">
-                                            <li class="l-1"><span class="fa-li"><i class="fas fa-lg fa-calendar"></i></span>Día: <b> @DateTime.Now.Date.ToString("dd/MMM/yyyy")</b>  </li>
-                                            <br />
-                                            <li class="l-1"><span class="fa-li"><i class="fas fa-lg fa-clock"></i></span> Hora: <b> @DateTime.Now.Hour : @DateTime.Now.Minute</b> </li>
-                                        </ul>
-                                    </div>
-                                }
-
-                            </div>
-                        </div>
-                        <div class="card-footer">
-                            <div class="text-right">
-                                <a v-on:Click="marcarSalida" class="btn btn-sm btn-default">
-                                    <i class="fas fa-save"></i>&nbsp; Registrar
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch flex-column"></div>
-                <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch flex-column">
                     <div class="card bg-gradient-yellow d-flex flex-fill">
                         <div class="card-body pt-0">
                             <div class="row">
@@ -195,6 +148,53 @@
                         <div class="card-footer">
                             <div class="text-right">
                                 <a v-on:Click="marcarAlmuerzoRegreso" class="btn btn-sm btn-default">
+                                    <i class="fas fa-save"></i>&nbsp; Registrar
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch flex-column"></div>
+                <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch flex-column">
+                    <div class="card bg-gradient-indigo d-flex flex-fill">
+                        <div class="card-body pt-0">
+                            <div class="row">
+                                @if (ViewBag.HoraSalida != null)
+                                {
+                                    <div class="col-7">
+                                        <br />
+                                        <h2 class="lead"><b>SALIDA REGISTRADA</b></h2>
+                                        <hr />
+                                        <ul class="ml-4 mb-0 fa-ul text-white">
+                                            <li class="l-1"><span class="fa-li"><i class="fas fa-lg fa-calendar"></i></span>Día: <b> @ViewBag.FechaAsistencia</b>  </li>
+                                            <br />
+                                            <li class="l-1"><span class="fa-li"><i class="fas fa-lg fa-clock"></i></span> Hora: <b>@ViewBag.HoraSalida</b> </li>
+                                        </ul>
+                                    </div>
+                                    <div class="col-5 text-center">
+                                        <br><br><br><br>
+                                        <i class="fas fa-4x fa-check"></i>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-7">
+                                        <br />
+                                        <h2 class="lead"><b>MARCAR SALIDA</b></h2>
+                                        <hr />
+                                        <ul class="ml-4 mb-0 fa-ul text-white">
+                                            <li class="l-1"><span class="fa-li"><i class="fas fa-lg fa-calendar"></i></span>Día: <b> @DateTime.Now.Date.ToString("dd/MMM/yyyy")</b>  </li>
+                                            <br />
+                                            <li class="l-1"><span class="fa-li"><i class="fas fa-lg fa-clock"></i></span> Hora: <b> @DateTime.Now.Hour : @DateTime.Now.Minute</b> </li>
+                                        </ul>
+                                    </div>
+                                }
+
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <div class="text-right">
+                                <a v-on:Click="marcarSalida" class="btn btn-sm btn-default">
                                     <i class="fas fa-save"></i>&nbsp; Registrar
                                 </a>
                             </div>
