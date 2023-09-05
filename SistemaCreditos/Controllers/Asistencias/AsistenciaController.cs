@@ -23,7 +23,7 @@ namespace SistemaCreditos.Controllers.Asistencias
             DateTime DateLima = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, cstZone);
 
             //Determinar usaurio
-            var usuario = @User.Claims.ToArray()[4].Value;
+            var usuario = @User.Claims.ToArray()[3].Value;
             var IdTrabajador = db.Trabajadors.Where(e => usuario.Contains(e.Usuario)).Select(e => e.IdTrabajador).FirstOrDefault();
 
             //Validar asistencia de hoy
@@ -64,7 +64,7 @@ namespace SistemaCreditos.Controllers.Asistencias
                 DateTime DateLima = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, cstZone);
 
                 //Determinar usaurio
-                var usuario = @User.Claims.ToArray()[4].Value;
+                var usuario = @User.Claims.ToArray()[3].Value;
                 var IdTrabajador = db.Trabajadors.Where(e => usuario.Contains(e.Usuario)).Select(e => e.IdTrabajador).FirstOrDefault();
 
                 //Validar asistencia de hoy
@@ -109,7 +109,7 @@ namespace SistemaCreditos.Controllers.Asistencias
                 DateTime DateLima = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, cstZone);
 
                 //Determinar usaurio
-                var usuario = @User.Claims.ToArray()[4].Value;
+                var usuario = @User.Claims.ToArray()[3].Value;
                 var IdTrabajador = db.Trabajadors.Where(e => usuario.Contains(e.Usuario)).Select(e => e.IdTrabajador).FirstOrDefault();
 
                 //Validar asistencia de hoy
@@ -147,7 +147,7 @@ namespace SistemaCreditos.Controllers.Asistencias
                 DateTime DateLima = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, cstZone);
 
                 //Determinar usaurio
-                var usuario = @User.Claims.ToArray()[4].Value;
+                var usuario = @User.Claims.ToArray()[3].Value;
                 var IdTrabajador = db.Trabajadors.Where(e => usuario.Contains(e.Usuario)).Select(e => e.IdTrabajador).FirstOrDefault();
 
                 //Validar asistencia de hoy
@@ -184,7 +184,7 @@ namespace SistemaCreditos.Controllers.Asistencias
                 DateTime DateLima = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, cstZone);
 
                 //Determinar usaurio
-                var usuario = @User.Claims.ToArray()[4].Value;
+                var usuario = @User.Claims.ToArray()[3].Value;
                 var IdTrabajador = db.Trabajadors.Where(e => usuario.Contains(e.Usuario)).Select(e => e.IdTrabajador).FirstOrDefault();
 
                 //Validar asistencia de hoy
