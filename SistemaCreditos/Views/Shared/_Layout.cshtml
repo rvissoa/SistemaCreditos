@@ -19,6 +19,10 @@
     <link rel="stylesheet" href="~/adminLte/plugins/fontawesome-free/css/all.min.css">
     <link rel="stylesheet" href="~/adminLte/plugins/toastr/toastr.min.css">
     <link rel="stylesheet" href="~/adminLte/plugins/sweetalert2-theme-bootstrap-4/bootstrap-4.min.css">
+    <link rel="stylesheet" href="~/adminLte/plugins/daterangepicker/daterangepicker.css">
+    <link rel="stylesheet" href="~/adminLte/plugins/bootstrap-colorpicker/css/bootstrap-colorpicker.min.css">
+    <!-- Tempusdominus Bootstrap 4 -->
+    <link rel="stylesheet" href="~/adminLte/plugins/tempusdominus-bootstrap-4/css/tempusdominus-bootstrap-4.min.css">
 </head>
 <body>
     
@@ -124,6 +128,14 @@
                                 <i class="nav-icon far fa-calendar-alt"></i>
                                 <p>
                                     Marcar asistencia
+                                </p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a asp-controller="Asistencia" asp-action="ReporteAsistencia" class="nav-link">
+                                <i class="nav-icon far fa-chart-bar"></i>
+                                <p>
+                                    Reporte Asistencia
                                 </p>
                             </a>
                         </li>
@@ -247,6 +259,12 @@
     <script src="~/adminLte/plugins/sweetalert2/sweetalert2.min.js"></script>
     <!-- Toastr -->
     <script src="~/adminLte/plugins/toastr/toastr.min.js"></script>
+    <script src="~/adminLte/plugins/daterangepicker/daterangepicker.js"></script>
+    <!-- bootstrap color picker -->
+    <script src="~/adminLte/plugins/bootstrap-colorpicker/js/bootstrap-colorpicker.min.js"></script>
+    <script src="~/adminLte/plugins/moment/moment.min.js"></script>
+    <script src="~/adminLte/plugins/inputmask/jquery.inputmask.min.js"></script>
+    <script src="~/adminLte/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

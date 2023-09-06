@@ -1,0 +1,151 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Reporte de Asistencias</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Inicio</a></li>
+                    <li class="breadcrumb-item active">Reporte de Asistencias</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<section class="content" id="reporteAsistencia">
+    <div class="container-fluid">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Listado de empleados</h3>
+
+                    <div class="card-tools">
+                        <ul class="pagination pagination-sm float-right">
+                            <li class="page-item"><a class="page-link" href="#">&laquo;</a></li>
+                            <li class="page-item"><a class="page-link" href="#">1</a></li>
+                            <li class="page-item"><a class="page-link" href="#">2</a></li>
+                            <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
+                        </ul>
+                    </div>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body p-0">
+                    <!-- Date -->
+                    <div class="row">
+                        <div class="col-md-4"></div>
+                        <div class="col-md-2 form-group">
+                            @*<div class="input-group date" id="reservationdate" data-target-input="nearest">
+                                <input id="fecha" type="text" class="form-control datetimepicker-input" data-target="#reservationdate" />
+                                <div class="input-group-append" data-target="#reservationdate" data-toggle="datetimepicker">
+                                    <div class="input-group-text"><i class="fa fa-calendar"></i></div>
+                                    
+                                </div>
+                                
+                            </div>*@
+                            <div>
+                                <input v-model="fechaBusqueda" id="fechaBusqueda" type="date" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <button v-on:click="buscarFecha" class="btn form-control btn-primary"><i class="fas fa-search"></i>&nbsp; Buscar</button>
+                        </div>
+                    </div>
+                    
+                    <!-- Date and time -->
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th style="width: 10px">#</th>
+                                <th>Empleado</th>
+                                <th style="width: 40px">Entrada</th>
+                                <th style="width: 40px">Almuerzo</th>
+                                <th style="width: 40px">Regreso</th>
+                                <th style="width: 40px">Salida</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(item,i) in lista">
+                                <td>{{i+1}}</td>
+                                <td>{{item.trabajador}}</td>
+                                <td><span class="badge bg-primary">{{item.horaEntrada}}</span></td>
+                                <td><span class="badge bg-warning">{{item.horaAlmuerzo}}</span></td>
+                                <td><span class="badge bg-warning">{{item.horaAlmuerzoRegreso}}</span></td>
+                                <td><span class="badge bg-success">{{item.horaSalida}}</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+        </div>
+    </div>
+</section>
+@section Scripts {
+    <script language="javascript">
+        //Date picker
+        var hoy = new Date().toLocaleString("es-PE", { timeZone: "America/Lima" });
+        var today = moment().format('YYYY-MM-DD');
+        //Vuee
+        var vform = new Vue({
+            el: '#reporteAsistencia',
+            data: {
+                lista: [],
+                fechaBusqueda: ''
+            },
+            created() {
+                this.fechaBusqueda = today.toString();
+                var _this = this;
+                var request = {
+                    fecha: hoy
+                };
+                fetch('/Asistencia/ReporteAsistencias',
+                    {
+                        method: 'POST',
+                        body: JSON.stringify(request),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(result => result.json())
+                    .then(function (result) {
+                        if (result.success == true) {
+                            _this.lista = result.model;
+                        }
+                    });
+            },
+            methods: {
+                buscarFecha: () =>{
+                    var _this = this;
+                    //var timeinput = $("#reservationdate").data('date');
+                    var timeinput = $("#fechaBusqueda").val()
+                    var request = {
+                        fecha: timeinput.toLocaleString("es-PE", { timeZone: "America/Lima" })
+                    };
+                    console.log(request)
+                    fetch('/Asistencia/ReporteAsistencias',
+                        {
+                            method: 'POST',
+                            body: JSON.stringify(request),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(result => result.json())
+                        .then(function (result) {
+                            if (result.success == true) {
+                                vform.lista = result.model;
+                            }
+                        });
+                }
+            }
+        });
+    </script>
+}

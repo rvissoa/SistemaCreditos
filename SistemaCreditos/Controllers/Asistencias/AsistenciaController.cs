@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using SistemaCreditos.Models;
 using System;
+using System.Data.Common;
 
 namespace SistemaCreditos.Controllers.Asistencias
 {
@@ -14,6 +15,32 @@ namespace SistemaCreditos.Controllers.Asistencias
         public AsistenciaController(ILogger<AsistenciaController> logger)
         {
             _logger = logger;
+        }
+
+        public IActionResult ReporteAsistencia()
+        {
+            return View();
+        }
+        [HttpPost]  
+        public IActionResult ReporteAsistencias([FromBody] body request)
+        {
+            //Zona horaria
+            DateTime timeUtc =Convert.ToDateTime( request.fecha).ToUniversalTime();
+            TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("SA Pacific Standard Time");
+            DateTime DateLima = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, cstZone);
+
+            var model = (from a in db.Asistencia.Where(e => e.FechaAsistencia.Value.Date == DateLima.Date)
+                        from t in db.Trabajadors.Where(e => e.IdTrabajador == a.IdTrabajador).DefaultIfEmpty()
+                        select new
+                        {
+                            trabajador = t.Nombres + " " + t.Apellidos,
+                            a.FechaAsistencia,
+                            a.HoraEntrada,
+                            a.HoraSalida,
+                            a.HoraAlmuerzo,
+                            a.HoraAlmuerzoRegreso
+                        }).ToList();
+            return new JsonResult(new { success = true, model });
         }
         public IActionResult Marcar()
         {
@@ -246,6 +273,10 @@ namespace SistemaCreditos.Controllers.Asistencias
 
         }
 
+        public class body
+        {
+            public string fecha { get; set; }     
+        }
     }
 }
 
