@@ -33,9 +33,6 @@
                             <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
                         </ul>
                     </div>
-                </div>
-                <!-- /.card-header -->
-                <div class="card-body p-0">
                     <!-- Date -->
                     <div class="row">
                         <div class="col-md-4"></div>
@@ -58,6 +55,9 @@
                     </div>
                     
                     <!-- Date and time -->
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body p-0" style="overflow-x:auto">
                     <table class="table">
                         <thead>
                             <tr>
@@ -91,7 +91,7 @@
 @section Scripts {
     <script language="javascript">
         //Date picker
-        var hoy = new Date().toLocaleString("es-PE", { timeZone: "America/Lima" });
+        var hoy = new Date();
         var today = moment().format('YYYY-MM-DD');
         //Vuee
         var vform = new Vue({
@@ -127,7 +127,7 @@
                     //var timeinput = $("#reservationdate").data('date');
                     var timeinput = $("#fechaBusqueda").val()
                     var request = {
-                        fecha: timeinput.toLocaleString("es-PE", { timeZone: "America/Lima" })
+                        fecha: timeinput
                     };
                     console.log(request)
                     fetch('/Asistencia/ReporteAsistencias',
