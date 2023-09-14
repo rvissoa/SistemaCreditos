@@ -1,0 +1,288 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Nuevo Cliente</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Inicio</a></li>
+                    <li class="breadcrumb-item active">Nuevo Cliente</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+<section class="content" id="nuevoCliente">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card card-outline card-info">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        Registre la información
+                    </h3>
+                    <br />
+                    <a class="badge bg-success" asp-controller="Clientes" asp-action="ListaClientes">
+                        <i class="fas fa-list"></i> &nbsp; Lista de CLientes
+                    </a>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Distrito</label>
+                            <select class="custom-select form-control-border" v-model="form.distrito">
+                                <option>Value 1</option>
+                                <option>Value 2</option>
+                                <option>Value 3</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Zona</label>
+                            <select class="custom-select form-control-border" v-model="form.zona">
+                                <option>Value 1</option>
+                                <option>Value 2</option>
+                                <option>Value 3</option>
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Gestor</label>
+                            <select class="custom-select form-control-border" v-model="form.gestor">
+                                <option>Value 1</option>
+                                <option>Value 2</option>
+                                <option>Value 3</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Nombres</label>
+                            <input v-model="form.nombres" type="text" class="form-control" maxlength="100" />
+                        </div>
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Apellidos</label>
+                            <input v-model="form.nombres" type="text" class="form-control" maxlength="100" />
+                        </div>
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">DNI</label>
+                            <input v-model="form.dni" type="text" class="form-control" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="15" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Dirección</label>
+                            <input v-model="form.nombres" type="text" class="form-control" maxlength="100" />
+                        </div>
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Celular</label>
+                            <input v-model="form.nombres" type="text" class="form-control" maxlength="100" />
+                        </div>
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Ubicación</label>
+                            <input v-model="form.dni" type="text" class="form-control" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="15" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Trabajo / Ocupación</label>
+                            <input v-model="form.nombres" type="text" class="form-control" maxlength="250" />
+                        </div>
+                        <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Nombre de Hijos</label>
+                            <input v-model="form.nombres" type="text" class="form-control" maxlength="250" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" class="custom-control-input" id="tieneConyuge" v-model="form.tieneConyuge" :value="true">
+                                <label class="custom-control-label" for="tieneConyuge">¿Tiene Conyuge?</label>
+                            </div>
+                        </div>
+                    </div>  
+                    
+                    <div v-if="form.tieneConyuge">
+                         <div class="row">
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                <label for="exampleSelectBorder">Nombres</label>
+                                <input v-model="form.nombres" type="text" class="form-control" maxlength="100" />
+                            </div>
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                <label for="exampleSelectBorder">Apellidos</label>
+                                <input v-model="form.nombres" type="text" class="form-control" maxlength="100" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                                <label for="exampleSelectBorder">DNI</label>
+                                <input v-model="form.nombres" type="text" class="form-control" maxlength="100" />
+                            </div>
+                            <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                                <label for="exampleSelectBorder">Celular</label>
+                                <input v-model="form.nombres" type="text" class="form-control" maxlength="100" />
+                            </div>
+                            <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                                <label for="exampleSelectBorder">Ubicación</label>
+                                <input v-model="form.dni" type="text" class="form-control" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="15" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                <label for="exampleSelectBorder">Dirección</label>
+                                <input v-model="form.dni" type="text" class="form-control" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="15" />
+                            </div>
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                <label for="exampleSelectBorder">Trabajo</label>
+                                <input v-model="form.nombres" type="text" class="form-control" maxlength="100" />
+                            </div>
+                            
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group">
+                            <div class="custom-control custom-switch">
+                                <input type="checkbox" class="custom-control-input" id="tieneAval" v-model="form.tieneAval" :value="true">
+                                <label class="custom-control-label" for="tieneAval">¿Tiene Aval?</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-if="form.tieneAval">
+                        <div class="row">
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                <label for="exampleSelectBorder">Nombres</label>
+                                <input v-model="form.nombres" type="text" class="form-control" maxlength="100" />
+                            </div>
+                            <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                <label for="exampleSelectBorder">Apellidos</label>
+                                <input v-model="form.nombres" type="text" class="form-control" maxlength="100" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                                <label for="exampleSelectBorder">DNI</label>
+                                <input v-model="form.nombres" type="text" class="form-control" maxlength="100" />
+                            </div>
+                            <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                                <label for="exampleSelectBorder">Celular</label>
+                                <input v-model="form.nombres" type="text" class="form-control" maxlength="100" />
+                            </div>
+                            <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                                <label for="exampleSelectBorder">Ubicación</label>
+                                <input v-model="form.dni" type="text" class="form-control" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="15" />
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                                <label for="exampleSelectBorder">Dirección</label>
+                                <input v-model="form.dni" type="text" class="form-control" onkeypress='return event.charCode >= 48 && event.charCode <= 57' maxlength="15" />
+                            </div>
+                            <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                                <label for="exampleSelectBorder">Trabajo</label>
+                                <input v-model="form.nombres" type="text" class="form-control" maxlength="100" />
+                            </div>
+                            <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                                <label for="exampleSelectBorder">Parentezco Aval</label>
+                                <input v-model="form.nombres" type="text" class="form-control" maxlength="100" />
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                            <label for="exampleSelectBorder">Observaciones</label>
+                            <textarea v-model="form.observaciones" type="text" class="form-control" maxlength="1500" rows="5"></textarea>
+                        </div>
+                    </div>
+                    
+                </div>
+                <div class="card-footer">
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary"><i class="fa fa-save"></i> &nbsp; Guardar</button>
+                    </div>
+                        
+                
+                    
+                </div>
+            </div>
+        </div>
+        <!-- /.col-->
+    </div>
+    <!-- ./row -->
+    </section>
+@section Scripts {
+    
+    <script language="javascript">
+        
+        //Date picker
+        //var hoy = new Date();
+        //var today = moment().format('YYYY-MM-DD');
+
+        //Vuee
+        var vform = new Vue({
+            el: '#nuevoCliente',
+            data: {
+                lista: [],
+                buscarCliente: '',
+                form:[]
+            },
+            created() {
+                //this.buscarCliente = today.toString();
+                var _this = this;
+                //var request = {
+                //    fecha: hoy
+                //};
+                fetch('/Clientes/ListaClientes',
+                    {
+                        method: 'POST',
+                        body: '',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(result => result.json())
+                    .then(function (result) {
+                        if (result.success == true) {
+                            _this.lista = result.model;
+                        }
+                    });
+            },
+            methods: {
+                cambios:()=>{
+                    this.form.tieneConyuge = $("#tieneConyuge").val();
+                },
+                buscarClientes: () => {
+                    var _this = this;
+                    //var timeinput = $("#reservationdate").data('date');
+                    var timeinput = $("#fechaBusqueda").val()
+                    var request = {
+                        fecha: timeinput
+                    };
+                    console.log(request)
+                    fetch('/Asistencia/ReporteAsistencias',
+                        {
+                            method: 'POST',
+                            body: JSON.stringify(request),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(result => result.json())
+                        .then(function (result) {
+                            if (result.success == true) {
+                                vform.lista = result.model;
+                            }
+                        });
+                }
+            }
+        });
+    </script>
+}

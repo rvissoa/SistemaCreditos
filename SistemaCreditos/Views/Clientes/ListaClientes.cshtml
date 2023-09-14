@@ -1,0 +1,188 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Listado de Clientes</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Inicio</a></li>
+                    <li class="breadcrumb-item active">Listado de Clientes</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<section class="content" id="listadoClientes">
+    <div class="container-fluid">
+        <div class="col-md-12">
+
+            <!-- /.card -->
+            <!-- Preloader -->
+            <div class="preloader flex-column justify-content-center align-items-center">
+                <img class="animation__shake" src="~/img/logocd.jpeg" alt="AdminLTELogo" height="180" width="180">
+            </div>
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Tabla de clientes</h3>
+                    <br />
+                    <a class="badge bg-info" asp-controller="Clientes" asp-action="NuevoCliente">
+                        <i class="far fa-user"></i> Nuevo Cliente
+                    </a>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table id="example1" class="table table-bordered table-striped">
+                        <thead>
+                            <tr>
+                                <th style="width: 10px">#</th>
+                                <th style="width: 40px">DNI</th>
+                                <th>Cliente</th>
+                                <th style="width: 40px">Dirección</th>
+                                <th style="width: 40px">Celular</th>
+                                <th style="width: 40px"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(item,i) in lista">
+                                <td>{{i+1}}</td>
+                                <td>{{item.dni}}</td>
+                                <td><span>{{item.cliente}}</span></td>
+                                <td><span class="badge bg-success">{{item.direccion}}</span></td>
+                                <td><a class="badge bg-primary" :href="'https://wa.me/'+'+51'+item.celular" target="_blank">{{item.celular}}</a></td>
+                                <td><span class="badge bg-success"></span></td>
+                            </tr>
+                        </tbody>
+                        <tfoot>
+                            <tr>
+                                <th style="width: 10px">#</th>
+                                <th style="width: 40px">DNI</th>
+                                <th>Cliente</th>
+                                <th style="width: 40px">Dirección</th>
+                                <th style="width: 40px">Celular</th>
+                                <th style="width: 40px"></th>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+
+        </div>
+    </div>
+</section>
+@section Scripts {
+    <script src="~/adminLte/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/adminLte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/adminLte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/adminLte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/adminLte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/adminLte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/adminLte/plugins/jszip/jszip.min.js"></script>
+    <script src="~/adminLte/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/adminLte/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/adminLte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/adminLte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/adminLte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+    <script language="javascript">
+        
+        //Date picker
+        //var hoy = new Date();
+        //var today = moment().format('YYYY-MM-DD');
+
+        //Vuee
+        var vform = new Vue({
+            el: '#listadoClientes',
+            data: {
+                lista: [],
+                buscarCliente: ''
+            },
+            created() {
+                //this.buscarCliente = today.toString();
+                var _this = this;
+                //var request = {
+                //    fecha: hoy
+                //};
+                fetch('/Clientes/ListaClientes',
+                    {
+                        method: 'POST',
+                        body: '',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(result => result.json())
+                    .then(function (result) {
+                        if (result.success == true) {
+                            _this.lista = result.model;
+                        }
+                        $(function () {
+                            $("#example1").DataTable({
+                                "responsive": true, "lengthChange": false, "autoWidth": false,
+                                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+                                language: {
+                                    "sProcessing": "Procesando...",
+                                    "sLengthMenu": "Mostrar _MENU_ registros",
+                                    "sZeroRecords": "No se encontraron resultados",
+                                    "sEmptyTable": "Ningún dato disponible en esta tabla =(",
+                                    "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_",
+                                    "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                                    "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                                    "sInfoPostFix": "",
+                                    "sSearch": "Buscar:",
+                                    "sUrl": "",
+                                    "sInfoThousands": ",",
+                                    "sLoadingRecords": "Cargando...",
+                                    "oPaginate": {
+                                        "sFirst": "Primero",
+                                        "sLast": "Último",
+                                        "sNext": "Siguiente",
+                                        "sPrevious": "Anterior"
+                                    },
+                                    "oAria": {
+                                        "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                                        "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                                    },
+                                    "buttons": {
+                                        "copy": "Copiar",
+                                        "colvis": "Visibilidad"
+                                    }
+                                }
+                            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+                        });
+                    });
+            },
+            methods: {
+                buscarClientes: () => {
+                    var _this = this;
+                    //var timeinput = $("#reservationdate").data('date');
+                    var timeinput = $("#fechaBusqueda").val()
+                    var request = {
+                        fecha: timeinput
+                    };
+                    console.log(request)
+                    fetch('/Asistencia/ReporteAsistencias',
+                        {
+                            method: 'POST',
+                            body: JSON.stringify(request),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(result => result.json())
+                        .then(function (result) {
+                            if (result.success == true) {
+                                vform.lista = result.model;
+                            }
+                        });
+                }
+            }
+        });
+    </script>
+}
