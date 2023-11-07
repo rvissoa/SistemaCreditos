@@ -25,14 +25,6 @@
                 <div class="card-header">
                     <h3 class="card-title">Listado de empleados</h3>
 
-                    <div class="card-tools">
-                        <ul class="pagination pagination-sm float-right">
-                            <li class="page-item"><a class="page-link" href="#">&laquo;</a></li>
-                            <li class="page-item"><a class="page-link" href="#">1</a></li>
-                            <li class="page-item"><a class="page-link" href="#">2</a></li>
-                            <li class="page-item"><a class="page-link" href="#">&raquo;</a></li>
-                        </ul>
-                    </div>
                     <!-- Date -->
                     <div class="row">
                         <div class="col-md-4"></div>
@@ -48,12 +40,12 @@
                     <!-- Date and time -->
                 </div>
                 <!-- /.card-header -->
-                <div class="card-body p-0" style="overflow-x:auto">
-                    <table class="table">
+                <div class="card-body">
+                    <table id="example1" class="table table-bordered table-striped">
                         <thead>
                             <tr>
                                 <th style="width: 10px">#</th>
-                                <th>Empleado</th>
+                                <th style="width: 100px">Empleado</th>
                                 <th style="width: 40px">Entrada</th>
                                 <th style="width: 40px">Almuerzo</th>
                                 <th style="width: 40px">Regreso</th>
@@ -80,6 +72,18 @@
     </div>
 </section>
 @section Scripts {
+    <script src="~/adminLte/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/adminLte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/adminLte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/adminLte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/adminLte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/adminLte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/adminLte/plugins/jszip/jszip.min.js"></script>
+    <script src="~/adminLte/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/adminLte/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/adminLte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/adminLte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/adminLte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
     <script language="javascript">
         //Date picker
         var hoy = new Date();
@@ -110,6 +114,40 @@
                         if (result.success == true) {
                             _this.lista = result.model;
                         }
+                        $(function () {
+                            $("#example1").DataTable({
+                                "responsive": true, "lengthChange": false, "autoWidth": false,
+                                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+                                language: {
+                                    "sProcessing": "Procesando...",
+                                    "sLengthMenu": "Mostrar _MENU_ registros",
+                                    "sZeroRecords": "No se encontraron resultados",
+                                    "sEmptyTable": "Ningún dato disponible en esta tabla =(",
+                                    "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_",
+                                    "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                                    "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                                    "sInfoPostFix": "",
+                                    "sSearch": "Buscar:",
+                                    "sUrl": "",
+                                    "sInfoThousands": ",",
+                                    "sLoadingRecords": "Cargando...",
+                                    "oPaginate": {
+                                        "sFirst": "Primero",
+                                        "sLast": "Último",
+                                        "sNext": "Siguiente",
+                                        "sPrevious": "Anterior"
+                                    },
+                                    "oAria": {
+                                        "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                                        "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                                    },
+                                    "buttons": {
+                                        "copy": "Copiar",
+                                        "colvis": "Visibilidad"
+                                    }
+                                }
+                            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+                        });
                     });
             },
             methods: {
