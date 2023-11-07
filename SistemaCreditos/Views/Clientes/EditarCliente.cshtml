@@ -7,18 +7,18 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>Nuevo Cliente</h1>
+                <h1>Editar Cliente</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Inicio</a></li>
-                    <li class="breadcrumb-item active">Nuevo Cliente</li>
+                    <li class="breadcrumb-item active">Editar Cliente</li>
                 </ol>
             </div>
         </div>
     </div><!-- /.container-fluid -->
 </section>
-<section class="content" id="nuevoCliente">
+<section class="content" id="editarCliente">
     <div class="row">
         <div class="col-md-12">
             <!-- Preloader -->
@@ -28,7 +28,7 @@
             <div class="card card-outline card-info">
                 <div class="card-header">
                     <h3 class="card-title">
-                        Registre la información
+                        Actualizar la información
                     </h3>
                     <br />
                     <a class="badge bg-success" asp-controller="Clientes" asp-action="ListaClientes">
@@ -211,7 +211,7 @@
                 </div>
                 <div class="card-footer">
                     <div class="text-center">
-                        <button type="submit" class="btn btn-primary" v-on:Click="guardarNuevoCliente"><i class="fa fa-save"></i> &nbsp; Guardar</button>
+                        <button type="submit" class="btn btn-warning" v-on:Click="guardarEditarCliente"><i class="fa fa-save"></i> &nbsp; Modificar</button>
                     </div>
                         
                 
@@ -227,44 +227,23 @@
     
     <script language="javascript">
         
-        //Date picker
-        //var hoy = new Date();
-        //var today = moment().format('YYYY-MM-DD');
-
         //Vuee
         function refrescar() {
             //Actualiza la página
             location.reload();
         }
         var vform = new Vue({
-            el: '#nuevoCliente',
+            el: '#editarCliente',
             data: {
                 lista: [],
                 buscarCliente: '',
                 form:[],
                 distritos:[],
-                gestores:[]
+                gestores:[],
+                idCliente:''
             },
             created() {
-                //this.buscarCliente = today.toString();
                 var _this = this;
-                //var request = {
-                //    fecha: hoy
-                //};
-                fetch('/Clientes/ListaClientes',
-                    {
-                        method: 'POST',
-                        body: '',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
-                    })
-                    .then(result => result.json())
-                    .then(function (result) {
-                        if (result.success == true) {
-                            _this.lista = result.model;
-                        }
-                    });
 
                 fetch('/Clientes/Distritos',
                     {
@@ -295,50 +274,32 @@
                             _this.gestores = result.gestores;
                         }
                     });
+
+                _this.idCliente = '@ViewBag.idCliente'
+                fetch('/Clientes/Edicion?id=' + _this.idCliente,
+                    {
+                        method: 'POST',
+                        //body: idCliente,
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(result => result.json())
+                    .then(function (result) {
+                        if (result.success == true) {
+                            vform.form = result.clientes;
+                            console.log(result.clientes)
+                        }
+                    });
             },
             methods: {
-                cambios:()=>{
-                    this.form.tieneConyuge = $("#tieneConyuge").val();
-                },
-                buscarClientes: () => {
+                guardarEditarCliente(){
                     var _this = this;
-                    //var timeinput = $("#reservationdate").data('date');
-                    var timeinput = $("#fechaBusqueda").val()
-                    var request = {
-                        fecha: timeinput
-                    };
-                    console.log(request)
-                    fetch('/Asistencia/ReporteAsistencias',
-                        {
-                            method: 'POST',
-                            body: JSON.stringify(request),
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
-                        })
-                        .then(result => result.json())
-                        .then(function (result) {
-                            if (result.success == true) {
-                                vform.lista = result.model;
-                            }
-                        });
-                },
-                guardarNuevoCliente(){
-                    var _this = this;
-                    //var cliente = {
-                    //    nombres:vform.form.nombres,
-                    //    apellidos:vform.form.apellidos
-                    //}
-                    //console.log(cliente);
-                    //console.log(Object.assign({}, vform.form));
-
-
+                    vform.form.idCliente = _this.idCliente;
+                    console.log("cliente");
+                    console.log(vform.form);
                     var cliente = Object.assign({}, vform.form);
-                    //$.post('/Clientes/NuevoCliente', { cliente: cliente }).done((result) => {
-                    //    if (result.success == true) {
-                    //    }
-                    //});
-                    fetch('/Clientes/NuevoCliente',
+                    fetch('/Clientes/EditarCliente',
                         {
                             method: 'POST',
                             body: JSON.stringify(cliente),
@@ -350,7 +311,7 @@
                         .then(function (result) {
                             if (result.success == true) {
                                 setTimeout(refrescar, 1500);
-                                toastr.success('¡Se registró correctamente el nuevo cliente!');
+                                toastr.success('¡Se actualizó correctamente el cliente!');
                             }
                         });
                 }
