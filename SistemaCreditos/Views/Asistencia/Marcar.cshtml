@@ -19,6 +19,12 @@
             </div>
             <br />
             <div class="row">
+                @{
+                    //Zona horaria
+                    DateTime timeUtc = DateTime.UtcNow;
+                    TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("SA Pacific Standard Time");
+                    DateTime DateLima = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, cstZone);
+                }
                 <div class="col-12 col-sm-6 col-md-4 d-flex align-items-stretch flex-column">
                     <div class="card bg-gradient-cyan d-flex flex-fill">
                         <div class="card-body pt-0">
@@ -45,9 +51,9 @@
                                         <h2 class="lead"><b>MARCAR ENTRADA</b></h2>
                                         <hr />
                                         <ul class="ml-4 mb-0 fa-ul text-white">
-                                            <li class="l-1"><span class="fa-li"><i class="fas fa-lg fa-calendar"></i></span>Día: <b> @DateTime.Now.Date.ToString("dd/MMM/yyyy")</b>  </li>
+                                            <li class="l-1"><span class="fa-li"><i class="fas fa-lg fa-calendar"></i></span>Día: <b> @DateLima.Date.ToString("dd/MMM/yyyy")</b>  </li>
                                             <br />
-                                            <li class="l-1"><span class="fa-li"><i class="fas fa-lg fa-clock"></i></span> Hora: <b> @DateTime.Now.Hour : @DateTime.Now.Minute</b> </li>
+                                            <li class="l-1"><span class="fa-li"><i class="fas fa-lg fa-clock"></i></span> Hora: <b> @DateLima.Hour : @DateTime.Now.Minute</b> </li>
                                         </ul>
                                     </div>
                                 </div>
@@ -90,9 +96,9 @@
                                         <h2 class="lead"><b>MARCAR ALMUERZO</b></h2>
                                         <hr />
                                         <ul class="ml-4 mb-0 fa-ul text-muted">
-                                            <li class="l-1"><span class="fa-li"><i class="fas fa-lg fa-calendar"></i></span>Día: <b> @DateTime.Now.Date.ToString("dd/MMM/yyyy")</b>  </li>
+                                            <li class="l-1"><span class="fa-li"><i class="fas fa-lg fa-calendar"></i></span>Día: <b> @DateLima.Date.ToString("dd/MMM/yyyy")</b>  </li>
                                             <br />
-                                            <li class="l-1"><span class="fa-li"><i class="fas fa-lg fa-clock"></i></span> Hora: <b> @DateTime.Now.Hour : @DateTime.Now.Minute</b> </li>
+                                            <li class="l-1"><span class="fa-li"><i class="fas fa-lg fa-clock"></i></span> Hora: <b> @DateLima.Hour : @DateTime.Now.Minute</b> </li>
                                         </ul>
                                     </div>
                                 }
@@ -136,9 +142,9 @@
                                         <h2 class="lead"><b>REGRESO ALMUERZO</b></h2>
                                         <hr />
                                         <ul class="ml-4 mb-0 fa-ul text-muted">
-                                            <li class="l-1"><span class="fa-li"><i class="fas fa-lg fa-calendar"></i></span>Día: <b> @DateTime.Now.Date.ToString("dd/MMM/yyyy")</b>  </li>
+                                            <li class="l-1"><span class="fa-li"><i class="fas fa-lg fa-calendar"></i></span>Día: <b> @DateLima.Date.ToString("dd/MMM/yyyy")</b>  </li>
                                             <br />
-                                            <li class="l-1"><span class="fa-li"><i class="fas fa-lg fa-clock"></i></span> Hora: <b> @DateTime.Now.Hour : @DateTime.Now.Minute</b> </li>
+                                            <li class="l-1"><span class="fa-li"><i class="fas fa-lg fa-clock"></i></span> Hora: <b> @DateLima.Hour : @DateTime.Now.Minute</b> </li>
                                         </ul>
                                     </div>
                                 }
@@ -183,9 +189,9 @@
                                         <h2 class="lead"><b>MARCAR SALIDA</b></h2>
                                         <hr />
                                         <ul class="ml-4 mb-0 fa-ul text-white">
-                                            <li class="l-1"><span class="fa-li"><i class="fas fa-lg fa-calendar"></i></span>Día: <b> @DateTime.Now.Date.ToString("dd/MMM/yyyy")</b>  </li>
+                                            <li class="l-1"><span class="fa-li"><i class="fas fa-lg fa-calendar"></i></span>Día: <b> @DateLima.Date.ToString("dd/MMM/yyyy")</b>  </li>
                                             <br />
-                                            <li class="l-1"><span class="fa-li"><i class="fas fa-lg fa-clock"></i></span> Hora: <b> @DateTime.Now.Hour : @DateTime.Now.Minute</b> </li>
+                                            <li class="l-1"><span class="fa-li"><i class="fas fa-lg fa-clock"></i></span> Hora: <b> @DateLima.Hour : @DateTime.Now.Minute</b> </li>
                                         </ul>
                                     </div>
                                 }
