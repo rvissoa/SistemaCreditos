@@ -41,7 +41,7 @@
                     <table id="example1" class="table table-bordered table-striped">
                         <thead>
                             <tr>
-                                <th>#</th>
+                                <th>Préstamos</th>
                                 <th>DNI</th>
                                 <th>Cliente</th>
                                 <th>Dirección</th>
@@ -55,7 +55,9 @@
                         </thead>
                         <tbody>
                             <tr v-for="(item,i) in lista">
-                                <td style="width:5%">{{i+1}}</td>
+                                <td style="width:10%" class="text-center">
+                                    <a class="badge bg-primary" :href="'/Clientes/Prestamos?id='+item.id" title="Ver préstamos"> <i class="fas fa-money-bill-alt text-white"></i> Ver Préstamo</a>
+                                </td>
                                 <td style="width:15%">{{item.dni}}</td>
                                 <td style="width:10%"><span>{{item.cliente}}</span></td>
                                 <td style="width:10%"><span class="badge bg-success">{{item.direccion}}</span></td>
@@ -72,7 +74,7 @@
                         </tbody>
                         <tfoot>
                             <tr>
-                                <th>#</th>
+                                <th>Préstamos</th>
                                 <th>DNI</th>
                                 <th>Cliente</th>
                                 <th>Dirección</th>

@@ -1,0 +1,275 @@
+﻿@{
+    ViewData["Title"] = "Prestamos";
+}
+@model SistemaCreditos.Models.Cliente
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Préstamos</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Inicio</a></li>
+                    <li class="breadcrumb-item active">Lista de Préstamos</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<section class="content" id="prestamos">
+    <div class="row">
+        <div class="col-md-12">
+            <!-- Preloader -->
+            <div class="preloader flex-column justify-content-center align-items-center">
+                <img class="animation__shake" src="~/img/logocd.jpeg" alt="AdminLTELogo" height="180" width="180">
+            </div>
+
+            <div class="card card-outline card-info">
+                <div class="card-header">
+                    @if (Model != null)
+                    {
+                        <div><span><font size="5">Cliente : <strong> @Model.ApellidosCliente  @Model.NombreCliente</strong></font>  </span></div>
+                        <div><span><font size="4">DNI : <strong> @Model.Dni</strong></font>  </span></div>
+                    }
+                    @if (Model != null)
+                    {
+                        <a class="badge bg-success" :href="'/Clientes/NuevoPrestamo?IdCliente='+idCliente" title="Nuevo Préstamo">
+                            <i class="fas fa-money-bill-alt"></i><span>  Nuevo Préstamo</span>
+                        </a>
+                    }
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table class="table table-bordered" id="example1">
+                        <thead>
+                            <tr>
+                                <th>Número</th>
+                                <th>Ver Cuotas</th>
+                                <th>Capital</th>
+                                <th>Día de pago</th>
+                                <th>Fondo Provicionario</th>
+                                <th>Fecha de Entrega</th>
+                                <th>Fecha de Termino</th>
+                                <th>Número de cuotas</th>
+                                <th>Eliminar Préstamo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="item,numero in prestamos">
+                                <td>{{numero+1}}</td>
+                                <td class="text-center"><button class="btn btn-default" id="show-modal" data-toggle="modal" data-target="#modal-lg" v-on:Click="verCuotas(item.idPrestamo)"><i class="fas fa-share text-success"></i> <i class="fas fa-list text-success"></i></button></td>
+                                <td>{{item.capital}}</td>
+                                <td>{{item.diaPago}}</td>
+                                <td>{{item.fondoProvicional}}</td>
+                                <td>{{item.fechaEntrega | JsonFecha2}}</td>
+                                <td>{{item.fechaTermino | JsonFecha2}}</td>
+                                <td>{{item.numeroCuotas}}</td>
+                                <td><a href="javascript:void(0);" title="Eliminar Préstamo" v-on:click="eliminar(item.idPrestamo)"><i class="fa fa-remove"></i></a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <div class="modal fade" id="modal-lg">
+                        <div class="modal-dialog modal-xl">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title text-success">Ver Cuotas</h4>
+                                    <button type="button" class="close" v-on:click="window.location.href='/Clientes/Prestamos?id='+idCliente" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <table class="table table-bordered" id="example2">
+                                        <thead>
+                                            <tr>
+                                                <th>Número</th>
+                                                <th>Fechas de pago</th>
+                                                <th>Monto de cuota</th>
+                                                <th>Mora</th>
+                                                <th>Observaciones</th>
+                                                <th>Abonar</th>
+                                                <th>Abonos</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="item,numero in cuotas">
+                                                <td>{{numero+1}}</td>
+                                                <td>{{item.fechaPago}}</td>
+                                                <td>{{item.montoCuota}}</td>
+                                                <td>{{item.mora}}</td>
+                                                <td>{{item.observaciones}}</td>
+                                                <td><a href="javascript:void(0);" title="Eliminar Préstamo" v-on:click="eliminar(item.idPrestamo)"><i class="fa fa-remove"></i></a></td>
+                                                <td><a href="javascript:void(0);" title="Eliminar Préstamo" v-on:click="eliminar(item.idPrestamo)"><i class="fa fa-remove"></i></a></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="modal-footer justify-content-between">
+                                    <button type="button" class="btn btn-default" v-on:click="window.location.href='/Clientes/Prestamos?id='+idCliente">Cerrar</button>
+                                </div>
+                            </div>
+                            <!-- /.modal-content -->
+                        </div>
+                        <!-- /.modal-dialog -->
+                    </div>
+                </div>
+
+                <div class="card-footer">
+                    <div class="text-center">
+                        <a asp-controller="Clientes" asp-action="ListaClientes"><i class="fa fa-reply"></i> &nbsp; Atrás</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@section Scripts {
+    <script src="~/adminLte/plugins/datatables/jquery.dataTables.min.js"></script>
+    <script src="~/adminLte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script src="~/adminLte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+    <script src="~/adminLte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+    <script src="~/adminLte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+    <script src="~/adminLte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+    <script src="~/adminLte/plugins/jszip/jszip.min.js"></script>
+    <script src="~/adminLte/plugins/pdfmake/pdfmake.min.js"></script>
+    <script src="~/adminLte/plugins/pdfmake/vfs_fonts.js"></script>
+    <script src="~/adminLte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+    <script src="~/adminLte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+    <script src="~/adminLte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+    <script language="javascript">
+        //Vuee
+        var vform = new Vue({
+            el: '#prestamos',
+            data: {
+                prestamos: [],
+                idCliente: '@Model.IdCliente',
+                showModal: false,
+                cuotas: []
+            },
+            created() {
+                var _this = this;
+                var id = '@Model' != null ? '@Model.IdCliente' : 0;
+                fetch('/Clientes/ListaPrestamos?idCliente=' + id,
+                    {
+                        method: 'POST',
+                        body: '',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(result => result.json())
+                    .then(function (result) {
+                        if (result.success == true) {
+                            _this.prestamos = result.prestamos;
+                        }
+                        $(function () {
+                            $("#example1").DataTable({
+                                "responsive": true, "lengthChange": false, "autoWidth": false,
+                                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+                                language: {
+                                    "sProcessing": "Procesando...",
+                                    "sLengthMenu": "Mostrar _MENU_ registros",
+                                    "sZeroRecords": "No se encontraron resultados",
+                                    "sEmptyTable": "Ningún dato disponible en esta tabla",
+                                    "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_",
+                                    "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                                    "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                                    "sInfoPostFix": "",
+                                    "sSearch": "Buscar:",
+                                    "sUrl": "",
+                                    "sInfoThousands": ",",
+                                    "sLoadingRecords": "Cargando...",
+                                    "oPaginate": {
+                                        "sFirst": "Primero",
+                                        "sLast": "Último",
+                                        "sNext": "Siguiente",
+                                        "sPrevious": "Anterior"
+                                    },
+                                    "oAria": {
+                                        "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                                        "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                                    },
+                                    "buttons": {
+                                        "copy": "Copiar",
+                                        "colvis": "Visibilidad"
+                                    }
+                                }
+                            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+
+                        });
+                    });
+            },
+            methods: {
+                verCuotas: (idPrestamo) => {
+                    fetch('/Clientes/Cuotas?idPrestamo=' + idPrestamo,
+                        {
+                            method: 'POST',
+                            //body: JSON.stringify(request),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(result => result.json())
+                        .then(function (result) {
+                            if (result.success == true) {
+                                vform.cuotas = result.cuotas;
+                                $(function () {
+                                    $("#example2").DataTable({
+                                        //paging: false,
+                                        //retrieve: true,
+                                        //bDestroy: true,
+                                        "responsive": true, "lengthChange": true, "autoWidth": false,
+                                        "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
+                                        language: {
+                                            "sProcessing": "Procesando...",
+                                            "sLengthMenu": "Mostrar _MENU_ registros",
+                                            "sZeroRecords": "No se encontraron resultados",
+                                            "sEmptyTable": "Ningún dato disponible en esta tabla",
+                                            "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_",
+                                            "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                                            "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                                            "sInfoPostFix": "",
+                                            "sSearch": "Buscar:",
+                                            "sUrl": "",
+                                            "sInfoThousands": ",",
+                                            "sLoadingRecords": "Cargando...",
+                                            "oPaginate": {
+                                                "sFirst": "Primero",
+                                                "sLast": "Último",
+                                                "sNext": "Siguiente",
+                                                "sPrevious": "Anterior"
+                                            },
+                                            "oAria": {
+                                                "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                                                "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                                            },
+                                            "buttons": {
+                                                "copy": "Copiar",
+                                                "colvis": "Visibilidad"
+                                            }
+                                        }
+                                    }).buttons().container().appendTo('#example2_wrapper .col-md-6:eq(0)');
+                                });
+                            }
+                        });
+                }
+            },
+            filters: {
+                JsonFecha(val) {
+                    return val != null ?
+                        moment(val).format('DD/MM/YYYY hh:mm:ss') :
+                        'Indeterminado'
+                        ;
+                },
+                JsonFecha2(val) {
+                    return val != null ?
+                        moment(val).format('DD/MM/YYYY') :
+                        'Indeterminado'
+                        ;
+                }
+            }
+        });
+    </script>
+}

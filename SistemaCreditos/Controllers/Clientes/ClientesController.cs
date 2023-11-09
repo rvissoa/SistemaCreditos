@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using SistemaCreditos.Models;
+using System.Net;
 using static SistemaCreditos.Controllers.Clientes.ClientesController;
 using static System.Net.Mime.MediaTypeNames;
 
@@ -8,6 +9,8 @@ namespace SistemaCreditos.Controllers.Clientes
     public class ClientesController : Controller
     {
         private Model db = new Model();
+
+        #region Modulo Clientes
         public IActionResult ListaClientes()
         {
             return View();
@@ -224,5 +227,138 @@ namespace SistemaCreditos.Controllers.Clientes
             public string parentezcoAval { get; set; }
             public string observaciones { get; set; }
         }
+        #endregion
+
+        #region Cliente-prestamo
+        public ActionResult Prestamos(int id)
+        {
+            try
+            {
+                var clientes = db.Clientes.Find(id);
+                if (clientes == null)
+                {
+                    return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+                }
+                return View("Prestamos", clientes);
+            }
+            catch
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
+        [HttpPost]
+        public ActionResult ListaPrestamos(int idCliente)
+        {
+            var sql = db.Prestamos.Where(e => e.IdCliente ==idCliente).ToList();
+            return Json(new { success = true, prestamos = sql });
+        }
+
+        public ActionResult NuevoPrestamo(int idCliente)
+        {
+            try
+            {
+                var clientes = db.Clientes.Find(idCliente);
+                if (clientes == null)
+                {
+                    return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+                }
+                return View("NuevoPrestamo", clientes);
+            }
+            catch
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpPost]
+        public ActionResult Autorizadores()
+        {
+            var sql = db.Trabajadors.Where(e => e.TipoTrabajador== 1).ToList();
+            return Json(new { success=true,autorizadores = sql });
+        }
+
+        [HttpPost]
+        public ActionResult NuevoPrestamo([FromBody] PrestamoCliente prestamo)
+        {
+            try
+            {
+                var modelPrestamo = new Prestamo
+                {
+                    CodigoGestor = prestamo.codigoGestor,
+                    Autorizacion = prestamo.autorizacion,
+                    IdCliente = prestamo.IdCliente,
+                    FondoProvisional= prestamo.fondo,
+                    FechaEntrega = prestamo.fechaEntrega,
+                    Capital = prestamo.capital,
+                    DiaPago = prestamo.diaPago,
+                    NumeroCuotas= prestamo.numeroCuotas,
+                    MontoCuota = prestamo.montoCuotas,
+                    CapitalPendiente= prestamo.capitalPendiente,
+                    DiasDeGracia = prestamo.diasgracia,
+
+                    FechaCreacion = DateTime.Now
+
+                };
+                var usuario = @User?.Claims.Where(e => e.Type == "preferred_username").Select(e => e.Value).FirstOrDefault();
+                string[] user = usuario.Split("@");
+                modelPrestamo.UsuarioIngresa = user[0];
+
+                db.Prestamos.Add(modelPrestamo);
+                db.SaveChanges();
+                var fcuota = prestamo.fecha1Cuota;
+                for (int i = 0; i < prestamo.numeroCuotas; i++)
+                {
+                    if (i != 0)
+                    {
+                        fcuota = fcuota.AddDays(7);
+                    }
+                    var modelCuota = new Cuota
+                    {
+                        IdPrestamo = modelPrestamo.IdPrestamo,
+                        FechaCuota = fcuota,
+                        FechaCreacion = DateTime.Now,
+                        UsuarioIngresa = user[0],
+                        MontoCuota = prestamo.montoCuotas
+                    };
+                    db.Cuotas.Add(modelCuota);
+                }
+                db.SaveChanges();
+                return Json(new { success = true });
+            }
+            catch
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+
+        }
+
+        [HttpPost]
+        public ActionResult Cuotas(int idPrestamo)
+        {
+            try
+            {
+                var model = db.Cuotas.Where(e => e.IdPrestamo == idPrestamo).ToList();
+                return Json(new { success = true, cuotas=model });
+            }
+            catch
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
+        public class PrestamoCliente { 
+            public int IdCliente { get; set; }
+            public string codigoGestor { get; set; }
+            public string autorizacion { get; set; }
+            public decimal fondo { get; set; }
+            public DateTime fechaEntrega { get; set; }
+            public decimal capital { get; set; }
+            public decimal capitalPendiente { get; set; }
+            public DateTime fecha1Cuota { get; set; }
+            public string diaPago { get; set; }
+            public int numeroCuotas { get; set; }
+            public decimal montoCuotas { get; set; }
+            public int diasgracia { get; set; }
+        }
+        #endregion
     }
 }

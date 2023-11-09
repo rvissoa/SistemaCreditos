@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
 namespace SistemaCreditos.Models
 {
@@ -9,7 +10,7 @@ namespace SistemaCreditos.Models
         {
             Cuota = new HashSet<Cuota>();
         }
-
+        [Key]
         public int IdPrestamo { get; set; }
         public int? IdCliente { get; set; }
         public string? NumeroCredito { get; set; }

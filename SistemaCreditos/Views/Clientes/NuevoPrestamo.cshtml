@@ -1,0 +1,212 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@model SistemaCreditos.Models.Cliente
+
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Nuevo Préstamo</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Inicio</a></li>
+                    <li class="breadcrumb-item active">Nuevo Préstamo</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<section class="content" id="nuevoPrestamo">
+    <div class="row">
+        <div class="col-md-12">
+            <!-- Preloader -->
+            <div class="preloader flex-column justify-content-center align-items-center">
+                <img class="animation__shake" src="~/img/logocd.jpeg" alt="AdminLTELogo" height="180" width="180">
+            </div>
+            <div class="card card-outline card-info">
+                <div class="card-header">
+                    <h3 class="card-title">
+                        Registre la información
+                    </h3>
+                    <br />
+                    <a class="badge bg-success" href='@Url.Action("Prestamos", "Clientes" , new { id=@Model.IdCliente })'>
+                        <i class="fas fa-list"></i> &nbsp; Lista de Préstamos
+                    </a>
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <div class="row">
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Cliente:</label>
+                            <label for="exampleSelectBorder">@Model.NombreCliente @Model.ApellidosCliente</label>
+                        </div>
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Gestor</label>
+                            <select class="custom-select form-control-border" v-model="form.codigoGestor">
+                                <option v-for="item in gestores" :value="item.codigoTrabajador" :key="item.codigoTrabajador">
+                                    {{item.nombres}}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Autorizador</label>
+                            <select class="custom-select form-control-border" v-model="form.autorizacion">
+                                <option v-for="item in autorizadores" :value="item.codigoTrabajador" :key="item.codigoTrabajador">
+                                    {{item.nombres}}
+                                </option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Fondo</label>
+                            <input type="number" v-model="form.fondo" class="form-control" maxlength="3" required/>
+                        </div>
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Capital</label>
+                            <input style="font-size:16px!important;font-weight: bold;" type="number" v-model="form.capital" class="form-control" maxlength="20" />
+                        </div>
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Capital Pendiente</label>
+                            <input type="number" v-model="form.capitalPendiente" class="form-control" maxlength="20" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Número de cuotas</label>
+                            <input type ="number" v-model="form.numeroCuotas" class="form-control" maxlength="2" />
+                        </div>
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Monto de Cuotas</label>
+                            <input type="number" v-model="form.montoCuotas" class="form-control"  maxlength="10" />
+                        </div>
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Días de gracia</label>
+                            <input type="number" v-model="form.diasgracia" class="form-control" maxlength="2" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Fecha de Entrega</label>
+                            <input type="date" v-model="form.fechaEntrega" class="form-control" maxlength="250" />
+                        </div>
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Fecha 1° Cuota</label>
+                            <input type="date" v-model="form.fecha1Cuota" class="form-control" maxlength="250" />
+                        </div>
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Día de Pago</label>
+                            <select v-model="form.diaPago" class="custom-select form-control-border" required>
+                                <option v-for="(sel,cix) in dias" :value="sel.id">{{sel.text}}</option>
+                                <option selected="true" value="" disabled>Seleccione...</option>
+                            </select>
+                            <input hidden type="number" v-model="form.idCliente" :value="idCliente" required />
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="text-center">
+                        <a href='@Url.Action("Prestamos", "Clientes" , new { id=@Model.IdCliente })'><i class="fa fa-reply"></i> &nbsp; Atrás</a> &nbsp;&nbsp;
+                        <button type="submit" class="btn btn-primary" v-on:Click="guardarNuevoPrestamo"><i class="fa fa-save"></i> &nbsp; Guardar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- /.col-->
+    </div>
+    <!-- ./row -->
+    </section>
+@section Scripts {
+    
+    <script language="javascript">
+        //Vuee
+        function refrescar() {
+            //Actualiza la página
+            location.reload();
+        }
+        var vform = new Vue({
+            el: '#nuevoPrestamo',
+            data: {
+                idCliente: '@Model.IdCliente',
+                lista: [],
+                buscarCliente: '',
+                form:[],
+                distritos:[],
+                gestores:[],
+                autorizadores:[],
+                dias: [
+                    { id: 'LUNES', text: 'LUNES' },
+                    { id: 'MARTES', text: 'MARTES' },
+                    { id: 'MIERCOLES', text: 'MIERCOLES' },
+                    { id: 'JUEVES', text: 'JUEVES' },
+                    { id: 'VIERNES', text: 'VIERNES' },
+                    { id: 'SABADO', text: 'SABADO' },
+                    { id: 'DOMINGO', text: 'DOMINGO' },
+
+                ],
+
+            },
+            created() {
+                var _this = this;
+                fetch('/Clientes/Gestores',
+                    {
+                        method: 'POST',
+                        body: '',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(result => result.json())
+                    .then(function (result) {
+                        if (result.success == true) {
+                            _this.gestores = result.gestores;
+                        }
+                    });
+
+                fetch('/Clientes/Autorizadores',
+                    {
+                        method: 'POST',
+                        body: '',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(result => result.json())
+                    .then(function (result) {
+                        if (result.success == true) {
+                            _this.autorizadores = result.autorizadores;
+                        }
+                    });
+            },
+            methods: {
+                guardarNuevoPrestamo() {
+                    var _this = this;
+                    var prestamo= Object.assign({}, vform.form);
+                    prestamo.idCliente=_this.idCliente;
+                    console.log(prestamo);
+                    fetch('/Clientes/NuevoPrestamo',
+                        {
+                            method: 'POST',
+                            body: JSON.stringify(prestamo),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(result => result.json())
+                        .then(function (result) {
+                            if (result.success == true) {
+                                setTimeout(() => { refrescar; window.location = '/Clientes/Prestamos?id=@Model.IdCliente';} , 1500);
+                                toastr.success('¡Se registró correctamente el préstamo!');
+                            }
+                        });
+                }
+            }
+        });
+    </script>
+}

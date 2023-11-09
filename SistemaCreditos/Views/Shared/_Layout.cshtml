@@ -147,29 +147,11 @@
                         <!-- Prestamos -->
                         <li class="nav-header">GESTIÓN PRESTAMOS</li>
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-edit"></i>
-                                <p>
-                                    PRESTAMOS
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
+                            <a asp-controller="Clientes" asp-action="ListaClientes" class="nav-link">
+                                <i class="fa fa-address-card nav-icon text-info"></i>
+                                <p>Clientes - Préstamos</p>
                             </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Nuevo Préstamo</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Lista de Préstamos</p>
-                                    </a>
-                                </li>
-                            </ul>
                         </li>
-
                         <!-- Clientes -->
                         <li class="nav-item">
                             <a href="#" class="nav-link">
@@ -181,15 +163,15 @@
                             </a>
                             <ul class="nav nav-treeview">
                                 <li class="nav-item">
-                                    <a asp-controller="Clientes" asp-action="NuevoCliente" class="nav-link">
-                                        <i class="far fa-circle nav-icon text-success"></i>
-                                        <p>Nuevo Cliente</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
                                     <a asp-controller="Clientes" asp-action="ListaClientes" class="nav-link">
                                         <i class="far fa-circle nav-icon text-primary"></i>
                                         <p>Lista de Clientes</p>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a asp-controller="Clientes" asp-action="NuevoCliente" class="nav-link">
+                                        <i class="far fa-circle nav-icon text-success"></i>
+                                        <p>Nuevo Cliente</p>
                                     </a>
                                 </li>
                             </ul>
