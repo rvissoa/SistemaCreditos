@@ -63,32 +63,32 @@
 
                     <div class="row">
                         <div class="form-group col-lg-4 col-md-6 col-sm-12">
-                            <label for="exampleSelectBorder">Fondo</label>
-                            <input type="number" v-model="form.fondo" class="form-control" maxlength="3" required/>
-                        </div>
-                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
                             <label for="exampleSelectBorder">Capital</label>
                             <input style="font-size:16px!important;font-weight: bold;" type="number" v-model="form.capital" class="form-control" maxlength="20" />
                         </div>
                         <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Número de cuotas</label>
+                            <input type="number" v-model="form.numeroCuotas" class="form-control" maxlength="2" />
+                        </div>
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
                             <label for="exampleSelectBorder">Capital Pendiente</label>
-                            <input type="number" v-model="form.capitalPendiente" class="form-control" maxlength="20" />
+                            <input type="number" v-model="form.capitalPendiente" class="form-control" maxlength="20" :disabled=isDisabled />
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="form-group col-lg-4 col-md-6 col-sm-12">
-                            <label for="exampleSelectBorder">Número de cuotas</label>
-                            <input type ="number" v-model="form.numeroCuotas" class="form-control" maxlength="2" />
+                            <label for="exampleSelectBorder">Fondo</label>
+                            <input type="number" v-model="form.fondo" class="form-control" maxlength="3" required />
                         </div>
                         <div class="form-group col-lg-4 col-md-6 col-sm-12">
                             <label for="exampleSelectBorder">Monto de Cuotas</label>
-                            <input type="number" v-model="form.montoCuotas" class="form-control"  maxlength="10" />
+                            <input type="number" v-model="form.montoCuotas" class="form-control" maxlength="10" :disabled=isDisabled />
                         </div>
-                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                        @*<div class="form-group col-lg-4 col-md-6 col-sm-12">
                             <label for="exampleSelectBorder">Días de gracia</label>
                             <input type="number" v-model="form.diasgracia" class="form-control" maxlength="2" />
-                        </div>
+                        </div>*@
                     </div>
 
                     <div class="row">
@@ -113,7 +113,7 @@
                 <div class="card-footer">
                     <div class="text-center">
                         <a href='@Url.Action("Prestamos", "Clientes" , new { id=@Model.IdCliente })'><i class="fa fa-reply"></i> &nbsp; Atrás</a> &nbsp;&nbsp;
-                        <button type="submit" class="btn btn-primary" v-on:Click="guardarNuevoPrestamo"><i class="fa fa-save"></i> &nbsp; Guardar</button>
+                        <button type="submit" class="btn btn-primary" v-on:Click="guardarNuevoPrestamo" :disabled="disabledBtn"><i class="fa fa-save"></i> &nbsp; Guardar</button>
                     </div>
                 </div>
             </div>
@@ -121,9 +121,9 @@
         <!-- /.col-->
     </div>
     <!-- ./row -->
-    </section>
+</section>
 @section Scripts {
-    
+
     <script language="javascript">
         //Vuee
         function refrescar() {
@@ -136,10 +136,10 @@
                 idCliente: '@Model.IdCliente',
                 lista: [],
                 buscarCliente: '',
-                form:[],
-                distritos:[],
-                gestores:[],
-                autorizadores:[],
+                form: [],
+                distritos: [],
+                gestores: [],
+                autorizadores: [],
                 dias: [
                     { id: 'LUNES', text: 'LUNES' },
                     { id: 'MARTES', text: 'MARTES' },
@@ -150,10 +150,13 @@
                     { id: 'DOMINGO', text: 'DOMINGO' },
 
                 ],
+                isDisabled:false,
+                disabledBtn:false
 
             },
             created() {
                 var _this = this;
+                _this.form.fondo=10;
                 fetch('/Clientes/Gestores',
                     {
                         method: 'POST',
@@ -184,11 +187,40 @@
                         }
                     });
             },
+            beforeUpdate() {
+                _this=this;
+                if (_this.form.numeroCuotas == 12) {
+                    _this.form.interes=0.44;
+                    _this.form.capitalPendiente = _this.form.capital * (1+_this.form.interes);
+                    _this.form.montoCuotas = _this.form.capitalPendiente /12;
+                    _this.isDisabled=true;
+                }
+                else if (_this.form.numeroCuotas == 15) {
+                    _this.form.interes = 0.50;
+                    _this.form.capitalPendiente = _this.form.capital * (1+_this.form.interes);
+                    _this.form.montoCuotas = _this.form.capitalPendiente / 15;
+                    _this.isDisabled = true;
+                }
+                else if (_this.form.numeroCuotas != 12 || _this.form.numeroCuotas != 15) {
+                    _this.form.interes='';
+                    _this.form.montoCuotas = ''
+                    if (_this.form.capitalPendiente != '' && _this.form.capital != '') {
+                        _this.form.interes = (_this.form.capitalPendiente / _this.form.capital) - 1;
+                        _this.form.montoCuotas = (_this.form.capitalPendiente / _this.form.numeroCuotas)
+                    }
+                    vform.form.montoCuotas = _this.form.montoCuotas;
+                    _this.isDisabled = false;
+                    
+                }else{
+                    _this.isDisabled = false;
+                }
+            },
             methods: {
                 guardarNuevoPrestamo() {
                     var _this = this;
-                    var prestamo= Object.assign({}, vform.form);
-                    prestamo.idCliente=_this.idCliente;
+                    _this.disabledBtn=true;
+                    var prestamo = Object.assign({}, vform.form);
+                    prestamo.idCliente = _this.idCliente;
                     console.log(prestamo);
                     fetch('/Clientes/NuevoPrestamo',
                         {
@@ -201,7 +233,7 @@
                         .then(result => result.json())
                         .then(function (result) {
                             if (result.success == true) {
-                                setTimeout(() => { refrescar; window.location = '/Clientes/Prestamos?id=@Model.IdCliente';} , 1500);
+                                setTimeout(() => { refrescar; window.location = '/Clientes/Prestamos?id=@Model.IdCliente'; }, 1500);
                                 toastr.success('¡Se registró correctamente el préstamo!');
                             }
                         });
