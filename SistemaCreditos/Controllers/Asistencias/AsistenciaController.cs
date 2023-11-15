@@ -17,10 +17,12 @@ namespace SistemaCreditos.Controllers.Asistencias
             _logger = logger;
         }
 
+        [Authorize(Policy = "Admin")]
         public IActionResult ReporteAsistencia()
         {
             return View();
         }
+        [Authorize(Policy = "Admin")]
         [HttpPost]  
         public IActionResult ReporteAsistencias([FromBody] body request)
         {
@@ -42,6 +44,8 @@ namespace SistemaCreditos.Controllers.Asistencias
                         }).ToList();
             return new JsonResult(new { success = true, model });
         }
+
+        #region Marcar asistencia
         public IActionResult Marcar()
         {
             //Zona horaria
@@ -277,6 +281,7 @@ namespace SistemaCreditos.Controllers.Asistencias
         {
             public string fecha { get; set; }     
         }
+        #endregion
     }
 }
 

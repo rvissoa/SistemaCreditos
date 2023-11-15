@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SistemaCreditos.Models;
 using System.Net;
 using static SistemaCreditos.Controllers.Clientes.ClientesController;
@@ -6,6 +7,7 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace SistemaCreditos.Controllers.Clientes
 {
+    [Authorize]
     public class ClientesController : Controller
     {
         private Model db = new Model();

@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -135,6 +137,8 @@
                                 </p>
                             </a>
                         </li>
+                        @if ((await AuthorizationService.AuthorizeAsync(User, "Admin")).Succeeded)
+                        {
                         <li class="nav-item">
                             <a asp-controller="Asistencia" asp-action="ReporteAsistencia" class="nav-link">
                                 <i class="nav-icon far fa-chart-bar text-primary"></i>
@@ -143,7 +147,7 @@
                                 </p>
                             </a>
                         </li>
-
+                        }
                         <!-- Prestamos -->
                         <li class="nav-header">GESTIÓN PRESTAMOS</li>
                         <li class="nav-item">
@@ -178,30 +182,32 @@
                         </li>
 
                         <!-- Reportes -->
-                        <li class="nav-item">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-book"></i>
-                                <p>
-                                    Reportes
-                                    <i class="fas fa-angle-left right"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Reporte</p>
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="#" class="nav-link">
-                                        <i class="far fa-circle nav-icon"></i>
-                                        <p>Profile</p>
-                                    </a>
-                                </li>
-                            </ul>
-                        </li>
-
+                        @if ((await AuthorizationService.AuthorizeAsync(User, "Admin")).Succeeded)
+                        {
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <i class="nav-icon fas fa-book"></i>
+                                    <p>
+                                        Reportes
+                                        <i class="fas fa-angle-left right"></i>
+                                    </p>
+                                </a>
+                                <ul class="nav nav-treeview">
+                                    <li class="nav-item">
+                                        <a href="#" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Reporte</p>
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="#" class="nav-link">
+                                            <i class="far fa-circle nav-icon"></i>
+                                            <p>Profile</p>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        }
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->
