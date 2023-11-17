@@ -69,8 +69,12 @@ namespace SistemaCreditos.Models
                 entity.Property(e => e.IdCuota).HasColumnName("ID_CUOTA");
 
                 entity.Property(e => e.MontoAbono)
-                    .HasColumnType("decimal(10, 2)")
+                    .HasColumnType("decimal(10, 4)")
                     .HasColumnName("MONTO_ABONO");
+
+                entity.Property(e => e.MontoMora)
+                    .HasColumnType("decimal(10, 4)")
+                    .HasColumnName("MONTO_MORA");
 
                 entity.Property(e => e.TipoAbono).HasColumnName("TIPO_ABONO");
 
@@ -390,11 +394,11 @@ namespace SistemaCreditos.Models
                 entity.Property(e => e.IdPrestamo).HasColumnName("ID_PRESTAMO");
 
                 entity.Property(e => e.MontoCuota)
-                    .HasColumnType("decimal(10, 2)")
+                    .HasColumnType("decimal(10, 4)")
                     .HasColumnName("MONTO_CUOTA");
 
                 entity.Property(e => e.Mora)
-                    .HasColumnType("decimal(10, 2)")
+                    .HasColumnType("decimal(10, 4)")
                     .HasColumnName("MORA");
 
                 entity.Property(e => e.Observaciones)
@@ -462,11 +466,11 @@ namespace SistemaCreditos.Models
                     .HasColumnName("AUTORIZACION");
 
                 entity.Property(e => e.Capital)
-                    .HasColumnType("decimal(10, 2)")
+                    .HasColumnType("decimal(10, 4)")
                     .HasColumnName("CAPITAL");
 
                 entity.Property(e => e.CapitalPendiente)
-                    .HasColumnType("decimal(10, 2)")
+                    .HasColumnType("decimal(10, 4)")
                     .HasColumnName("CAPITAL_PENDIENTE");
 
                 entity.Property(e => e.CodigoGestor)
@@ -498,13 +502,13 @@ namespace SistemaCreditos.Models
                     .HasColumnName("FECHA_TERMINO");
 
                 entity.Property(e => e.FondoProvisional)
-                    .HasColumnType("decimal(10, 2)")
+                    .HasColumnType("decimal(10, 4)")
                     .HasColumnName("FONDO_PROVISIONAL");
 
                 entity.Property(e => e.IdCliente).HasColumnName("ID_CLIENTE");
 
                 entity.Property(e => e.Interes)
-                    .HasColumnType("decimal(4, 2)")
+                    .HasColumnType("decimal(4, 4)")
                     .HasColumnName("INTERES");
 
                 entity.Property(e => e.Liquidacion)
@@ -513,7 +517,7 @@ namespace SistemaCreditos.Models
                     .HasColumnName("LIQUIDACION");
 
                 entity.Property(e => e.MontoCuota)
-                    .HasColumnType("decimal(10, 2)")
+                    .HasColumnType("decimal(10, 4)")
                     .HasColumnName("MONTO_CUOTA");
 
                 entity.Property(e => e.NumeroCredito)

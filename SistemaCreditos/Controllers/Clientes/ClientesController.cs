@@ -347,6 +347,86 @@ namespace SistemaCreditos.Controllers.Clientes
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
             }
         }
+
+        [HttpPost]
+        public ActionResult Bancos()
+        {
+            try
+            {
+                return Json(new {success=true, bancos = db.Bancos.ToList() });
+            }
+            catch
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
+        [HttpPost]
+        public ActionResult NuevoAbono([FromBody] formulario abono)
+        {
+            try
+            {
+                var model = new Abono
+                {
+                    IdCuota = abono.idCuota,
+                    MontoAbono = abono.monto,
+                    FechaAbono = abono.fechaAbono,
+                    FechaCreacion = DateTime.Now,
+                    Banco = abono.banco,
+                    TipoArchivo = abono.tipo,
+                    Codigo = abono.numeroVoucher,
+                    TipoAbono = abono.tipoAbono
+                };
+                var usuario = @User?.Claims.Where(e => e.Type == "preferred_username").Select(e => e.Value).FirstOrDefault();
+                string[] user = usuario.Split("@");
+                model.UsuarioIngresa = user[0];
+                if(abono.voucher!=null)
+                    model.FotoAbono = Convert.FromBase64String(abono.voucher);
+                db.Abonos.Add(model);
+                db.SaveChanges();
+                //Verificar dia de pago CUOTA
+                var cuota = db.Cuotas.Find(abono.idCuota);
+                var abonos = db.Abonos.Where(e => e.IdCuota == cuota.IdCuota);
+                var presta = db.Prestamos.Find(cuota.IdPrestamo);
+                decimal? suma = 0;
+                foreach (var item in abonos.ToList())
+                {
+                    suma += item.MontoAbono;
+                }
+                if (suma >= cuota.MontoCuota)
+                {
+                    cuota.FechaPago = abono.fechaAbono;
+                    //Verificar fecha termino del prestamo
+                    if (db.Cuotas.Where(e=>e.IdPrestamo==presta.IdPrestamo).Max(e=>e.IdCuota) == abono.idCuota)
+                    {
+                        presta.FechaTermino = abono.fechaAbono;
+                        presta.Liquidacion = "NORMAL";
+                    }
+                }
+                cuota.CantidadAbonos = abonos.ToList().Count();
+                db.SaveChanges();
+
+                return Json(new { success = true });
+            }
+            catch
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        public class formulario
+        {
+            public decimal monto { get; set; }
+            public decimal mora { get; set; }
+            public string voucher { get; set; }
+            public string observaciones { get; set; }
+            public string tipo { get; set; }
+            public int idCuota { get; set; }
+            public DateTime fechaAbono { get; set; }
+            public int banco { get; set; }
+            public int idAbono { get; set; }
+            public string numeroVoucher { get; set; }
+            public int tipoAbono { get; set; }
+        }
         public class PrestamoCliente { 
             public int IdCliente { get; set; }
             public string codigoGestor { get; set; }

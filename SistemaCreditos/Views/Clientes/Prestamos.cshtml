@@ -71,6 +71,7 @@
                             </tr>
                         </tbody>
                     </table>
+                    <!-- /.modal-CUOTAS -->
                     <div class="modal fade" id="modal-lg">
                         <div class="modal-dialog modal-xl">
                             <div class="modal-content">
@@ -100,7 +101,8 @@
                                                 <td>{{item.montoCuota}}</td>
                                                 <td>{{item.mora}}</td>
                                                 <td>{{item.observaciones}}</td>
-                                                <td><a href="javascript:void(0);" title="Eliminar Préstamo" v-on:click="eliminar(item.idPrestamo)"><i class="fa fa-remove"></i></a></td>
+                                                <td v-if="item.fechaPago==null"><button class="btn btn-default" id="show-modal" data-toggle="modal" data-target="#modal-sm" v-on:Click="verAbonar(item.idCuota)"><i class="fas fa-share text-primary"></i> <i class="fab fa-cc-visa text-primary"></i></button></td>
+                                                <td v-else><span class="badge bg-success">Cuota Cancelada</span></td>
                                                 <td><a href="javascript:void(0);" title="Eliminar Préstamo" v-on:click="eliminar(item.idPrestamo)"><i class="fa fa-remove"></i></a></td>
                                             </tr>
                                         </tbody>
@@ -108,6 +110,71 @@
                                 </div>
                                 <div class="modal-footer justify-content-between">
                                     <button type="button" class="btn btn-default" v-on:click="window.location.href='/Clientes/Prestamos?id='+idCliente">Cerrar</button>
+                                </div>
+                            </div>
+                            <!-- /.modal-content -->
+                        </div>
+                        <!-- /.modal-dialog -->
+                    </div>
+
+                    <!-- /.modal-ABONOS -->
+                    <div class="modal fade" id="modal-sm">
+                        <div class="modal-dialog modal-lg">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title text-success">Abonar</h4>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                            <label for="exampleSelectBorder">Monto Cuota</label>
+                                            <input v-model="form.monto" type="number" class="form-control" maxlength="100" />
+                                        </div>
+                                        <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                            <label for="exampleSelectBorder">Fecha de abono</label>
+                                            <input type="date" v-model="form.fechaAbono" class="form-control"/>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                            <label for="exampleSelectBorder">Mora</label>
+                                            <input v-model="form.mora" type="number" class="form-control" maxlength="100" />
+                                        </div>
+                                        <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                            <label for="exampleSelectBorder">Banco</label>
+                                            <select v-model="form.banco" class="custom-select form-control-border">
+                                                <option value="" disabled selected>--Selecione--</option>
+                                                <option v-for="(sel,cix) in bancos" :value="sel.idBanco">{{sel.razonSocial}}</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                            <label for="exampleSelectBorder">Nro Voucher</label>
+                                            <input v-model="form.numeroVoucher" type="text" class="form-control" maxlength="100" />
+                                        </div>
+                                        <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                            <label for="exampleSelectBorder">Tipo de abono</label>
+                                            <select v-model="form.tipoAbono" class="custom-select form-control-border">
+                                                <option value="" disabled selected>--Selecione--</option>
+                                                <option value="1">VOUCHER</option>
+                                                <option value="2">RECIBO</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                            <label for="exampleSelectBorder">Voucher</label>
+                                            <input id="voucher" v-model="form.voucher" type="file" class="form-control" maxlength="100" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="modal-footer justify-content-between">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                                    <button type="submit" class="btn btn-primary" v-on:Click="guardarCuota" :disabled="disabledBtn"><i class="fa fa-save"></i> &nbsp; Guardar</button>
                                 </div>
                             </div>
                             <!-- /.modal-content -->
@@ -139,6 +206,21 @@
     <script src="~/adminLte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
     <script src="~/adminLte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
     <script language="javascript">
+        function refrescar() {
+            location.reload();
+        }
+        //Funcion para covertir a base 64
+         function getBase64(file) {
+            var reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function () {
+                let documento = reader.result.replace(/^data:.+;base64,/, '');
+                vform.form.voucher =documento;
+            }
+        }
+        async function cargarFile(file){
+            await getBase64(file);
+        }
         //Vuee
         var vform = new Vue({
             el: '#prestamos',
@@ -146,10 +228,29 @@
                 prestamos: [],
                 idCliente: '@Model.IdCliente',
                 showModal: false,
-                cuotas: []
+                cuotas: [],
+                form:[],
+                bancos: [],
+                idCuota:'',
+                disabledBtn: false
             },
             created() {
                 var _this = this;
+                fetch('/Clientes/Bancos',
+                    {
+                        method: 'POST',
+                        //body: JSON.stringify(cliente),
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(result => result.json())
+                    .then(function (result) {
+                        if (result.success == true) {
+                            _this.bancos = result.bancos;
+                        }
+                    });
+
                 var id = '@Model' != null ? '@Model.IdCliente' : 0;
                 fetch('/Clientes/ListaPrestamos?idCliente=' + id,
                     {
@@ -202,6 +303,31 @@
                     });
             },
             methods: {
+                verAbonar(idCuota){
+                    vform.idCuota=idCuota;
+                },
+               guardarCuota(){
+                    var _this = this;
+                    _this.disabledBtn = true;
+                    //serializar formulario abono
+                    var abono = Object.assign({}, vform.form);
+                    abono.idCuota = vform.idCuota;
+                    fetch('/Clientes/NuevoAbono',
+                        {
+                            method: 'POST',
+                            body: JSON.stringify(abono),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(result => result.json())
+                        .then(function (result) {
+                            if (result.success == true) {
+                                setTimeout(refrescar, 1500);
+                                toastr.success('¡Se registró correctamente el abono!');
+                            }
+                        });
+                },
                 verCuotas: (idPrestamo) => {
                     fetch('/Clientes/Cuotas?idPrestamo=' + idPrestamo,
                         {
@@ -218,8 +344,8 @@
                                 $(function () {
                                     $("#example2").DataTable({
                                         //paging: false,
-                                        //retrieve: true,
-                                        //bDestroy: true,
+                                        retrieve: true,
+                                        bDestroy: true,
                                         "responsive": true, "lengthChange": true, "autoWidth": false,
                                         "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
                                         language: {
@@ -268,6 +394,19 @@
                         moment(val).format('DD/MM/YYYY') :
                         'Indeterminado'
                         ;
+                }
+            },
+            beforeUpdate() {
+                _this = this;
+                //seleccionar si es que hay archivo a guardar
+                if (this.form.voucher != '' || this.form.voucher != undefined || this.form.voucher != null) {
+                    //Extraer atributos
+                    var archivo = $("#voucher").val().split('\\').pop();
+                    var extension = archivo.substring(archivo.lastIndexOf("."));
+                    this.form.tipo = extension;
+                    var file = document.querySelector('#voucher').files[0];
+                    //Obtener base 64
+                    cargarFile(file);
                 }
             }
         });

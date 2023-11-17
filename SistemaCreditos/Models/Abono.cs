@@ -18,7 +18,7 @@ namespace SistemaCreditos.Models
         public int? Banco { get; set; }
         public int? TipoAbono { get; set; }
         public string? Codigo { get; set; }
-
+        public decimal? MontoMora { get; set; }
         public virtual Cuota? IdCuotaNavigation { get; set; }
     }
 }

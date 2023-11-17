@@ -221,7 +221,6 @@
                     _this.disabledBtn=true;
                     var prestamo = Object.assign({}, vform.form);
                     prestamo.idCliente = _this.idCliente;
-                    console.log(prestamo);
                     fetch('/Clientes/NuevoPrestamo',
                         {
                             method: 'POST',
