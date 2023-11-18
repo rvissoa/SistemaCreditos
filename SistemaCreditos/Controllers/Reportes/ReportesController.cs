@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using SistemaCreditos.Models;
-
 namespace SistemaCreditos.Controllers.Reportes
 {
     [Authorize]
@@ -20,8 +19,8 @@ namespace SistemaCreditos.Controllers.Reportes
             try
             {
                 string[] fechas = form.rangoFechas.Split(" - ");
-                var fechaInicio = Convert.ToDateTime(fechas[0]);
-                var fechaFin = Convert.ToDateTime(fechas[1]);
+                var fechaInicio = Util.convertirFecha(fechas[0]);
+                var fechaFin = Util.convertirFecha(fechas[1]);
 
                 //var cuotas = db.Cuotas.Where(e=>e.FechaCuota>=fechaInicio&&e.FechaCuota<=fechaFin).ToList();
                 var cuotas = (from cl in db.Clientes
