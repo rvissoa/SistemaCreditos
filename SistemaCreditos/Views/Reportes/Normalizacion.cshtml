@@ -1,0 +1,363 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+<!-- daterange picker -->
+<link rel="stylesheet" href="~/adminLte/plugins/daterangepicker/daterangepicker.css">
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Reporte de Normalización</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Inicio</a></li>
+                    <li class="breadcrumb-item active">Reporte de Normalización</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<section class="content" id="reporteNormalizacion">
+    <div class="container-fluid">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <!-- Date -->
+                    <div class="row">
+                        <div class="form-group col-lg-3 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Distrito</label>
+                            <select class="custom-select form-control-border" v-model="form.idDistrito">
+                                <option v-for="item in distritos" :value="item.idDistrito" :key="item.idDistrito">
+                                    {{ item.nombreDistrito }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-3 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Zona</label>
+                            <select class="custom-select form-control-border" v-model="form.zona">
+                                <option v-for="item in zonas" :value="item.id" :key="item.id">
+                                    {{ item.text }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-3 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Rango de fechas</label>
+                            <!-- Date and time range -->
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="far fa-clock"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control float-right" id="reservationtime" title="Rango de fechas">
+                                </div>
+                                <!-- /.input group -->
+                            </div>
+                            <!-- /.form group -->
+                        </div>
+                        <div class="col-lg-1 text-end"></div>
+                        <div class="col-lg-1 text-end">
+                            <label for="exampleSelectBorder">&nbsp;</label>
+                            <button v-on:click="buscar" class="btn form-control btn-primary" title="Buscar"><i class="fas fa-search"></i></button>
+                        </div>
+                    </div>
+                    <!-- Date and time -->
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <!-- PIE CHART -->
+                    <div v-show="visible" class="card card-danger">
+                        <div class="card-header">
+                            <h3 class="card-title">Gráfico de torta Resumen</h3>
+
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <canvas id="pieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+                    <!-- /.card -->
+                    <!-- STACKED BAR CHART -->
+                    <div v-show="visible" class="card card-success">
+                        <div class="card-header">
+                            <h3 class="card-title">Cumplimiento por meses</h3>
+
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart">
+                                <canvas id="stackedBarChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
+                            </div>
+                        </div>
+                        <!-- /.card-body -->
+                    </div>
+
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+        </div>
+    </div>
+</section>
+@section Scripts {
+    
+    <!-- date-range-picker -->
+    <script src="~/adminLte/plugins/daterangepicker/daterangepicker.js"></script>
+    <!-- ChartJS -->
+    <script src="~/adminLte/plugins/chart.js/Chart.min.js"></script>
+
+    <script language="javascript">
+        //Date range picker with time picker
+        function torta(cumple,noCumple){
+            var donutData = {
+                labels: [
+                    'No Cumple',
+                    'Cumple',
+                    //'Neutro',
+                ],
+                datasets: [
+                    {
+                        data: [noCumple, cumple],
+                        backgroundColor: ['#f56954', '#00a65a'],
+                        //backgroundColor: ['#f56954', '#00a65a', '#f39c12'],
+                    }
+                ]
+            }
+            var donutOptions = {
+                maintainAspectRatio: false,
+                responsive: true,
+            }
+            //-------------
+            //- PIE CHART -
+            //-------------
+            // Get context with jQuery - using jQuery's .get() method.
+            var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
+            var pieData = donutData;
+            var pieOptions = {
+                maintainAspectRatio: false,
+                responsive: true,
+            }
+            //Create pie or douhnut chart
+            // You can switch between pie and douhnut using the method below.
+            new Chart(pieChartCanvas, {
+                type: 'pie',
+                data: pieData,
+                options: pieOptions
+            })
+        }
+        $(function () {
+            //var donutData = {
+            //    labels: [
+            //        'No Cumple',
+            //        'Cumple',
+            //        //'Neutro',
+            //    ],
+            //    datasets: [
+            //        {
+            //            data: [700, 500],
+            //            backgroundColor: ['#f56954', '#00a65a'],
+            //            //backgroundColor: ['#f56954', '#00a65a', '#f39c12'],
+            //        }
+            //    ]
+            //}
+            //var donutOptions = {
+            //    maintainAspectRatio: false,
+            //    responsive: true,
+            //}
+
+            //-----------------------
+            var areaChartData = {
+                labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julop'],
+                datasets: [
+                    {
+                        label: 'No normalizados',
+                        backgroundColor: 'rgba(60,141,188,0.9)',
+                        borderColor: 'rgba(60,141,188,0.8)',
+                        pointRadius: false,
+                        pointColor: '#3b8bba',
+                        pointStrokeColor: 'rgba(60,141,188,1)',
+                        pointHighlightFill: '#fff',
+                        pointHighlightStroke: 'rgba(60,141,188,1)',
+                        data: [28, 48, 40, 19, 86, 27, 90]
+                    },
+                    {
+                        label: 'Normalizados',
+                        backgroundColor: 'rgba(210, 214, 222, 1)',
+                        borderColor: 'rgba(210, 214, 222, 1)',
+                        pointRadius: false,
+                        pointColor: 'rgba(210, 214, 222, 1)',
+                        pointStrokeColor: '#c1c7d1',
+                        pointHighlightFill: '#fff',
+                        pointHighlightStroke: 'rgba(220,220,220,1)',
+                        data: [65, 59, 80, 81, 56, 55, 40]
+                    },
+                ]
+            }
+
+            var areaChartOptions = {
+                maintainAspectRatio: false,
+                responsive: true,
+                legend: {
+                    display: false
+                },
+                scales: {
+                    xAxes: [{
+                        gridLines: {
+                            display: false,
+                        }
+                    }],
+                    yAxes: [{
+                        gridLines: {
+                            display: false,
+                        }
+                    }]
+                }
+            }
+            var barChartData = $.extend(true, {}, areaChartData)
+            var temp0 = areaChartData.datasets[0]
+            var temp1 = areaChartData.datasets[1]
+            barChartData.datasets[0] = temp1
+            barChartData.datasets[1] = temp0
+
+            var barChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                datasetFill: false
+            }
+            //-------------
+            //- PIE CHART -
+            //-------------
+            // Get context with jQuery - using jQuery's .get() method.
+            //var pieChartCanvas = $('#pieChart').get(0).getContext('2d')
+            //var pieData = donutData;
+            //var pieOptions = {
+            //    maintainAspectRatio: false,
+            //    responsive: true,
+            //}
+            ////Create pie or douhnut chart
+            //// You can switch between pie and douhnut using the method below.
+            //new Chart(pieChartCanvas, {
+            //    type: 'pie',
+            //    data: pieData,
+            //    options: pieOptions
+            //})
+            //---------------------
+            //- STACKED BAR CHART -
+            //---------------------
+            var stackedBarChartCanvas = $('#stackedBarChart').get(0).getContext('2d')
+            var stackedBarChartData = $.extend(true, {}, barChartData)
+
+            var stackedBarChartOptions = {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    xAxes: [{
+                        stacked: true,
+                    }],
+                    yAxes: [{
+                        stacked: true
+                    }]
+                }
+            }
+
+            new Chart(stackedBarChartCanvas, {
+                type: 'bar',
+                data: stackedBarChartData,
+                options: stackedBarChartOptions
+            })
+        });
+        //var hoy = new Date();
+        //var today = moment().format('YYYY-MM-DD');
+
+        //Vuee
+        var vform = new Vue({
+            el: '#reporteNormalizacion',
+            data: {
+                visible:false,
+                reporte: [],
+                fechaInicio: '',
+                fechaFin: '',
+                zonas: [
+                    { id: 'A', text: 'A' },
+                    { id: 'B', text: 'B' },
+                    { id: 'C', text: 'C' },
+                    { id: 'D', text: 'D' },
+                    { id: 'E', text: 'E' }
+
+                ],
+                form:[],
+                distritos:[]
+            },
+            created() {
+               
+                var _this = this;
+                $(function () {
+                    $('#reservationtime').daterangepicker({
+                        timePicker: false,
+                        timePickerIncrement: 120,
+                        locale: {
+                            format: 'DD/MM/YYYY'
+                        }
+                    })
+                });
+                fetch('/Clientes/Distritos',
+                    {
+                        method: 'POST',
+                        body: '',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(result => result.json())
+                    .then(function (result) {
+                        if (result.success == true) {
+                            _this.distritos = result.distritos;
+                        }
+                    });
+            },
+            methods: {
+                buscar(){
+                    var form = Object.assign({}, vform.form);
+                    form.rangoFechas = $('#reservationtime').val();
+                    console.log(form);
+                    fetch('/Reportes/VerNormalizacion',
+                        {
+                            method: 'POST',
+                            body: JSON.stringify(form),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(result => result.json())
+                        .then(function (result) {
+                            if (result.success == true) {
+                                vform.visible = true;
+                                vform.reporte=result.reporte;
+                                console.log(result.reporte);
+                                torta(vform.reporte.normalizacion, vform.reporte.noNorma);
+                            }
+                        });
+
+                    
+                }
+            }
+        });
+    </script>
+}

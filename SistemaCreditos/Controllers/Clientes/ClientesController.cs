@@ -380,7 +380,7 @@ namespace SistemaCreditos.Controllers.Clientes
                 string[] user = usuario.Split("@");
                 model.UsuarioIngresa = user[0];
                 if(abono.voucher!=null)
-                    model.FotoAbono = Convert.FromBase64String(abono.voucher);
+                    //model.FotoAbono = Convert.FromBase64String(abono.voucher);
                 db.Abonos.Add(model);
                 db.SaveChanges();
                 //Verificar dia de pago CUOTA
