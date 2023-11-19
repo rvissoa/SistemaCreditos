@@ -54,6 +54,7 @@
                                 <th>Fecha de Entrega</th>
                                 <th>Fecha de Termino</th>
                                 <th>Número de cuotas</th>
+                                <th>Ver Estado de Cuenta</th>
                                 <th>Eliminar Préstamo</th>
                             </tr>
                         </thead>
@@ -67,6 +68,7 @@
                                 <td>{{item.fechaEntrega | JsonFecha2}}</td>
                                 <td>{{item.fechaTermino | JsonFecha2}}</td>
                                 <td>{{item.numeroCuotas}}</td>
+                                <td class="text-center"><button title="Descargar Estado de cuenta" id="show-modal" data-toggle="modal" data-target="#modal-estado" class="btn btn-default"><i class="fas fa-file-download text-success fa-2x"></i></button></td>
                                 <td><a href="javascript:void(0);" title="Eliminar Préstamo" v-on:click="eliminar(item.idPrestamo)"><i class="fa fa-remove"></i></a></td>
                             </tr>
                         </tbody>
@@ -135,7 +137,7 @@
                                         </div>
                                         <div class="form-group col-lg-6 col-md-6 col-sm-12">
                                             <label for="exampleSelectBorder">Fecha de abono</label>
-                                            <input type="date" v-model="form.fechaAbono" class="form-control"/>
+                                            <input type="date" v-model="form.fechaAbono" class="form-control" />
                                         </div>
                                     </div>
                                     <div class="row">
@@ -181,6 +183,273 @@
                         </div>
                         <!-- /.modal-dialog -->
                     </div>
+
+                    <!-- /.modal-ESTADO DE CUENTA -->
+                    <div class="modal fade" id="modal-estado">
+                        <div class="modal-dialog modal-xl">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h4 class="modal-title text-success">Estado de Cuenta</h4>
+                                    <div>
+                                        &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
+                                        <button title="Descargar Estado de cuenta" class="btn btn-default" v-on:Click="descargarEstado()">
+                                            Descargar &nbsp;
+                                            <i class="fas fa-file-download text-success fa-2x"></i>
+                                        </button>
+                                    </div>
+                                    <button type="button" class="close" v-on:click="window.location.href='/Clientes/Prestamos?id='+idCliente" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <table class="table table-bordered" id="estado">
+                                        <thead></thead>
+                                        <tbody>
+                                            @*Datos del Cliente - prestamo*@
+                                            <tr>
+                                                <td align="center" colspan="9" style="vertical-align: middle;background-color:royalblue;color:white"><b>DATOS DEL CLIENTE</b></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="4" rowspan="2" align="center" style="vertical-align: middle;"><label class="badge bg-primary">CREDITOS "DIEGO"</label></td>
+                                                <td colspan="3"><b>N° de Créditos</b></td>
+                                                <td colspan="2">[numeroCredito] 1</td>
+                                            </tr>
+                                            <tr>
+                                                <td>[codigoCliente] CL-3611</td>
+                                                <td>[codigoAutorizador] RNV-2</td>
+                                                <td>[codigoGestor] JS015</td>
+                                                <td>[Capital] S/. 800.00</td>
+                                                <td colspan="2" rowspan="4" align="center" style="vertical-align: middle;">[diaPago] MARTES</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Nombre: </td>
+                                                <td colspan="5"><b>[nombres] Rodolfo Visso</b></td>
+                                                <td colspan="2">[HCL] HCL</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Dirección: </td>
+                                                <td colspan="7"><b>[direccion] Aparicio Gomez 257</b></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Telefonos: </td>
+                                                <td><b>[telefonos]</b></td>
+                                                <td>Celular: </td>
+                                                <td><b>[celular]</b></td>
+                                                <td>DNI: </td>
+                                                <td colspan="3"><b>[dni] 46761515</b></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Ubicación: </td>
+                                                <td colspan="8"><b>[ubicacion] alt cuadra 31 av. jose granda</b></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Trabajo: </td>
+                                                <td colspan="8"><b>[trabajo] Gerente de TI</b></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="9">&nbsp;</td>
+                                            </tr>
+                                            @*Datos del conyuge*@
+                                            <tr>
+                                                <td>Conyuge: </td>
+                                                <td colspan="5"><b>[conyuge] Esposa</b></td>
+                                                <td>DNI: </td>
+                                                <td colspan="2"><b>[dni] 46761515</b></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Dirección Conyuge: </td>
+                                                <td colspan="8"><b>[direccionConyuge] Aparicio Gomez 257</b></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Trabajo: </td>
+                                                <td colspan="5"><b>[trabajoConyuge] Ama de casa</b></td>
+                                                <td>Telefono: </td>
+                                                <td colspan="2"><b>[telefono] 994145452</b></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="9">&nbsp;</td>
+                                            </tr>
+                                            @*Datos de AVal*@
+                                            <tr>
+                                                <td>Aval: </td>
+                                                <td colspan="5"><b>[aval] Nombre aval</b></td>
+                                                <td>DNI: </td>
+                                                <td colspan="2"><b>[dniAval] 46761515</b></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Dirección Aval: </td>
+                                                <td colspan="8"><b>[direccionAval] Aparicio Gomez 257</b></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Trabajo Aval: </td>
+                                                <td colspan="5"><b>[trabajoAval] Gestor</b></td>
+                                                <td>Telefono Aval: </td>
+                                                <td colspan="2"><b>[telefono] 994145452</b></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Parentesco: </td>
+                                                <td colspan="5"><b>[parentesco] Hermano</b></td>
+                                                <td>Hijos: </td>
+                                                <td colspan="2"><b>[hijos] Hijo1, hijo2</b></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="9">&nbsp;</td>
+                                            </tr>
+                                            @*Estado de cuenta*@
+                                            <tr>
+                                                <td colspan="9" style="vertical-align: middle;background-color:royalblue;color:white" align="center"><b>ESTADO DE CUENTA</b></td>
+                                            </tr>
+                                            <tr>
+                                                <td>Fecha de Entrega: </td>
+                                                <td><b>[fechaEntrega] 01/01/2023</b></td>
+                                                <td>Modalidad: </td>
+                                                <td><b>[cuotas] 15*80</b></td>
+                                                <td colspan="2">Capital: </td>
+                                                <td><b>[capital] S/. 800.00</b></td>
+                                                <td>Fondo Provisional: </td>
+                                                <td><b>[fondo] S/. 30.00</b></td>
+
+                                            </tr>
+                                            <tr>
+                                                <td colspan="1">Capital pendiente Inicial: </td>
+                                                <td colspan="2"><b>[capitalPendiente] 1200</b></td>
+                                                <td colspan="2">Número de créditos: </td>
+                                                <td colspan="1"><b>[numeroPrestamos] 2°</b></td>
+                                                <td colspan="1">Días de pago: </td>
+                                                <td colspan="3"><b>[diaPago] MARTES</b></td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="9">
+                                                    <table>
+                                                        <thead>
+                                                            <tr>
+                                                                <td>IT</td>
+                                                                <td>FECHA</td>
+                                                                <td>CAPITAL</td>
+                                                                <td>ABONO</td>
+                                                                <td>CAPITAL PENDIENTE</td>
+                                                                <td>MORA</td>
+                                                                <td>G</td>
+                                                                <td>FECHA PAGO</td>
+                                                                <td>N° OPERACIÓN</td>
+                                                                <td>BANCO</td>
+                                                                <td>MORAS PENDIENTES</td>
+                                                                <td>DÍAS MORA</td>
+                                                                <td>OBSERVACIÓN</td>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <tr>
+                                                                <td>1</td>
+                                                                <td>15/08/2023</td>
+                                                                <td>800.00</td>
+                                                                <td>80.00</td>
+                                                                <td>1120.00</td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td>15/08/2023</td>
+                                                                <td>19:07</td>
+                                                                <td>YAPE</td>
+                                                                <td>-</td>
+                                                                <td>0</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>1</td>
+                                                                <td>15/08/2023</td>
+                                                                <td>800.00</td>
+                                                                <td>80.00</td>
+                                                                <td>1120.00</td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td>15/08/2023</td>
+                                                                <td>19:07</td>
+                                                                <td>YAPE</td>
+                                                                <td>-</td>
+                                                                <td>0</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>1</td>
+                                                                <td>15/08/2023</td>
+                                                                <td>800.00</td>
+                                                                <td>80.00</td>
+                                                                <td>1120.00</td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td>15/08/2023</td>
+                                                                <td>19:07</td>
+                                                                <td>YAPE</td>
+                                                                <td>-</td>
+                                                                <td>0</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>1</td>
+                                                                <td>15/08/2023</td>
+                                                                <td>800.00</td>
+                                                                <td>80.00</td>
+                                                                <td>1120.00</td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td>15/08/2023</td>
+                                                                <td>19:07</td>
+                                                                <td>YAPE</td>
+                                                                <td>-</td>
+                                                                <td>0</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>1</td>
+                                                                <td>15/08/2023</td>
+                                                                <td>800.00</td>
+                                                                <td>80.00</td>
+                                                                <td>1120.00</td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td>15/08/2023</td>
+                                                                <td>19:07</td>
+                                                                <td>YAPE</td>
+                                                                <td>-</td>
+                                                                <td>0</td>
+                                                                <td></td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td>1</td>
+                                                                <td>15/08/2023</td>
+                                                                <td>800.00</td>
+                                                                <td>80.00</td>
+                                                                <td>1120.00</td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td>15/08/2023</td>
+                                                                <td>19:07</td>
+                                                                <td>YAPE</td>
+                                                                <td>-</td>
+                                                                <td>0</td>
+                                                                <td></td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <div class="modal-footer justify-content-between">
+                                    <button type="button" class="btn btn-default" v-on:click="window.location.href='/Clientes/Prestamos?id='+idCliente">Cerrar</button>
+                                    <div>
+                                        <button title="Descargar Estado de cuenta" class="btn btn-default" v-on:Click="descargarEstado()">
+                                            Descargar &nbsp;
+                                            <i class="fas fa-file-download text-success fa-2x"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- /.modal-content -->
+                        </div>
+                        <!-- /.modal-dialog -->
+                    </div>
                 </div>
 
                 <div class="card-footer">
@@ -210,15 +479,15 @@
             location.reload();
         }
         //Funcion para covertir a base 64
-         function getBase64(file) {
+        function getBase64(file) {
             var reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = function () {
                 let documento = reader.result.replace(/^data:.+;base64,/, '');
-                vform.form.voucher =documento;
+                vform.form.voucher = documento;
             }
         }
-        async function cargarFile(file){
+        async function cargarFile(file) {
             await getBase64(file);
         }
         //Vuee
@@ -229,9 +498,9 @@
                 idCliente: '@Model.IdCliente',
                 showModal: false,
                 cuotas: [],
-                form:[],
+                form: [],
                 bancos: [],
-                idCuota:'',
+                idCuota: '',
                 disabledBtn: false
             },
             created() {
@@ -301,12 +570,13 @@
 
                         });
                     });
+
             },
             methods: {
-                verAbonar(idCuota){
-                    vform.idCuota=idCuota;
+                verAbonar(idCuota) {
+                    vform.idCuota = idCuota;
                 },
-               guardarCuota(){
+                guardarCuota() {
                     var _this = this;
                     _this.disabledBtn = true;
                     //serializar formulario abono
@@ -380,6 +650,12 @@
                                 });
                             }
                         });
+                },
+                descargarEstado() {
+                    var BOM = "\uFEFF";
+                    var htmltabel = document.getElementById("estado");
+                    var html = htmltabel.outerHTML;
+                    window.open('data:application/vnd.ms-excel,' + encodeURI(BOM + html));
                 }
             },
             filters: {

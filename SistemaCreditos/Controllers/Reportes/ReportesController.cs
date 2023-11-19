@@ -12,6 +12,10 @@ namespace SistemaCreditos.Controllers.Reportes
         {
             return View();
         }
+        public IActionResult EstadodeCuenta()
+        {
+            return View();
+        }
 
         [HttpPost]
         public ActionResult VerNormalizacion([FromBody] FormularioNormalizacion form )
