@@ -68,7 +68,7 @@
                                 <td>{{item.fechaEntrega | JsonFecha2}}</td>
                                 <td>{{item.fechaTermino | JsonFecha2}}</td>
                                 <td>{{item.numeroCuotas}}</td>
-                                <td class="text-center"><button title="Descargar Estado de cuenta" id="show-modal" data-toggle="modal" data-target="#modal-estado" class="btn btn-default"><i class="fas fa-file-download text-success fa-2x"></i></button></td>
+                                <td class="text-center"><button title="Descargar Estado de cuenta" v-on:click="verEstado(item)" id="show-modal-estado" data-toggle="modal" data-target="#modal-estado" class="btn btn-default"><i class="fas fa-file-download text-success fa-2x"></i></button></td>
                                 <td><a href="javascript:void(0);" title="Eliminar Préstamo" v-on:click="eliminar(item.idPrestamo)"><i class="fa fa-remove"></i></a></td>
                             </tr>
                         </tbody>
@@ -212,111 +212,115 @@
                                             <tr>
                                                 <td colspan="4" rowspan="2" align="center" style="vertical-align: middle;"><label class="badge bg-primary">CREDITOS "DIEGO"</label></td>
                                                 <td colspan="3"><b>N° de Créditos</b></td>
-                                                <td colspan="2">[numeroCredito] 1</td>
+                                                <td colspan="2">{{prestamos.length}}</td>
                                             </tr>
                                             <tr>
-                                                <td>[codigoCliente] CL-3611</td>
-                                                <td>[codigoAutorizador] RNV-2</td>
-                                                <td>[codigoGestor] JS015</td>
-                                                <td>[Capital] S/. 800.00</td>
-                                                <td colspan="2" rowspan="4" align="center" style="vertical-align: middle;">[diaPago] MARTES</td>
+                                                <td>@Model.CodigoCliente</td>
+                                                <td>{{verPrestamo.autorizacion}}</td>
+                                                <td>{{verPrestamo.codigoGestor}}</td>
+                                                <td>{{verPrestamo.capital}}</td>
+                                                <td colspan="2" rowspan="4" align="center" style="vertical-align: middle;">{{verPrestamo.diaPago}}</td>
                                             </tr>
                                             <tr>
                                                 <td>Nombre: </td>
-                                                <td colspan="5"><b>[nombres] Rodolfo Visso</b></td>
-                                                <td colspan="2">[HCL] HCL</td>
+                                                <td colspan="5"><b>@Model.NombreCliente @Model.ApellidosCliente</b></td>
+                                                <td colspan="2">HCL</td>
                                             </tr>
                                             <tr>
                                                 <td>Dirección: </td>
-                                                <td colspan="7"><b>[direccion] Aparicio Gomez 257</b></td>
+                                                <td colspan="7"><b>@Model.Direccion</b></td>
                                             </tr>
                                             <tr>
                                                 <td>Telefonos: </td>
-                                                <td><b>[telefonos]</b></td>
+                                                <td><b>@Model.Celular</b></td>
                                                 <td>Celular: </td>
-                                                <td><b>[celular]</b></td>
+                                                <td><b>@Model.Celular</b></td>
                                                 <td>DNI: </td>
-                                                <td colspan="3"><b>[dni] 46761515</b></td>
+                                                <td colspan="3"><b>@Model.Dni</b></td>
                                             </tr>
                                             <tr>
                                                 <td>Ubicación: </td>
-                                                <td colspan="8"><b>[ubicacion] alt cuadra 31 av. jose granda</b></td>
+                                                <td colspan="8"><b>@Model.UbicacionReferencia</b></td>
                                             </tr>
                                             <tr>
                                                 <td>Trabajo: </td>
-                                                <td colspan="8"><b>[trabajo] Gerente de TI</b></td>
+                                                <td colspan="8"><b>@Model.TrabajoOcupacion</b></td>
                                             </tr>
                                             <tr>
                                                 <td colspan="9">&nbsp;</td>
                                             </tr>
                                             @*Datos del conyuge*@
+                                            @if(Model.TieneConyuge>0){
                                             <tr>
                                                 <td>Conyuge: </td>
-                                                <td colspan="5"><b>[conyuge] Esposa</b></td>
+                                                <td colspan="5"><b>@Model.NombreConyuge @Model.ApellidosConyuge</b></td>
                                                 <td>DNI: </td>
-                                                <td colspan="2"><b>[dni] 46761515</b></td>
+                                                <td colspan="2"><b>@Model.DniConyuge</b></td>
                                             </tr>
                                             <tr>
                                                 <td>Dirección Conyuge: </td>
-                                                <td colspan="8"><b>[direccionConyuge] Aparicio Gomez 257</b></td>
+                                                <td colspan="8"><b>@Model.DireccionConyuge</b></td>
                                             </tr>
                                             <tr>
                                                 <td>Trabajo: </td>
-                                                <td colspan="5"><b>[trabajoConyuge] Ama de casa</b></td>
+                                                <td colspan="5"><b>@Model.TrabajoConyuge</b></td>
                                                 <td>Telefono: </td>
-                                                <td colspan="2"><b>[telefono] 994145452</b></td>
+                                                <td colspan="2"><b>@Model.TelefonoConyuge</b></td>
                                             </tr>
                                             <tr>
                                                 <td colspan="9">&nbsp;</td>
                                             </tr>
+                                            }
                                             @*Datos de AVal*@
+                                            @if(Model.TieneAval>0){
                                             <tr>
                                                 <td>Aval: </td>
-                                                <td colspan="5"><b>[aval] Nombre aval</b></td>
+                                                <td colspan="5"><b>@Model.NombreAval @Model.ApellidosAval</b></td>
                                                 <td>DNI: </td>
-                                                <td colspan="2"><b>[dniAval] 46761515</b></td>
+                                                <td colspan="2"><b>@Model.DniAval</b></td>
                                             </tr>
                                             <tr>
                                                 <td>Dirección Aval: </td>
-                                                <td colspan="8"><b>[direccionAval] Aparicio Gomez 257</b></td>
+                                                <td colspan="8"><b>@Model.DireccionAval</b></td>
                                             </tr>
                                             <tr>
                                                 <td>Trabajo Aval: </td>
-                                                <td colspan="5"><b>[trabajoAval] Gestor</b></td>
+                                                <td colspan="5"><b>@Model.TrabajoAval</b></td>
                                                 <td>Telefono Aval: </td>
-                                                <td colspan="2"><b>[telefono] 994145452</b></td>
+                                                <td colspan="2"><b>@Model.TelefonoAval</b></td>
                                             </tr>
                                             <tr>
                                                 <td>Parentesco: </td>
-                                                <td colspan="5"><b>[parentesco] Hermano</b></td>
+                                                <td colspan="5"><b>@Model.ParentescoAval</b></td>
                                                 <td>Hijos: </td>
-                                                <td colspan="2"><b>[hijos] Hijo1, hijo2</b></td>
+                                                <td colspan="2"><b>@Model.Hijos</b></td>
                                             </tr>
                                             <tr>
                                                 <td colspan="9">&nbsp;</td>
                                             </tr>
+                                            }
                                             @*Estado de cuenta*@
                                             <tr>
                                                 <td colspan="9" style="vertical-align: middle;background-color:royalblue;color:white" align="center"><b>ESTADO DE CUENTA</b></td>
                                             </tr>
                                             <tr>
                                                 <td>Fecha de Entrega: </td>
-                                                <td><b>[fechaEntrega] 01/01/2023</b></td>
+                                                <td><b>{{verPrestamo.fechaEntrega}}</b></td>
                                                 <td>Modalidad: </td>
-                                                <td><b>[cuotas] 15*80</b></td>
+                                                <td><b>{{verPrestamo.numeroCuotas}}</b></td>
                                                 <td colspan="2">Capital: </td>
-                                                <td><b>[capital] S/. 800.00</b></td>
+                                                <td><b>{{verPrestamo.capital}}</b></td>
                                                 <td>Fondo Provisional: </td>
-                                                <td><b>[fondo] S/. 30.00</b></td>
+                                                <td><b>{{verPrestamo.fondoProvisional}}</b></td>
 
                                             </tr>
                                             <tr>
                                                 <td colspan="1">Capital pendiente Inicial: </td>
-                                                <td colspan="2"><b>[capitalPendiente] 1200</b></td>
+                                                <td colspan="2"><b>{{verPrestamo.capitalPendiente}}</b></td>
                                                 <td colspan="2">Número de créditos: </td>
-                                                <td colspan="1"><b>[numeroPrestamos] 2°</b></td>
+                                                <td colspan="1"><b>{{prestamos.length}}</b></td>
                                                 <td colspan="1">Días de pago: </td>
-                                                <td colspan="3"><b>[diaPago] MARTES</b></td>
+                                                <td colspan="3"><b>{{verPrestamo.diaPago}}</b></td>
                                             </tr>
                                             <tr>
                                                 <td colspan="9">
@@ -339,95 +343,20 @@
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            <tr>
-                                                                <td>1</td>
-                                                                <td>15/08/2023</td>
-                                                                <td>800.00</td>
-                                                                <td>80.00</td>
-                                                                <td>1120.00</td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td>15/08/2023</td>
-                                                                <td>19:07</td>
-                                                                <td>YAPE</td>
+                                                            <tr v-for="i,numero in cuotas">
+                                                                <td>{{numero+1}}</td>
+                                                                <td>{{i.fechaCuota}}</td>
+                                                                <td>{{verPrestamo.capital}}</td>
+                                                                <td>{{i.montoCuota}}</td>
+                                                                <td>{{verPrestamo.capitalPendiente}}</td>
                                                                 <td>-</td>
-                                                                <td>0</td>
-                                                                <td></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>1</td>
-                                                                <td>15/08/2023</td>
-                                                                <td>800.00</td>
-                                                                <td>80.00</td>
-                                                                <td>1120.00</td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td>15/08/2023</td>
-                                                                <td>19:07</td>
-                                                                <td>YAPE</td>
                                                                 <td>-</td>
-                                                                <td>0</td>
-                                                                <td></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>1</td>
-                                                                <td>15/08/2023</td>
-                                                                <td>800.00</td>
-                                                                <td>80.00</td>
-                                                                <td>1120.00</td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td>15/08/2023</td>
-                                                                <td>19:07</td>
-                                                                <td>YAPE</td>
+                                                                <td>{{i.fechaPago}}</td>
                                                                 <td>-</td>
-                                                                <td>0</td>
-                                                                <td></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>1</td>
-                                                                <td>15/08/2023</td>
-                                                                <td>800.00</td>
-                                                                <td>80.00</td>
-                                                                <td>1120.00</td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td>15/08/2023</td>
-                                                                <td>19:07</td>
-                                                                <td>YAPE</td>
                                                                 <td>-</td>
-                                                                <td>0</td>
-                                                                <td></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>1</td>
-                                                                <td>15/08/2023</td>
-                                                                <td>800.00</td>
-                                                                <td>80.00</td>
-                                                                <td>1120.00</td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td>15/08/2023</td>
-                                                                <td>19:07</td>
-                                                                <td>YAPE</td>
                                                                 <td>-</td>
-                                                                <td>0</td>
-                                                                <td></td>
-                                                            </tr>
-                                                            <tr>
-                                                                <td>1</td>
-                                                                <td>15/08/2023</td>
-                                                                <td>800.00</td>
-                                                                <td>80.00</td>
-                                                                <td>1120.00</td>
-                                                                <td></td>
-                                                                <td></td>
-                                                                <td>15/08/2023</td>
-                                                                <td>19:07</td>
-                                                                <td>YAPE</td>
                                                                 <td>-</td>
-                                                                <td>0</td>
-                                                                <td></td>
+                                                                <td>-</td>
                                                             </tr>
                                                         </tbody>
                                                     </table>
@@ -501,7 +430,9 @@
                 form: [],
                 bancos: [],
                 idCuota: '',
-                disabledBtn: false
+                disabledBtn: false,
+                estadoCuenta:[],
+                verPrestamo:''
             },
             created() {
                 var _this = this;
@@ -648,6 +579,26 @@
                                         }
                                     }).buttons().container().appendTo('#example2_wrapper .col-md-6:eq(0)');
                                 });
+                            }
+                        });
+                },
+                verEstado:(prestamo)=>{
+                    vform.verPrestamo=prestamo;
+                    fetch('/Clientes/EstadoCuenta?idPrestamo=' + prestamo.idPrestamo,
+                        {
+                            method: 'POST',
+                            //body: '',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(result => result.json())
+                        .then(function (result) {
+                            if (result.success == true) {
+                                vform.cuotas = result.cuotas;
+                                console.log(prestamo)
+                                console.log(vform.cuotas)
+                                console.log('@Model.NombreCliente')
                             }
                         });
                 },

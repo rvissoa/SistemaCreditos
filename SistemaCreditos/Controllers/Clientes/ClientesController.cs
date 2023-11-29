@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using NuGet.Protocol;
 using SistemaCreditos.Models;
 using System.Net;
 using static SistemaCreditos.Controllers.Clientes.ClientesController;
@@ -231,7 +232,7 @@ namespace SistemaCreditos.Controllers.Clientes
         }
         #endregion
 
-        #region Cliente-prestamo
+        #region Cliente prestamo
         public ActionResult Prestamos(int id)
         {
             try
@@ -440,6 +441,23 @@ namespace SistemaCreditos.Controllers.Clientes
             public int numeroCuotas { get; set; }
             public decimal montoCuotas { get; set; }
             public int diasgracia { get; set; }
+        }
+        #endregion
+
+        #region Estado Cuenta
+        [HttpPost]
+        public ActionResult EstadoCuenta(int idPrestamo)
+        {
+            try
+            {
+                var cuotas = db.Cuotas.Where(e => e.IdPrestamo == idPrestamo).ToList();
+
+                return Json(new { success = true, cuotas});
+            }
+            catch
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
         }
         #endregion
     }

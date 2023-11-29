@@ -30,7 +30,7 @@
                         <div class="col-md-4"></div>
                         <div class="col-md-2 form-group">
                             <div>
-                                <input v-model="fechaBusqueda" id="fechaBusqueda" type="date" class="form-control"/>
+                                <input v-model="fechaBusqueda" id="fechaBusqueda" type="date" class="form-control" />
                             </div>
                         </div>
                         <div class="col-md-2">
@@ -52,7 +52,7 @@
                                 <th style="width: 40px">Salida</th>
                             </tr>
                         </thead>
-                        <tbody>
+                        <tbody id="tbody">
                             <tr v-for="(item,i) in lista">
                                 <td>{{i+1}}</td>
                                 <td>{{item.trabajador}}</td>
@@ -88,6 +88,50 @@
         //Date picker
         var hoy = new Date();
         var today = moment().format('YYYY-MM-DD');
+        //Funcion table
+        function crearDatatable(idTabla) {
+            $("#" + idTabla).DataTable({
+                retrieve: true,
+                bDestroy: true,
+                "responsive": true, "lengthChange": false, "autoWidth": false,
+                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis", 
+                //{   
+                //    text: 'Recargar',
+                //    action: function () {
+                //            $("#" + idTabla).ajax.reload();
+                //    }
+                //}
+                ],
+                language: {
+                    "sProcessing": "Procesando...",
+                    "sLengthMenu": "Mostrar _MENU_ registros",
+                    "sZeroRecords": "No se encontraron resultados",
+                    "sEmptyTable": "Ningún dato disponible en esta tabla",
+                    "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_",
+                    "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                    "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                    "sInfoPostFix": "",
+                    "sSearch": "Buscar:",
+                    "sUrl": "",
+                    "sInfoThousands": ",",
+                    "sLoadingRecords": "Cargando...",
+                    "oPaginate": {
+                        "sFirst": "Primero",
+                        "sLast": "Último",
+                        "sNext": "Siguiente",
+                        "sPrevious": "Anterior"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                        "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                    },
+                    "buttons": {
+                        "copy": "Copiar",
+                        "colvis": "Visibilidad"
+                    }
+                }
+            }).buttons().container().appendTo('#' + idTabla + '_wrapper .col-md-6:eq(0)');
+        }
         //Vuee
         var vform = new Vue({
             el: '#reporteAsistencia',
@@ -113,52 +157,19 @@
                     .then(function (result) {
                         if (result.success == true) {
                             _this.lista = result.model;
+                            crearDatatable('example1');
                         }
-                        $(function () {
-                            $("#example1").DataTable({
-                                "responsive": true, "lengthChange": false, "autoWidth": false,
-                                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"],
-                                language: {
-                                    "sProcessing": "Procesando...",
-                                    "sLengthMenu": "Mostrar _MENU_ registros",
-                                    "sZeroRecords": "No se encontraron resultados",
-                                    "sEmptyTable": "Ningún dato disponible en esta tabla",
-                                    "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_",
-                                    "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
-                                    "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
-                                    "sInfoPostFix": "",
-                                    "sSearch": "Buscar:",
-                                    "sUrl": "",
-                                    "sInfoThousands": ",",
-                                    "sLoadingRecords": "Cargando...",
-                                    "oPaginate": {
-                                        "sFirst": "Primero",
-                                        "sLast": "Último",
-                                        "sNext": "Siguiente",
-                                        "sPrevious": "Anterior"
-                                    },
-                                    "oAria": {
-                                        "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
-                                        "sSortDescending": ": Activar para ordenar la columna de manera descendente"
-                                    },
-                                    "buttons": {
-                                        "copy": "Copiar",
-                                        "colvis": "Visibilidad"
-                                    }
-                                }
-                            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-                        });
+
                     });
             },
             methods: {
-                buscarFecha: () =>{
+                buscarFecha: () => {
                     var _this = this;
                     //var timeinput = $("#reservationdate").data('date');
                     var timeinput = $("#fechaBusqueda").val()
                     var request = {
                         fecha: timeinput
                     };
-                    console.log(request)
                     fetch('/Asistencia/ReporteAsistencias',
                         {
                             method: 'POST',
@@ -171,6 +182,7 @@
                         .then(function (result) {
                             if (result.success == true) {
                                 vform.lista = result.model;
+                                crearDatatable('example1');
                             }
                         });
                 }
