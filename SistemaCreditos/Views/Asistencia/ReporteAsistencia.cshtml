@@ -28,10 +28,20 @@
                     <!-- Date -->
                     <div class="row">
                         <div class="col-md-4"></div>
-                        <div class="col-md-2 form-group">
+                        @*<div class="col-md-2 form-group">
                             <div>
                                 <input v-model="fechaBusqueda" id="fechaBusqueda" type="date" class="form-control" />
                             </div>
+                        </div>*@
+                        <!-- Date and time range -->
+                        <div class="form-group col-lg-4 col-md-4">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text"><i class="far fa-clock"></i></span>
+                                </div>
+                                <input type="text" class="form-control float-right" v-model="fechaBusqueda"  id="fechaBusqueda" title="Rango de fechas">
+                            </div>
+                            <!-- /.input group -->
                         </div>
                         <div class="col-md-2">
                             <button v-on:click="buscarFecha" class="btn form-control btn-primary"><i class="fas fa-search"></i>&nbsp; Buscar</button>
@@ -44,23 +54,15 @@
                     <table id="example1" class="table table-bordered table-striped">
                         <thead>
                             <tr>
-                                <th style="width: 10px">#</th>
+                                @*<th style="width: 10px">#</th>*@
                                 <th style="width: 100px">Empleado</th>
+                                <th style="width: 40px">Fecha</th>
                                 <th style="width: 40px">Entrada</th>
                                 <th style="width: 40px">Almuerzo</th>
                                 <th style="width: 40px">Regreso</th>
                                 <th style="width: 40px">Salida</th>
                             </tr>
                         </thead>
-                        <tbody id="tbody">
-                            <tr v-for="(item,i) in lista">
-                                <td>{{i+1}}</td>
-                                <td>{{item.trabajador}}</td>
-                                <td><span class="badge bg-warning">{{item.horaAlmuerzo}}</span></td>
-                                <td><span class="badge bg-warning">{{item.horaAlmuerzoRegreso}}</span></td>
-                                <td><span class="badge bg-success">{{item.horaSalida}}</span></td>
-                            </tr>
-                        </tbody>
                     </table>
                 </div>
                 <!-- /.card-body -->
@@ -83,23 +85,55 @@
     <script src="~/adminLte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
     <script src="~/adminLte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
     <script src="~/adminLte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+    <!-- date-range-picker -->
+    <script src="~/adminLte/plugins/daterangepicker/daterangepicker.js"></script>
     <script language="javascript">
         //Date picker
         var hoy = new Date();
         var today = moment().format('YYYY-MM-DD');
         //Funcion table
-        function crearDatatable(idTabla) {
+        function crearDatatable(idTabla,data) {
+            var jsonResult='';
             $("#" + idTabla).DataTable({
+                'pageLength': 20,
+                lengthMenu: [
+                    [20, 25, 50, -1],
+                    ['20', '25', '50', 'Todo']
+                ],
+                //"serverSide": true,
                 retrieve: true,
                 bDestroy: true,
+                //processing: true,
+                dom: 'Blfrtip',
                 "responsive": true, "lengthChange": false, "autoWidth": false,
-                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis", 
+                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis",'pageLength'
                 //{   
                 //    text: 'Recargar',
                 //    action: function () {
                 //            $("#" + idTabla).ajax.reload();
                 //    }
                 //}
+                ],
+                data: data,
+                columns: [
+                    { data: 'trabajador' },
+                    {
+                        data: 'fechaAsistencia', render: (val, b, c) => {
+                            return `<span class="badge bg-warning" >` + moment(val).format('DD/MM/YYYY') + `</span>`;
+                        }
+                    },
+                    { 
+                        data: 'horaEntrada', render: (val, b, c) => {
+                            return `<span class="badge bg-primary" >` +val + `</span>`;
+                        }
+                    },
+                    { data: 'horaAlmuerzo' },
+                    { data: 'horaAlmuerzoRegreso' },
+                    {
+                        data: 'horaSalida', render: (val, b, c) => {
+                            return `<span class="badge bg-success" >` + val + `</span>`;
+                        }
+                    }
                 ],
                 language: {
                     "sProcessing": "Procesando...",
@@ -126,7 +160,8 @@
                     },
                     "buttons": {
                         "copy": "Copiar",
-                        "colvis": "Visibilidad"
+                        "colvis": "Visibilidad",
+                        "pageLength": "Cantidad registros"
                     }
                 }
             }).buttons().container().appendTo('#' + idTabla + '_wrapper .col-md-6:eq(0)');
@@ -141,23 +176,58 @@
             created() {
                 this.fechaBusqueda = today.toString();
                 var _this = this;
+                $(function () {
+                    $('#fechaBusqueda').daterangepicker({
+                        timePicker: false,
+                        timePickerIncrement: 120,
+                        locale: {
+                            format: 'YYYY-MM-DD',
+                            "applyLabel": "Aplicar",
+                            "cancelLabel": "Cancelar",
+                            "fromLabel": "De",
+                            "toLabel": "Hasta",
+                            "customRangeLabel": "Config",
+                            "daysOfWeek": [
+                                "Dom",
+                                "Lun",  
+                                "Mar",
+                                "Mie",
+                                "Jue",
+                                "Vie",
+                                "Sab"
+                            ],
+                            "monthNames": [
+                                "Enero",
+                                "Febrero",
+                                "Marzo",
+                                "Abril",
+                                "Mayo",
+                                "Junio",
+                                "Julio",
+                                "Agosto",
+                                "Setiembre",
+                                "Octubre",
+                                "Noviembre",
+                                "Diciembre"
+                            ],
+                        }
+                    })
+                });
                 var request = {
                     fecha: hoy
                 };
-                fetch('/Asistencia/ReporteAsistencias',
+                //crearDatatable('example1', _this.fechaBusqueda);
+                fetch('/Asistencia/ReporteAsistencias?request=' + this.fechaBusqueda,
                     {
                         method: 'POST',
-                        body: JSON.stringify(request),
-                        headers: {
-                            'Content-Type': 'application/json'
-                        }
                     })
                     .then(result => result.json())
                     .then(function (result) {
-                        if (result.success == true) {
-                            _this.lista = result.model;
-                            crearDatatable('example1');
-                        }
+                        crearDatatable('example1', result);
+                        //if (result.success == true) {
+                        //    //_this.lista = result.model;
+                            
+                        //}
 
                     });
             },
@@ -169,20 +239,14 @@
                     var request = {
                         fecha: timeinput
                     };
-                    fetch('/Asistencia/ReporteAsistencias',
+                    //crearDatatable('example1', timeinput);
+                    fetch('/Asistencia/ReporteAsistencias?request=' + timeinput,
                         {
                             method: 'POST',
-                            body: JSON.stringify(request),
-                            headers: {
-                                'Content-Type': 'application/json'
-                            }
                         })
                         .then(result => result.json())
                         .then(function (result) {
-                            if (result.success == true) {
-                                vform.lista = result.model;
-                                crearDatatable('example1');
-                            }
+                            $("#example1").DataTable().clear().rows.add(result).draw();
                         });
                 }
             }

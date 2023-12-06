@@ -24,14 +24,15 @@ namespace SistemaCreditos.Controllers.Asistencias
         }
         [Authorize(Policy = "Admin")]
         [HttpPost]  
-        public IActionResult ReporteAsistencias([FromBody] body request)
+        public IActionResult ReporteAsistencias(string request)
         {
-            //Zona horaria
-            DateTime timeUtc =Convert.ToDateTime( request.fecha).ToUniversalTime();
-            TimeZoneInfo cstZone = TimeZoneInfo.FindSystemTimeZoneById("SA Pacific Standard Time");
-            DateTime DateLima = TimeZoneInfo.ConvertTimeFromUtc(timeUtc, cstZone);
+            string[] fechas = request.Split(" - ");
+            var fechaInicio = Util.convertirFecha(fechas[0]);
+            var fechaFin = fechaInicio;
+            if (fechas.Count()>1)
+              fechaFin = Util.convertirFecha(fechas[1]);
 
-            var model = (from a in db.Asistencia.Where(e => e.FechaAsistencia.Value.Date == DateLima.Date)
+            var model = (from a in db.Asistencia.Where(e => e.FechaAsistencia>=fechaInicio&&e.FechaAsistencia<=fechaFin)
                         from t in db.Trabajadors.Where(e => e.IdTrabajador == a.IdTrabajador).DefaultIfEmpty()
                         select new
                         {
@@ -42,7 +43,10 @@ namespace SistemaCreditos.Controllers.Asistencias
                             a.HoraAlmuerzo,
                             a.HoraAlmuerzoRegreso
                         }).ToList();
-            return new JsonResult(new { success = true, model });
+            //var draw = 0;
+            //var recordsTotal = model.Count;
+            //var recordsFiltered = model.Count;
+            return new JsonResult( model);
         }
 
         #region Marcar asistencia
