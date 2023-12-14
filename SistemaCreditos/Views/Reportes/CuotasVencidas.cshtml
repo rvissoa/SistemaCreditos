@@ -1,0 +1,293 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+<!-- daterange picker -->
+<link rel="stylesheet" href="~/adminLte/plugins/daterangepicker/daterangepicker.css">
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Reporte de Cuotas Vencidas</h1>
+            </div>
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Inicio</a></li>
+                    <li class="breadcrumb-item active">Reporte de Cuotas Vencidas</li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+
+<section class="content" id="reporteCuotasVencidas">
+    <div class="container-fluid">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <!-- Date -->
+                    <div class="row">
+                        <div class="form-group col-lg-3 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Distrito</label>
+                            <select class="custom-select form-control-border" v-model="form.idDistrito">
+                                <option v-for="item in distritos" :value="item.idDistrito" :key="item.idDistrito">
+                                    {{ item.nombreDistrito }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-3 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Zona</label>
+                            <select class="custom-select form-control-border" v-model="form.zona">
+                                <option v-for="item in zonas" :value="item.id" :key="item.id">
+                                    {{ item.text }}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-3 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Rango de fechas</label>
+                            <!-- Date and time range -->
+                            <div class="form-group">
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><i class="far fa-clock"></i></span>
+                                    </div>
+                                    <input type="text" class="form-control float-right" id="reservationtime" title="Rango de fechas">
+                                </div>
+                                <!-- /.input group -->
+                            </div>
+                            <!-- /.form group -->
+                        </div>
+                        <div class="col-lg-1 text-end"></div>
+                        <div class="col-lg-1 text-end">
+                            <label for="exampleSelectBorder">&nbsp;</label>
+                            <button v-on:click="buscar" class="btn form-control btn-primary" title="Buscar"><i class="fas fa-search"></i></button>
+                        </div>
+                    </div>
+                    <!-- Date and time -->
+                </div>
+                <!-- /.card-header -->
+                <div class="card-body">
+                    <table class="table table-bordered" id="example1">
+                        <thead>
+                            <tr>
+                                <th>DNI Cliente</th>
+                                <th>Nombres Cliente</th>
+                                <th>ID Prestamo</th>
+                                <th>Número de Cuotas Vencidas</th>
+                                <th>Cuotas Vencidas</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(item,i) in cuotasVencidas">
+                                <td>{{item.dni}}</td>
+                                <td>{{item.cliente}}</td>
+                                <td>{{item.idPrestamo}}</td>
+                                <td>{{item.nroCuotasVencidas}}</td>
+                                <td colspan="3">
+                                    <table class="table table-bordered table-striped">
+                                        <thead>
+                                            <tr>
+                                                <th>FECHA</th>
+                                                <th>DÍAS</th>
+                                                <th>MORA</th>
+                                            </tr>
+                                            
+                                        </thead>
+                                        <tbody>
+                                            <tr v-for="(it,j) in item.cuotasVencidasLista">
+                                                <td>{{it.fechaCuota|JsonFecha2}}</td>
+                                                <td>{{it.diasMora}}</td>
+                                                <td>{{it.mora}} &nbsp;&nbsp;&nbsp;<br /></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /.card-body -->
+            </div>
+            <!-- /.card -->
+
+        </div>
+    </div>
+</section>
+@section Scripts {
+        <script src="~/adminLte/plugins/datatables/jquery.dataTables.min.js"></script>
+        <script src="~/adminLte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js"></script>
+        <script src="~/adminLte/plugins/datatables-responsive/js/dataTables.responsive.min.js"></script>
+        <script src="~/adminLte/plugins/datatables-responsive/js/responsive.bootstrap4.min.js"></script>
+        <script src="~/adminLte/plugins/datatables-buttons/js/dataTables.buttons.min.js"></script>
+        <script src="~/adminLte/plugins/datatables-buttons/js/buttons.bootstrap4.min.js"></script>
+        <script src="~/adminLte/plugins/jszip/jszip.min.js"></script>
+        <script src="~/adminLte/plugins/pdfmake/pdfmake.min.js"></script>
+        <script src="~/adminLte/plugins/pdfmake/vfs_fonts.js"></script>
+        <script src="~/adminLte/plugins/datatables-buttons/js/buttons.html5.min.js"></script>
+        <script src="~/adminLte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
+        <script src="~/adminLte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
+    <!-- date-range-picker -->
+    <script src="~/adminLte/plugins/daterangepicker/daterangepicker.js"></script>
+    <!-- ChartJS -->
+    <script src="~/adminLte/plugins/chart.js/Chart.min.js"></script>
+
+    <script language="javascript">
+
+        //Vuee
+        var vform = new Vue({
+            el: '#reporteCuotasVencidas',
+            data: {
+                visible:false,
+                reporte: [],
+                fechaInicio: '',
+                fechaFin: '',
+                zonas: [
+                    { id: 'A', text: 'A' },
+                    { id: 'B', text: 'B' },
+                    { id: 'C', text: 'C' },
+                    { id: 'D', text: 'D' },
+                    { id: 'E', text: 'E' }
+
+                ],
+                form:[],
+                distritos:[],
+                cuotasVencidas:[]
+            },
+            created() {
+               
+                var _this = this;
+                $(function () {
+                    $('#reservationtime').daterangepicker({
+                        timePicker: false,
+                        timePickerIncrement: 120,
+                        locale: {
+                            format: 'YYYY-MM-DD',
+                            "applyLabel": "Aplicar",
+                            "cancelLabel": "Cancelar",
+                            "fromLabel": "De",
+                            "toLabel": "Hasta",
+                            "customRangeLabel": "Config",
+                            "daysOfWeek": [
+                                "Dom",
+                                "Lun",
+                                "Mar",
+                                "Mie",
+                                "Jue",
+                                "Vie",
+                                "Sab"
+                            ],
+                            "monthNames": [
+                                "Enero",
+                                "Febrero",
+                                "Marzo",
+                                "Abril",
+                                "Mayo",
+                                "Junio",
+                                "Julio",
+                                "Agosto",
+                                "Setiembre",
+                                "Octubre",
+                                "Noviembre",
+                                "Diciembre"
+                            ],
+                        }
+                    })
+                });
+                fetch('/Clientes/Distritos',
+                    {
+                        method: 'POST',
+                        body: '',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(result => result.json())
+                    .then(function (result) {
+                        if (result.success == true) {
+                            _this.distritos = result.distritos;
+                        }
+                    });
+            },
+            methods: {
+                buscar(){
+                    var form = Object.assign({}, vform.form);
+                    form.rangoFechas = $('#reservationtime').val();
+                    console.log(form);
+                fetch('/Reportes/CuotasVencidas',
+                        {
+                            method: 'POST',
+                            body: JSON.stringify(form),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(result => result.json())
+                        .then(function (result) {
+                            if (result.success == true) {
+                            vform.cuotasVencidas = result.cuotasVencidas;
+                            }
+                            $(function () {
+                                $("#example1").DataTable({
+                                    retrieve: true,
+                                    bDestroy: true,
+                                    dom: 'Blfrtip',
+                                    'pageLength': 20,
+                                    lengthMenu: [
+                                        [20, 25, 50, -1],
+                                        ['20', '25', '50', 'Todo']
+                                    ],
+                                    "responsive": true, "lengthChange": false, "autoWidth": false,
+                                    "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis", 'pageLength'],
+                                    language: {
+                                        "sProcessing": "Procesando...",
+                                        "sLengthMenu": "Mostrar _MENU_ registros",
+                                        "sZeroRecords": "No se encontraron resultados",
+                                        "sEmptyTable": "Ningún dato disponible en esta tabla",
+                                        "sInfo": "Mostrando registros del _START_ al _END_ de un total de _TOTAL_",
+                                        "sInfoEmpty": "Mostrando registros del 0 al 0 de un total de 0 registros",
+                                        "sInfoFiltered": "(filtrado de un total de _MAX_ registros)",
+                                        "sInfoPostFix": "",
+                                        "sSearch": "Buscar:",
+                                        "sUrl": "",
+                                        "sInfoThousands": ",",
+                                        "sLoadingRecords": "Cargando...",
+                                        "oPaginate": {
+                                            "sFirst": "Primero",
+                                            "sLast": "Último",
+                                            "sNext": "Siguiente",
+                                            "sPrevious": "Anterior"
+                                        },
+                                        "oAria": {
+                                            "sSortAscending": ": Activar para ordenar la columna de manera ascendente",
+                                            "sSortDescending": ": Activar para ordenar la columna de manera descendente"
+                                        },
+                                        "buttons": {
+                                            "copy": "Copiar",
+                                            "colvis": "Visibilidad",
+                                            "pageLength": "Cantidad"
+                                        }
+                                    }
+                                }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
+
+                            });
+                        });
+
+                    
+                }
+            },
+            filters: {
+                JsonFecha(val) {
+                    return val != null ?
+                        moment(val).format('DD/MM/YYYY hh:mm:ss') :
+                        ''
+                        ;
+                },
+                JsonFecha2(val) {
+                    return val != null ?
+                        moment(val).format('DD/MM/YYYY') :
+                        ''
+                        ;
+                }
+            },
+        });
+    </script>
+}

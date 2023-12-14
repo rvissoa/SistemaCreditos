@@ -340,8 +340,39 @@ namespace SistemaCreditos.Controllers.Clientes
         {
             try
             {
+                //Calculo de moras
+                var CuotasVencidas = db.Cuotas.Where(a => a.FechaCuota < DateTime.Now && a.FechaPago == null && a.IdPrestamo == idPrestamo).ToList();
+                var diasMora = 0;
+                decimal Mora = 0;
+                foreach (var item in CuotasVencidas)
+                {
+                    diasMora = (int)DateTime.Now.Subtract((DateTime)item.FechaCuota).TotalDays;
+                    if (diasMora > 7) diasMora = 7;
+                    Mora = diasMora * 5;
+                    //Seteo de valores de mora
+                    item.Mora = Mora;
+                    item.DiasMora= diasMora;
+                }
+                db.SaveChanges();
+                //---------------
                 var model = db.Cuotas.Where(e => e.IdPrestamo == idPrestamo).ToList();
-                return Json(new { success = true, cuotas=model });
+                var modelo = (from c in db.Cuotas.Where(e => e.IdPrestamo == idPrestamo)
+                              from a in db.Abonos.Where(e => e.IdCuota == c.IdCuota).DefaultIfEmpty()
+                              group new { c,a } by new { c.DiasMora, c.FechaPago, c.IdCuota, c.FechaCuota, c.MontoCuota, c.Mora, c.Observaciones, } into g
+                              select new
+                              {
+                                  g.Key.FechaPago,
+                                  g.Key.IdCuota,
+                                  g.Key.FechaCuota,
+                                  g.Key.MontoCuota,
+                                  g.Key.Mora,
+                                  g.Key.DiasMora,
+                                  g.Key.Observaciones,
+                                  Abono=g.Sum(e=>e.a.MontoAbono)
+
+                              }).ToList();
+
+                return Json(new { success = true, cuotas=modelo });
             }
             catch
             {
@@ -380,8 +411,10 @@ namespace SistemaCreditos.Controllers.Clientes
                 var usuario = @User?.Claims.Where(e => e.Type == "preferred_username").Select(e => e.Value).FirstOrDefault();
                 string[] user = usuario.Split("@");
                 model.UsuarioIngresa = user[0];
-                if(abono.voucher!=null)
+                if (abono.voucher != null)
+                {
                     //model.FotoAbono = Convert.FromBase64String(abono.voucher);
+                }
                 db.Abonos.Add(model);
                 db.SaveChanges();
                 //Verificar dia de pago CUOTA

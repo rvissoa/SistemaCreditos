@@ -88,9 +88,11 @@
                                         <thead>
                                             <tr>
                                                 <th>Número</th>
-                                                <th>Fechas de pago</th>
+                                                <th>Fecha de Cuota</th>
+                                                <th>Fecha de Pago</th>
                                                 <th>Monto de cuota</th>
                                                 <th>Mora</th>
+                                                <th>Días de Mora</th>
                                                 <th>Observaciones</th>
                                                 <th>Abonar</th>
                                                 <th>Abonos</th>
@@ -99,13 +101,15 @@
                                         <tbody>
                                             <tr v-for="item,numero in cuotas">
                                                 <td>{{numero+1}}</td>
-                                                <td>{{item.fechaPago}}</td>
+                                                <td>{{item.fechaCuota | JsonFecha2}}</td>
+                                                <td>{{item.fechaPago | JsonFecha2}}</td>
                                                 <td>{{item.montoCuota}}</td>
                                                 <td>{{item.mora}}</td>
+                                                <td>{{item.diasMora}}</td>
                                                 <td>{{item.observaciones}}</td>
                                                 <td v-if="item.fechaPago==null"><button class="btn btn-default" id="show-modal" data-toggle="modal" data-target="#modal-sm" v-on:Click="verAbonar(item.idCuota)"><i class="fas fa-share text-primary"></i> <i class="fab fa-cc-visa text-primary"></i></button></td>
                                                 <td v-else><span class="badge bg-success">Cuota Cancelada</span></td>
-                                                <td><a href="javascript:void(0);" title="Eliminar Préstamo" v-on:click="eliminar(item.idPrestamo)"><i class="fa fa-remove"></i></a></td>
+                                                <td>{{item.abono}}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -305,7 +309,7 @@
                                             </tr>
                                             <tr>
                                                 <td>Fecha de Entrega: </td>
-                                                <td><b>{{verPrestamo.fechaEntrega}}</b></td>
+                                                <td><b>{{verPrestamo.fechaEntrega | JsonFecha2}}</b></td>
                                                 <td>Modalidad: </td>
                                                 <td><b>{{verPrestamo.numeroCuotas}}</b></td>
                                                 <td colspan="2">Capital: </td>
@@ -345,18 +349,18 @@
                                                         <tbody>
                                                             <tr v-for="i,numero in cuotas">
                                                                 <td>{{numero+1}}</td>
-                                                                <td>{{i.fechaCuota}}</td>
+                                                                <td>{{i.fechaCuota | JsonFecha2}}</td>
                                                                 <td>{{verPrestamo.capital}}</td>
                                                                 <td>{{i.montoCuota}}</td>
                                                                 <td>{{verPrestamo.capitalPendiente}}</td>
                                                                 <td>-</td>
                                                                 <td>-</td>
-                                                                <td>{{i.fechaPago}}</td>
+                                                                <td>{{i.fechaPago | JsonFecha2}}</td>
                                                                 <td>-</td>
                                                                 <td>-</td>
-                                                                <td>-</td>
-                                                                <td>-</td>
-                                                                <td>-</td>
+                                                                <td>{{i.mora}}</td>
+                                                                <td>{{i.diasMora}}</td>
+                                                                <td>{{i.observaciones}}</td>
                                                             </tr>
                                                         </tbody>
                                                     </table>
@@ -613,13 +617,13 @@
                 JsonFecha(val) {
                     return val != null ?
                         moment(val).format('DD/MM/YYYY hh:mm:ss') :
-                        'Indeterminado'
+                        ''
                         ;
                 },
                 JsonFecha2(val) {
                     return val != null ?
                         moment(val).format('DD/MM/YYYY') :
-                        'Indeterminado'
+                        ''
                         ;
                 }
             },
