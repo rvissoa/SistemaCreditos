@@ -341,6 +341,7 @@ namespace SistemaCreditos.Controllers.Clientes
             try
             {
                 //Calculo de moras
+                var cuotas = db.Cuotas.Where(e => e.IdPrestamo == idPrestamo).ToList();
                 var CuotasVencidas = db.Cuotas.Where(a => a.FechaCuota < DateTime.Now && a.FechaPago == null && a.IdPrestamo == idPrestamo).ToList();
                 var diasMora = 0;
                 decimal Mora = 0;
@@ -352,10 +353,20 @@ namespace SistemaCreditos.Controllers.Clientes
                     //Seteo de valores de mora
                     item.Mora = Mora;
                     item.DiasMora= diasMora;
+
+                    //ultima cuota con mora
+                    if (cuotas.Max(e => e.IdCuota) == item.IdCuota)
+                    {
+                        diasMora = (int)DateTime.Now.Subtract((DateTime)item.FechaCuota).TotalDays;
+                        Mora = diasMora * 5;
+                        //Seteo de valores de mora
+                        item.Mora = Mora;
+                        item.DiasMora = diasMora;
+                    }
                 }
                 db.SaveChanges();
                 //---------------
-                var model = db.Cuotas.Where(e => e.IdPrestamo == idPrestamo).ToList();
+                //var model = db.Cuotas.Where(e => e.IdPrestamo == idPrestamo).ToList();
                 var modelo = (from c in db.Cuotas.Where(e => e.IdPrestamo == idPrestamo)
                               from a in db.Abonos.Where(e => e.IdCuota == c.IdCuota).DefaultIfEmpty()
                               group new { c,a } by new { c.DiasMora, c.FechaPago, c.IdCuota, c.FechaCuota, c.MontoCuota, c.Mora, c.Observaciones, } into g
@@ -368,7 +379,8 @@ namespace SistemaCreditos.Controllers.Clientes
                                   g.Key.Mora,
                                   g.Key.DiasMora,
                                   g.Key.Observaciones,
-                                  Abono=g.Sum(e=>e.a.MontoAbono)
+                                  Abono=g.Sum(e=>e.a.MontoAbono),
+                                  AbonoMora = g.Sum(e => e.a.MontoMora)
 
                               }).ToList();
 
@@ -406,7 +418,8 @@ namespace SistemaCreditos.Controllers.Clientes
                     Banco = abono.banco,
                     TipoArchivo = abono.tipo,
                     Codigo = abono.numeroVoucher,
-                    TipoAbono = abono.tipoAbono
+                    TipoAbono = abono.tipoAbono,
+                    MontoMora=abono.mora
                 };
                 var usuario = @User?.Claims.Where(e => e.Type == "preferred_username").Select(e => e.Value).FirstOrDefault();
                 string[] user = usuario.Split("@");
@@ -417,6 +430,7 @@ namespace SistemaCreditos.Controllers.Clientes
                 }
                 db.Abonos.Add(model);
                 db.SaveChanges();
+
                 //Verificar dia de pago CUOTA
                 var cuota = db.Cuotas.Find(abono.idCuota);
                 var abonos = db.Abonos.Where(e => e.IdCuota == cuota.IdCuota);
@@ -437,6 +451,19 @@ namespace SistemaCreditos.Controllers.Clientes
                     }
                 }
                 cuota.CantidadAbonos = abonos.ToList().Count();
+
+                //Verificar pagos de mora
+                var result=ActualizarMoras(presta.IdPrestamo);
+                decimal? sumaMora = 0;
+                foreach (var item in abonos.ToList())
+                {
+                    sumaMora += item.MontoMora;
+                }
+                if (sumaMora >= cuota.Mora && sumaMora!=0)
+                {
+                    cuota.FechaPagoMora = abono.fechaAbono;
+                }
+                //-----------------------
                 db.SaveChanges();
 
                 return Json(new { success = true });
@@ -447,6 +474,44 @@ namespace SistemaCreditos.Controllers.Clientes
             }
         }
 
+        public bool ActualizarMoras(int idPrestamo)
+        {
+            try
+            {
+                //Calculo de moras
+                var cuotas = db.Cuotas.Where(e => e.IdPrestamo == idPrestamo).ToList();
+                var CuotasVencidas = db.Cuotas.Where(a => a.FechaCuota < DateTime.Now && a.FechaPago == null && a.IdPrestamo == idPrestamo).ToList();
+                var diasMora = 0;
+                decimal Mora = 0;
+                foreach (var item in CuotasVencidas)
+                {
+                    diasMora = (int)DateTime.Now.Subtract((DateTime)item.FechaCuota).TotalDays;
+                    if (diasMora > 7) diasMora = 7;
+                    Mora = diasMora * 5;
+                    //Seteo de valores de mora
+                    item.Mora = Mora;
+                    item.DiasMora = diasMora;
+
+                    //ultima cuota con mora
+                    if (cuotas.Max(e => e.IdCuota) == item.IdCuota)
+                    {
+                        diasMora = (int)DateTime.Now.Subtract((DateTime)item.FechaCuota).TotalDays;
+                        Mora = diasMora * 5;
+                        //Seteo de valores de mora
+                        item.Mora = Mora;
+                        item.DiasMora = diasMora;
+                    }
+                }
+                db.SaveChanges();
+                //---------------
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+
+        }
         public class formulario
         {
             public decimal monto { get; set; }
@@ -483,9 +548,59 @@ namespace SistemaCreditos.Controllers.Clientes
         {
             try
             {
+                //Calculo de moras
                 var cuotas = db.Cuotas.Where(e => e.IdPrestamo == idPrestamo).ToList();
+                var CuotasVencidas = db.Cuotas.Where(a => a.FechaCuota < DateTime.Now && a.FechaPago == null && a.IdPrestamo == idPrestamo).ToList();
+                var diasMora = 0;
+                decimal Mora = 0;
+                foreach (var item in CuotasVencidas)
+                {
+                    diasMora = (int)DateTime.Now.Subtract((DateTime)item.FechaCuota).TotalDays;
+                    if (diasMora > 7) diasMora = 7;
+                    Mora = diasMora * 5;
+                    //Seteo de valores de mora
+                    item.Mora = Mora;
+                    item.DiasMora = diasMora;
 
-                return Json(new { success = true, cuotas});
+                    //ultima cuota con mora
+                    if (cuotas.Max(e => e.IdCuota) == item.IdCuota)
+                    {
+                        diasMora = (int)DateTime.Now.Subtract((DateTime)item.FechaCuota).TotalDays;
+                        Mora = diasMora * 5;
+                        //Seteo de valores de mora
+                        item.Mora = Mora;
+                        item.DiasMora = diasMora;
+                    }
+                }
+                db.SaveChanges();
+                //---------------
+
+                //var cuotas = db.Cuotas.Where(e => e.IdPrestamo == idPrestamo).ToList();
+                var modelo = (from c in db.Cuotas.Where(e => e.IdPrestamo == idPrestamo)
+                              from a in db.Abonos.Where(e => e.IdCuota == c.IdCuota).DefaultIfEmpty()
+                              from b in db.Bancos.Where(e=> e.IdBanco==a.Banco).DefaultIfEmpty()
+
+                              group new { c, a,b } by new { c.DiasMora, c.FechaPago, c.IdCuota, c.FechaCuota, c.MontoCuota, c.Mora, c.Observaciones, } into g
+                              select new
+                              {
+                                  g.Key.FechaPago,
+                                  g.Key.IdCuota,
+                                  g.Key.FechaCuota,
+                                  g.Key.MontoCuota,
+                                  g.Key.Mora,
+                                  g.Key.DiasMora,
+                                  g.Key.Observaciones,
+                                  Abono = g.Sum(e => e.a.MontoAbono),
+                                  AbonoMora = g.Sum(e => e.a.MontoMora),
+                                  NroOperacion= string.Join(",", g.Select(i => i.a.Codigo)),
+                                  Banco= string.Join(",", g.Select(i => i.b.RazonSocial))
+
+                              }).OrderBy(a=>a.FechaCuota).ToList();
+                var abonoTotal = modelo.Sum(e => e.Abono);
+                var abonoMoraTotal = modelo.Sum(e => e.AbonoMora);
+                var moraTotal = modelo.Sum(e => e.Mora);
+                var diasMoraTotal = modelo.Sum(e => e.DiasMora);
+                return Json(new { success = true, cuotas = modelo, abonoTotal, abonoMoraTotal, moraTotal, diasMoraTotal });
             }
             catch
             {

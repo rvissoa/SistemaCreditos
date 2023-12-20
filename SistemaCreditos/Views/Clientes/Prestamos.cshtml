@@ -73,7 +73,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    <!-- /.modal-CUOTAS -->
+                    <!-- /.modal-VER CUOTAS -->
                     <div class="modal fade" id="modal-lg">
                         <div class="modal-dialog modal-xl">
                             <div class="modal-content">
@@ -96,6 +96,7 @@
                                                 <th>Observaciones</th>
                                                 <th>Abonar</th>
                                                 <th>Abonos</th>
+                                                <th>Pago de Moras</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -110,6 +111,7 @@
                                                 <td v-if="item.fechaPago==null"><button class="btn btn-default" id="show-modal" data-toggle="modal" data-target="#modal-sm" v-on:Click="verAbonar(item.idCuota)"><i class="fas fa-share text-primary"></i> <i class="fab fa-cc-visa text-primary"></i></button></td>
                                                 <td v-else><span class="badge bg-success">Cuota Cancelada</span></td>
                                                 <td>{{item.abono}}</td>
+                                                <td>{{item.abonoMora}}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -123,7 +125,7 @@
                         <!-- /.modal-dialog -->
                     </div>
 
-                    <!-- /.modal-ABONOS -->
+                    <!-- /.modal-ABONAR -->
                     <div class="modal fade" id="modal-sm">
                         <div class="modal-dialog modal-lg">
                             <div class="modal-content">
@@ -205,7 +207,7 @@
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
-                                <div class="modal-body">
+                                <div class="modal-body" style="overflow-y: auto; overflow-x: auto;">
                                     <table class="table table-bordered" id="estado">
                                         <thead></thead>
                                         <tbody>
@@ -336,7 +338,7 @@
                                                                 <td>CAPITAL</td>
                                                                 <td>ABONO</td>
                                                                 <td>CAPITAL PENDIENTE</td>
-                                                                <td>MORA</td>
+                                                                <td>ABONO MORA</td>
                                                                 <td>G</td>
                                                                 <td>FECHA PAGO</td>
                                                                 <td>N° OPERACIÓN</td>
@@ -351,16 +353,31 @@
                                                                 <td>{{numero+1}}</td>
                                                                 <td>{{i.fechaCuota | JsonFecha2}}</td>
                                                                 <td>{{verPrestamo.capital}}</td>
-                                                                <td>{{i.montoCuota}}</td>
+                                                                <td>{{i.abono}}</td>
                                                                 <td>{{verPrestamo.capitalPendiente}}</td>
-                                                                <td>-</td>
+                                                                <td>{{i.abonoMora}}</td>
                                                                 <td>-</td>
                                                                 <td>{{i.fechaPago | JsonFecha2}}</td>
-                                                                <td>-</td>
-                                                                <td>-</td>
+                                                                <td>{{i.nroOperacion}}</td>
+                                                                <td>{{i.banco}}</td>
                                                                 <td>{{i.mora}}</td>
                                                                 <td>{{i.diasMora}}</td>
                                                                 <td>{{i.observaciones}}</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <th>S+</th>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <th>{{estadoCuenta.abonoTotal}}</th>
+                                                                <td></td>
+                                                                <th>{{estadoCuenta.abonoMoraTotal}}</th>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <th>{{estadoCuenta.moraTotal}}</th>
+                                                                <th>{{estadoCuenta.diasMoraTotal}}</th>
+                                                                <td></td>
                                                             </tr>
                                                         </tbody>
                                                     </table>
@@ -599,6 +616,7 @@
                         .then(result => result.json())
                         .then(function (result) {
                             if (result.success == true) {
+                                vform.estadoCuenta = result;
                                 vform.cuotas = result.cuotas;
                                 console.log(prestamo)
                                 console.log(vform.cuotas)

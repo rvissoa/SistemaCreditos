@@ -23,7 +23,7 @@ namespace SistemaCreditos.Models
         public DateTime? FechaModificacion { get; set; }
         public string? UsuarioIngresa { get; set; }
         public string? UsuarioModifica { get; set; }
-
+        public DateTime? FechaPagoMora { get; set; }
         public virtual Prestamo? IdPrestamoNavigation { get; set; }
         public virtual ICollection<Abono> Abonos { get; set; }
     }

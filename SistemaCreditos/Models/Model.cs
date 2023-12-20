@@ -416,6 +416,10 @@ namespace SistemaCreditos.Models
                     .IsUnicode(false)
                     .HasColumnName("USUARIO_MODIFICA");
 
+                entity.Property(e => e.FechaPagoMora)
+                    .HasColumnType("datetime")
+                    .HasColumnName("FECHA_PAGO_MORA");
+
                 entity.HasOne(d => d.IdPrestamoNavigation)
                     .WithMany(p => p.Cuota)
                     .HasForeignKey(d => d.IdPrestamo)
