@@ -8,7 +8,7 @@
     }
   },
   "profiles": {
-    "SistemaCreditos": {
+    "SistemaCreditos-Development": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
@@ -16,7 +16,20 @@
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "VaultBDUser": "https://suscription-key.vault.azure.net/",
-        "AZURE_USERNAME": "rodolfovisso@hotmail.com"
+        "AZURE_USERNAME": "rodolfovisso@hotmail.com",
+        "BD_CONNECTION": "Server=tcp:srv-prestamos.database.windows.net,1433;Initial Catalog=BD_CREDITOS_PRUEBAS;Persist Security Info=False;User ID=sa-bd-prestamos;Password=Adm1n@2023;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
+      }
+    },
+    "SistemaCreditos-Production": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "applicationUrl": "https://localhost:7134;http://localhost:5249",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production",
+        "VaultBDUser": "https://suscription-key.vault.azure.net/",
+        "AZURE_USERNAME": "rodolfovisso@hotmail.com",
+        "BD_CONNECTION": "Server=tcp:srv-prestamos.database.windows.net,1433;Initial Catalog=BD_CREDITOS;Persist Security Info=False;User ID=sa-bd-prestamos;Password=Adm1n@2023;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;"
       }
     },
     "IIS Express": {
