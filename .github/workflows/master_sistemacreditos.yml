@@ -53,5 +53,5 @@ jobs:
         with:
           app-name: 'sistemacreditos'
           slot-name: 'Production'
-          publish-profile: 'SistemaCreditos-Production'
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_61F5A89A22AC4F2DA65AAADE08138DB4 }}
           package: .
