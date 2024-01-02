@@ -45,7 +45,8 @@ namespace SistemaCreditos.Controllers.Clientes
         [HttpPost]
         public ActionResult Distritos()
         {
-            var model = db.Distritos.Where(e => e.CodigoDepartamento == 15 && e.CodigoProvincia == 1).ToList();
+            string[] lista = { "514", "1829", "543", "504", "520", "506", "511", "531", "1834" };
+            var model = db.Distritos.Where(e => lista.Contains(e.IdDistrito.ToString())).ToList();
             return Json(new { success = true, distritos = model });
         }
 
@@ -276,7 +277,7 @@ namespace SistemaCreditos.Controllers.Clientes
         [HttpPost]
         public ActionResult Autorizadores()
         {
-            var sql = db.Trabajadors.Where(e => e.TipoTrabajador== 1).ToList();
+            var sql = db.Trabajadors.Where(e => e.TipoTrabajador== 4).ToList();
             return Json(new { success=true,autorizadores = sql });
         }
 
