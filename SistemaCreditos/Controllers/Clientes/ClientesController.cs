@@ -342,30 +342,7 @@ namespace SistemaCreditos.Controllers.Clientes
             try
             {
                 //Calculo de moras
-                var cuotas = db.Cuotas.Where(e => e.IdPrestamo == idPrestamo).ToList();
-                var CuotasVencidas = db.Cuotas.Where(a => a.FechaCuota < DateTime.Now && a.FechaPago == null && a.IdPrestamo == idPrestamo).ToList();
-                var diasMora = 0;
-                decimal Mora = 0;
-                foreach (var item in CuotasVencidas)
-                {
-                    diasMora = (int)DateTime.Now.Subtract((DateTime)item.FechaCuota).TotalDays;
-                    if (diasMora > 7) diasMora = 7;
-                    Mora = diasMora * 5;
-                    //Seteo de valores de mora
-                    item.Mora = Mora;
-                    item.DiasMora= diasMora;
-
-                    //ultima cuota con mora
-                    if (cuotas.Max(e => e.IdCuota) == item.IdCuota)
-                    {
-                        diasMora = (int)DateTime.Now.Subtract((DateTime)item.FechaCuota).TotalDays;
-                        Mora = diasMora * 5;
-                        //Seteo de valores de mora
-                        item.Mora = Mora;
-                        item.DiasMora = diasMora;
-                    }
-                }
-                db.SaveChanges();
+                ActualizarMoras(idPrestamo);
                 //---------------
                 //var model = db.Cuotas.Where(e => e.IdPrestamo == idPrestamo).ToList();
                 var modelo = (from c in db.Cuotas.Where(e => e.IdPrestamo == idPrestamo)
@@ -479,32 +456,38 @@ namespace SistemaCreditos.Controllers.Clientes
         {
             try
             {
-                //Calculo de moras
-                var cuotas = db.Cuotas.Where(e => e.IdPrestamo == idPrestamo).ToList();
-                var CuotasVencidas = db.Cuotas.Where(a => a.FechaCuota < DateTime.Now && a.FechaPago == null && a.IdPrestamo == idPrestamo).ToList();
-                var diasMora = 0;
-                decimal Mora = 0;
-                foreach (var item in CuotasVencidas)
+                //Condición de 7 días para regularizar moras
+                var prestamo=db.Prestamos.Find(idPrestamo);
+                var diasDiferencia=(int)DateTime.Now.Subtract((DateTime)prestamo.FechaCreacion).TotalDays;
+                if (diasDiferencia >= 7)
                 {
-                    diasMora = (int)DateTime.Now.Subtract((DateTime)item.FechaCuota).TotalDays;
-                    if (diasMora > 7) diasMora = 7;
-                    Mora = diasMora * 5;
-                    //Seteo de valores de mora
-                    item.Mora = Mora;
-                    item.DiasMora = diasMora;
-
-                    //ultima cuota con mora
-                    if (cuotas.Max(e => e.IdCuota) == item.IdCuota)
+                    //Calculo de moras
+                    var cuotas = db.Cuotas.Where(e => e.IdPrestamo == idPrestamo).ToList();
+                    var CuotasVencidas = db.Cuotas.Where(a => a.FechaCuota < DateTime.Now && a.FechaPago == null && a.IdPrestamo == idPrestamo).ToList();
+                    var diasMora = 0;
+                    decimal Mora = 0;
+                    foreach (var item in CuotasVencidas)
                     {
                         diasMora = (int)DateTime.Now.Subtract((DateTime)item.FechaCuota).TotalDays;
+                        if (diasMora > 7) diasMora = 7;
                         Mora = diasMora * 5;
                         //Seteo de valores de mora
                         item.Mora = Mora;
                         item.DiasMora = diasMora;
+
+                        //ultima cuota con mora
+                        if (cuotas.Max(e => e.IdCuota) == item.IdCuota)
+                        {
+                            diasMora = (int)DateTime.Now.Subtract((DateTime)item.FechaCuota).TotalDays;
+                            Mora = diasMora * 5;
+                            //Seteo de valores de mora
+                            item.Mora = Mora;
+                            item.DiasMora = diasMora;
+                        }
                     }
+                    db.SaveChanges();
+                    //---------------
                 }
-                db.SaveChanges();
-                //---------------
                 return true;
             }
             catch (Exception ex)
@@ -550,30 +533,7 @@ namespace SistemaCreditos.Controllers.Clientes
             try
             {
                 //Calculo de moras
-                var cuotas = db.Cuotas.Where(e => e.IdPrestamo == idPrestamo).ToList();
-                var CuotasVencidas = db.Cuotas.Where(a => a.FechaCuota < DateTime.Now && a.FechaPago == null && a.IdPrestamo == idPrestamo).ToList();
-                var diasMora = 0;
-                decimal Mora = 0;
-                foreach (var item in CuotasVencidas)
-                {
-                    diasMora = (int)DateTime.Now.Subtract((DateTime)item.FechaCuota).TotalDays;
-                    if (diasMora > 7) diasMora = 7;
-                    Mora = diasMora * 5;
-                    //Seteo de valores de mora
-                    item.Mora = Mora;
-                    item.DiasMora = diasMora;
-
-                    //ultima cuota con mora
-                    if (cuotas.Max(e => e.IdCuota) == item.IdCuota)
-                    {
-                        diasMora = (int)DateTime.Now.Subtract((DateTime)item.FechaCuota).TotalDays;
-                        Mora = diasMora * 5;
-                        //Seteo de valores de mora
-                        item.Mora = Mora;
-                        item.DiasMora = diasMora;
-                    }
-                }
-                db.SaveChanges();
+                ActualizarMoras(idPrestamo);
                 //---------------
 
                 //var cuotas = db.Cuotas.Where(e => e.IdPrestamo == idPrestamo).ToList();
