@@ -93,6 +93,11 @@ namespace SistemaCreditos.Models
                     .IsUnicode(false)
                     .HasColumnName("USUARIO_MODIFICA");
 
+                entity.Property(e => e.CodigoGestor)
+                    .HasMaxLength(20)
+                    .IsUnicode(false)
+                    .HasColumnName("CODIGO_GESTOR");
+
                 entity.HasOne(d => d.IdCuotaNavigation)
                     .WithMany(p => p.Abonos)
                     .HasForeignKey(d => d.IdCuota)

@@ -375,7 +375,7 @@ namespace SistemaCreditos.Controllers.Clientes
         {
             try
             {
-                return Json(new {success=true, bancos = db.Bancos.ToList() });
+                return Json(new {success=true, bancos = db.Bancos.OrderByDescending(e=>e.IdBanco).ToList() });
             }
             catch
             {
@@ -397,7 +397,8 @@ namespace SistemaCreditos.Controllers.Clientes
                     TipoArchivo = abono.tipo,
                     Codigo = abono.numeroVoucher,
                     TipoAbono = abono.tipoAbono,
-                    MontoMora=abono.mora
+                    MontoMora=abono.mora,
+                    CodigoGestor=abono.gestor
                 };
                 var usuario = @User?.Claims.Where(e => e.Type == "preferred_username").Select(e => e.Value).FirstOrDefault();
                 string[] user = usuario.Split("@");
@@ -509,6 +510,7 @@ namespace SistemaCreditos.Controllers.Clientes
             public int idAbono { get; set; }
             public string numeroVoucher { get; set; }
             public int tipoAbono { get; set; }
+            public string gestor { get; set; }
         }
         public class PrestamoCliente { 
             public int IdCliente { get; set; }

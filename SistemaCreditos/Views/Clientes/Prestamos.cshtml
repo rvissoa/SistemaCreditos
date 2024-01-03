@@ -148,23 +148,6 @@
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-lg-6 col-md-6 col-sm-12">
-                                            <label for="exampleSelectBorder">Mora</label>
-                                            <input v-model="form.mora" type="number" class="form-control" maxlength="100" />
-                                        </div>
-                                        <div class="form-group col-lg-6 col-md-6 col-sm-12">
-                                            <label for="exampleSelectBorder">Banco</label>
-                                            <select v-model="form.banco" class="custom-select form-control-border">
-                                                <option value="" disabled selected>--Selecione--</option>
-                                                <option v-for="(sel,cix) in bancos" :value="sel.idBanco">{{sel.razonSocial}}</option>
-                                            </select>
-                                        </div>
-                                    </div>
-                                    <div class="row">
-                                        <div class="form-group col-lg-6 col-md-6 col-sm-12">
-                                            <label for="exampleSelectBorder">Nro Voucher</label>
-                                            <input v-model="form.numeroVoucher" type="text" class="form-control" maxlength="100" />
-                                        </div>
-                                        <div class="form-group col-lg-6 col-md-6 col-sm-12">
                                             <label for="exampleSelectBorder">Tipo de abono</label>
                                             <select v-model="form.tipoAbono" class="custom-select form-control-border">
                                                 <option value="" disabled selected>--Selecione--</option>
@@ -172,11 +155,37 @@
                                                 <option value="2">RECIBO</option>
                                             </select>
                                         </div>
+                                        <div v-if="form.tipoAbono!=null" class="form-group col-lg-6 col-md-6 col-sm-12">
+                                            <label v-if="form.tipoAbono=='1'" for="exampleSelectBorder">Nro Voucher</label>
+                                            <label v-if="form.tipoAbono=='2'" for="exampleSelectBorder">Nro Recibo</label>
+                                            <input v-model="form.numeroVoucher" type="text" class="form-control" maxlength="100" />
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div v-if="form.tipoAbono=='1'" class="form-group col-lg-6 col-md-6 col-sm-12">
+                                            <label for="exampleSelectBorder">Banco</label>
+                                            <select v-model="form.banco" class="custom-select form-control-border">
+                                                <option value="" disabled selected>--Selecione--</option>
+                                                <option v-for="(sel,cix) in bancos" :value="sel.idBanco">{{sel.razonSocial}}</option>
+                                            </select>
+                                        </div>
+                                        <div v-if="form.tipoAbono=='2'" class="form-group col-lg-4 col-md-6 col-sm-12">
+                                            <label for="exampleSelectBorder">Gestor</label>
+                                            <select class="custom-select form-control-border" v-model="form.gestor">
+                                                <option v-for="item in gestores" :value="item.codigoTrabajador" :key="item.codigoTrabajador">
+                                                    {{item.nombres}}
+                                                </option>
+                                            </select>
+                                        </div>
                                     </div>
                                     <div class="row">
                                         <div class="form-group col-lg-6 col-md-6 col-sm-12">
                                             <label for="exampleSelectBorder">Voucher</label>
                                             <input id="voucher" v-model="form.voucher" type="file" class="form-control" maxlength="100" />
+                                        </div>
+                                        <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                                            <label for="exampleSelectBorder">Mora</label>
+                                            <input v-model="form.mora" type="number" class="form-control" maxlength="100" />
                                         </div>
                                     </div>
                                 </div>
@@ -453,10 +462,25 @@
                 idCuota: '',
                 disabledBtn: false,
                 estadoCuenta:[],
-                verPrestamo:''
+                verPrestamo:'',
+                gestores: []
             },
             created() {
                 var _this = this;
+                fetch('/Clientes/Gestores',
+                    {
+                        method: 'POST',
+                        body: '',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(result => result.json())
+                    .then(function (result) {
+                        if (result.success == true) {
+                            _this.gestores = result.gestores;
+                        }
+                    });
                 fetch('/Clientes/Bancos',
                     {
                         method: 'POST',
