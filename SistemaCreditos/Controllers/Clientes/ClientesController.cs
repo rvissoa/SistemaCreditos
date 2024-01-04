@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using NuGet.Protocol;
 using SistemaCreditos.Models;
 using System.Net;
@@ -45,7 +46,7 @@ namespace SistemaCreditos.Controllers.Clientes
         [HttpPost]
         public ActionResult Distritos()
         {
-            string[] lista = { "514", "1829", "543", "504", "520", "506", "511", "531", "1834" };
+            string[] lista = { "514", "1829", "543", "504", "520", "506", "511", "531", "1834", "2060", "2061" };
             var model = db.Distritos.Where(e => lista.Contains(e.IdDistrito.ToString())).ToList();
             return Json(new { success = true, distritos = model });
         }
@@ -281,6 +282,59 @@ namespace SistemaCreditos.Controllers.Clientes
             return Json(new { success=true,autorizadores = sql });
         }
 
+        [HttpPost]
+        public ActionResult GuardarAplazar([FromBody] Aplazar aplazar)
+        {
+            try
+            {
+                var prestamo = db.Prestamos.Find(aplazar.idPrestamo);
+                prestamo.DiaPago = aplazar.diaPago;
+                var cuotas = db.Cuotas.Where(e => e.IdPrestamo == prestamo.IdPrestamo);
+                foreach (var item in cuotas)
+                {
+                    if (item.FechaPago==null&&item.Abonos.Count==0)
+                    {
+                        db.Cuotas.Remove(item);
+                    }
+                    
+                }
+                var usuario = @User?.Claims.Where(e => e.Type == "preferred_username").Select(e => e.Value).FirstOrDefault();
+                string[] user = usuario.Split("@");
+
+                var fcuota = aplazar.fecha;
+                for (int i = 0; i < aplazar.numeroCuotas; i++)
+                {
+                    if (i != 0)
+                    {
+                        fcuota = fcuota.AddDays(7);
+                    }
+                    var modelCuota = new Cuota
+                    {
+                        IdPrestamo = aplazar.idPrestamo,
+                        FechaCuota = fcuota,
+                        FechaCreacion = DateTime.Now,
+                        UsuarioIngresa = user[0],
+                        MontoCuota = aplazar.montoCuotas
+                    };
+                    db.Cuotas.Add(modelCuota);
+                }
+                db.SaveChanges();
+                return Json(new { success = true });
+            }
+            catch(Exception e)
+            {
+                return Json(new { success = false, error = e.Message, errorLargo = e.InnerException.Message });
+            }
+            
+        }
+        public class Aplazar
+        {
+            public int idPrestamo { get; set; }
+            public DateTime fecha { get; set; }
+            public int numeroCuotas { get; set; }
+            public decimal montoCuotas { get; set; }
+            public string diaPago { get; set; }
+        }
         [HttpPost]
         public ActionResult NuevoPrestamo([FromBody] PrestamoCliente prestamo)
         {
@@ -568,6 +622,154 @@ namespace SistemaCreditos.Controllers.Clientes
             catch
             {
                 return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
+        #endregion
+
+        #region Abonos
+        [HttpGet]
+        public ActionResult ListarAbonos(int idCuota)
+        {
+            try
+            {
+                return Json(new { success = true, listaAbonos = db.Abonos.Where(e=>e.IdCuota==idCuota).ToList() });
+            }
+            catch
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpGet]
+        public ActionResult VerAbono(int idAbono)
+        {
+            try
+            {
+                var model = from a in db.Abonos.Where(e=>e.IdAbono==idAbono)
+                            select new
+                            {
+                                a.IdAbono,
+                                a.MontoAbono,
+                                FechaAbono=a.FechaAbono.Value.ToString("yyyy-MM-dd"),
+                                a.Banco,
+                                a.Codigo,
+                                a.TipoAbono,
+                                a.MontoMora,
+                                a.CodigoGestor
+            };
+                return Json(new { success = true, verAbono = model.FirstOrDefault() });
+            }
+            catch
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpPost]
+        public ActionResult ModificarAbono([FromBody] formulario abono)
+        {
+            try
+            {
+                //var model = new Abono
+                //{
+                //    IdCuota = abono.idCuota,
+                //    MontoAbono = abono.monto,
+                //    FechaAbono = abono.fechaAbono,
+                //    FechaCreacion = DateTime.Now,
+                //    Banco = abono.banco,
+                //    TipoArchivo = abono.tipo,
+                //    Codigo = abono.numeroVoucher,
+                //    TipoAbono = abono.tipoAbono,
+                //    MontoMora = abono.mora,
+                //    CodigoGestor = abono.gestor
+                //};
+                var model = db.Abonos.Find(abono.idAbono);
+                model.IdCuota = abono.idCuota;
+                model.MontoAbono = abono.monto;
+                model.FechaAbono = abono.fechaAbono;
+                model.FechaCreacion = DateTime.Now;
+                model.Banco = abono.banco;
+                model.TipoArchivo = abono.tipo;
+                model.Codigo = abono.numeroVoucher;
+                model.TipoAbono = abono.tipoAbono;
+                model.MontoMora = abono.mora;
+                model.CodigoGestor = abono.gestor;
+
+                var usuario = @User?.Claims.Where(e => e.Type == "preferred_username").Select(e => e.Value).FirstOrDefault();
+                string[] user = usuario.Split("@");
+                model.UsuarioIngresa = user[0];
+                if (abono.voucher != null)
+                {
+                    //model.FotoAbono = Convert.FromBase64String(abono.voucher);
+                }
+                db.SaveChanges();
+
+                //Verificar dia de pago CUOTA
+                var cuota = db.Cuotas.Find(abono.idCuota);
+                var abonos = db.Abonos.Where(e => e.IdCuota == cuota.IdCuota);
+                var presta = db.Prestamos.Find(cuota.IdPrestamo);
+                decimal? suma = 0;
+                foreach (var item in abonos.ToList())
+                {
+                    suma += item.MontoAbono;
+                }
+                if (suma >= cuota.MontoCuota)
+                {
+                    cuota.FechaPago = abono.fechaAbono;
+                    //Verificar fecha termino del prestamo
+                    if (db.Cuotas.Where(e => e.IdPrestamo == presta.IdPrestamo).Max(e => e.IdCuota) == abono.idCuota)
+                    {
+                        presta.FechaTermino = abono.fechaAbono;
+                        presta.Liquidacion = "NORMAL";
+                    }
+                }
+                cuota.CantidadAbonos = abonos.ToList().Count();
+
+                //Verificar pagos de mora
+                var result = ActualizarMoras(presta.IdPrestamo);
+                decimal? sumaMora = 0;
+                foreach (var item in abonos.ToList())
+                {
+                    sumaMora += item.MontoMora;
+                }
+                if (sumaMora >= cuota.Mora && sumaMora != 0)
+                {
+                    cuota.FechaPagoMora = abono.fechaAbono;
+                }
+                //-----------------------
+                db.SaveChanges();
+
+                return Json(new { success = true });
+            }
+            catch
+            {
+                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+            }
+        }
+
+        [HttpPost]
+        public ActionResult EliminarAbono(int idAbono)
+        {
+            try
+            {
+                //Verificar dia de pago CUOTA
+                var abono = db.Abonos.Find(idAbono);
+
+                var cuota = db.Cuotas.Where(e => e.IdCuota == abono.IdCuota).FirstOrDefault();
+                var presta = db.Prestamos.Find(cuota.IdPrestamo);
+
+                cuota.FechaPago = null;
+                presta.FechaTermino = null;
+
+                db.Abonos.Remove(abono);
+                db.SaveChanges();
+                //-----------------------
+
+                return Json(new { success = true });
+            }
+            catch (Exception e)
+            {
+                return Json(new { success = false, error = e.Message, errorLargo = e.InnerException.Message });
             }
         }
         #endregion
