@@ -29,7 +29,8 @@
     <link rel="stylesheet" href="~/adminLte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css">
     <link rel="stylesheet" href="~/adminLte/plugins/datatables-responsive/css/responsive.bootstrap4.min.css">
     <link rel="stylesheet" href="~/adminLte/plugins/datatables-buttons/css/buttons.bootstrap4.min.css">
-    
+    <!-- Select2 -->
+    <link rel="stylesheet" href="~/adminLte/plugins/select2/css/select2.min.css">
     
 </head>
 <body>
@@ -102,7 +103,7 @@
             </a>
 
             <!-- Sidebar -->
-            <div class="sidebar">
+            <div class="sidebar" id="menu">
                 <!-- Sidebar user panel (optional) -->
                 <div class="user-panel mt-3 pb-3 mb-3 d-flex">
                     <div class="image">
@@ -116,9 +117,15 @@
                 <!-- SidebarSearch Form -->
                 <div class="form-inline">
                     <div class="input-group" data-widget="sidebar-search">
-                        <input class="form-control form-control-sidebar" type="search" placeholder="Buscar" aria-label="Search">
+                        <input v-show="buscarCliente==null" class="form-control form-control-sidebar" type="search" placeholder="Buscar cliente" aria-label="Search">
+                        <select data-dropdown-css-class="select2-warning" class="form-control form-control-sidebar buscarCliente" type="search" placeholder="Buscar cliente" v-model="buscarCliente" aria-label="Search">
+                            <option disabled selected value="0">Buscar Cliente...</option>
+                            <option v-for="item in clientes" :value="item.id" :key="item.id">
+                                {{item.dni}} - {{item.cliente}}
+                            </option>
+                        </select>
                         <div class="input-group-append">
-                            <button class="btn btn-sidebar">
+                            <button class="btn btn-sidebar" style="line-height: 1.5 !important;" v-on:click="buscarCliente!=''?window.location.href='/Clientes/Prestamos?id='+buscarCliente:alert('¡Seleciona un cliente!');">
                                 <i class="fas fa-search fa-fw"></i>
                             </button>
                         </div>
@@ -160,7 +167,7 @@
                         </li>
                         <!-- Clientes -->
                         <li class="nav-item">
-                            <a href="#" class="nav-link">
+                            <a class="nav-link">
                                 <i class="nav-icon fas fa-search text-warning"></i>
                                 <p>
                                     Clientes
@@ -187,7 +194,7 @@
                         @if ((await AuthorizationService.AuthorizeAsync(User, "Admin")).Succeeded)
                         {
                             <li class="nav-item">
-                                <a href="#" class="nav-link">
+                                <a class="nav-link">
                                     <i class="nav-icon fas fa-book text-red"></i>
                                     <p>
                                         Reportes
@@ -265,8 +272,61 @@
     <script src="~/adminLte/plugins/moment/moment.min.js"></script>
     <script src="~/adminLte/plugins/inputmask/jquery.inputmask.min.js"></script>
     <script src="~/adminLte/plugins/tempusdominus-bootstrap-4/js/tempusdominus-bootstrap-4.min.js"></script>
-    
-    
+    <!-- Select2 -->
+    <script src="~/adminLte/plugins/select2/js/select2.full.min.js"></script>
+    <script>
+        var vformu = new Vue({
+            el: '#menu',
+            data: {
+                buscarCliente:'',
+                clientes:[]
+            },
+            created() {
+                
+            },
+            methods: {
+                listarClientes(){
+
+                }
+            }
+        });
+        if (localStorage.getItem("arregloClientes")==null) {
+            if ('sessionStorage' in window) {
+                sessionStorage.clear();
+            }
+            fetch('/Clientes/ListaClientes',
+                {
+                    method: 'POST',
+                    body: '',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(result => result.json())
+                .then(function (result) {
+                    if (result.success == true) {
+                        vformu.clientes = result.model;
+                        localStorage.setItem("arregloClientes", JSON.stringify(result.model));
+                        console.log(localStorage.getItem("arregloClientes"));
+                        $('.buscarCliente').select2();
+                        $('.buscarCliente').val('0').trigger('change');
+                    }
+
+                });
+        }else{
+            var array = JSON.parse(localStorage.getItem("arregloClientes"));
+            vformu.clientes = array;
+            $('.buscarCliente').select2();
+            $('.buscarCliente').val('0').trigger('change');
+        }
+        //Seteo de cliente
+        $(document).ready(() => {
+            $('.buscarCliente').change(() => {
+                var id = $('.buscarCliente').val();
+                vformu.buscarCliente = id;
+            });
+        });
+    </script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

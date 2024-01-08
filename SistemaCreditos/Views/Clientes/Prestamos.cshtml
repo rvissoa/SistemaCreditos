@@ -43,20 +43,21 @@
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
+                     <!-- /.table PRESTAMOS -->
                     <table class="table table-bordered" id="example1">
                         <thead>
                             <tr>
                                 <th>Número</th>
                                 <th>ID Préstamo</th>
                                 <th>Ver Cuotas</th>
+                                <th>Ver Estado de Cuenta</th>
+                                <th>Refinanciar / Aplazar</th>
                                 <th>Capital</th>
                                 <th>Día de pago</th>
                                 <th>Fondo Provicionario</th>
                                 <th>Fecha de Entrega</th>
                                 <th>Fecha de Termino</th>
                                 <th>Número de cuotas</th>
-                                <th>Ver Estado de Cuenta</th>
-                                <th>Aplazar Préstamo</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -64,14 +65,14 @@
                                 <td>{{numero+1}}</td>
                                 <td>{{item.idPrestamo}}</td>
                                 <td class="text-center"><button class="btn btn-default" id="show-modal" data-toggle="modal" data-target="#modal-lg" v-on:Click="verCuotas(item.idPrestamo)"><i class="fas fa-share text-success"></i> <i class="fas fa-list text-success"></i></button></td>
+                                <td class="text-center"><button title="Descargar Estado de cuenta" v-on:click="verEstado(item)" id="show-modal-estado" data-toggle="modal" data-target="#modal-estado" class="btn btn-default"><i class="fas fa-file-download text-primary fa-2x"></i></button></td>
+                                <td class="text-center"><button title="Aplazar Préstamo" v-on:click="aplazar(item.idPrestamo)" class="btn btn-default" data-toggle="modal" data-target="#modal-aplazar"><i class="far fa-calendar-plus fa-2x text-danger"></i></button></td>
                                 <td>{{item.capital}}</td>
                                 <td>{{item.diaPago}}</td>
                                 <td>{{item.fondoProvicional}}</td>
                                 <td>{{item.fechaEntrega | JsonFecha2}}</td>
                                 <td>{{item.fechaTermino | JsonFecha2}}</td>
                                 <td>{{item.numeroCuotas}}</td>
-                                <td class="text-center"><button title="Descargar Estado de cuenta" v-on:click="verEstado(item)" id="show-modal-estado" data-toggle="modal" data-target="#modal-estado" class="btn btn-default"><i class="fas fa-file-download text-success fa-2x"></i></button></td>
-                                <td class="text-center"><button title="Aplazar Préstamo" v-on:click="aplazar(item.idPrestamo)" class="btn btn-default" data-toggle="modal" data-target="#modal-aplazar"><i class="far fa-calendar-plus fa-2x text-warning"></i></button></td>
                             </tr>
                         </tbody>
                     </table>
@@ -85,37 +86,41 @@
                                         <span aria-hidden="true">&times;</span>
                                     </button>
                                 </div>
-                                <div class="modal-body">
+                                <div class="modal-body" style="overflow-y: auto; overflow-x: auto;">
                                     <table class="table table-bordered" id="example2">
                                         <thead>
                                             <tr>
                                                 <th>Número</th>
+                                                <th>Monto de cuota</th>
                                                 <th>Fecha de Cuota</th>
                                                 <th>Fecha de Pago</th>
-                                                <th>Monto de cuota</th>
+                                                <th>Abonar</th>
+                                                <th>Modificar Cuota</th>
+                                                <th>Lista Abonos</th>
                                                 <th>Mora</th>
                                                 <th>Días de Mora</th>
                                                 <th>Observaciones</th>
-                                                <th>Abonar</th>
                                                 <th>Abonos</th>
                                                 <th>Pago de Moras</th>
-                                                <th>Lista Abonos</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             <tr v-for="item,numero in cuotas">
                                                 <td>{{numero+1}}</td>
+                                                <td>{{item.montoCuota}}</td>
                                                 <td>{{item.fechaCuota | JsonFecha2}}</td>
                                                 <td>{{item.fechaPago | JsonFecha2}}</td>
-                                                <td>{{item.montoCuota}}</td>
+                                                <td v-if="item.fechaPago==null"><button class="btn btn-default" id="show-modal" data-toggle="modal" data-target="#modal-sm" v-on:Click="verAbonar(item.idCuota)"><i class="fas fa-share text-primary"></i> <i class="fab fa-cc-visa text-primary"></i></button></td>
+                                                <td v-else><span class="badge bg-success">Cuota Cancelada</span></td>
+                                                <td><button class="btn btn-default" id="show-modal-m" data-toggle="modal" data-target="#modal-modificar-cuotas" v-on:Click="verModificarCuota(item.idCuota)"><i class="fas fa-share text-warning"></i> <i class="fas fa-edit text-warning"></i></button></td>
+                                                <td v-if="item.abono!=0"><button class="btn btn-default" id="show-modal" data-toggle="modal" data-target="#listar-abonos" v-on:Click="listarAbonos(item.idCuota)"><i class="fas fa-share text-default"></i> <i class="fas fa-list-ol text-default"></i></button></td>
+                                                <td v-else><span></span></td>
                                                 <td>{{item.mora}}</td>
                                                 <td>{{item.diasMora}}</td>
                                                 <td>{{item.observaciones}}</td>
-                                                <td v-if="item.fechaPago==null"><button class="btn btn-default" id="show-modal" data-toggle="modal" data-target="#modal-sm" v-on:Click="verAbonar(item.idCuota)"><i class="fas fa-share text-primary"></i> <i class="fab fa-cc-visa text-primary"></i></button></td>
-                                                <td v-else><span class="badge bg-success">Cuota Cancelada</span></td>
                                                 <td>{{item.abono}}</td>
                                                 <td>{{item.abonoMora}}</td>
-                                                <td v-if="item.abono!=0"><button class="btn btn-default" id="show-modal" data-toggle="modal" data-target="#listar-abonos" v-on:Click="listarAbonos(item.idCuota)"><i class="fas fa-share text-warning"></i> <i class="fas fa-list-ol text-warning"></i></button></td>
+                                                
                                             </tr>
                                         </tbody>
                                     </table>
@@ -589,8 +594,8 @@
 
                 </div>
                 <div class="modal-footer justify-content-between">
-                    <button type="submit" class="btn btn-primary" v-on:Click="guardarAplazar()" :disabled="disabledBtn"><i class="fa fa-save"></i> &nbsp; Guardar</button>
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary" v-on:Click="guardarAplazar()" :disabled="disabledBtn"><i class="fa fa-save"></i> &nbsp; Guardar</button>
                 </div>
             </div>
             <!-- /.modal-content -->
@@ -598,6 +603,62 @@
         <!-- /.modal-dialog -->
     </div>
     @*Fin Mantenimiento Prestamos*@
+
+    @*Mantenimiento Cuotas*@
+    <div class="modal fade" id="modal-modificar-cuotas">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title text-warning">Modificar Cuota</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-6 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Fecha Cuota: </label>
+                            <input type="date" v-model="formModCuota.fechaCuota" class="form-control" maxlength="250" />
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Fecha Pago: </label>
+                            <input type="date" v-model="formModCuota.fechaPago" class="form-control" maxlength="250" />
+                        </div>
+                    </div>
+
+                    <div class="row">
+
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Monto de Cuota</label>
+                            <input type="number" v-model="formModCuota.montoCuota" class="form-control" maxlength="10" />
+                        </div>
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Mora</label>
+                            <input type="number" v-model="formModCuota.mora" class="form-control" maxlength="10" />
+                        </div>
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Días de Mora</label>
+                            <input type="number" v-model="formModCuota.diasMora" class="form-control" maxlength="10" />
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                            <label for="exampleSelectBorder">Observaciones</label>
+                            <textarea v-model="formModCuota.observaciones" type="text" class="form-control" maxlength="1500" rows="3"></textarea>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary" v-on:Click="guardarModificarCuota()" :disabled="disabledBtn"><i class="fa fa-save"></i> &nbsp; Guardar</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    @*Mantenimiento Cuotas*@
 </section>
 @section Scripts {
     <script src="~/adminLte/plugins/datatables/jquery.dataTables.min.js"></script>
@@ -667,6 +728,16 @@
                 formAplazar:{
                     idPrestamo:'',
                     fecha:''
+                },
+                formModCuota: {
+                    idCuota:'',
+                    fechaCuota:'',
+                    fechaPago:'',
+                    montoCuota:'',
+                    cantidadAbonos:'',
+                    mora:'',
+                    diasMora:'',
+                    observaciones:''
                 }
             },
             created() {
@@ -774,9 +845,6 @@
                         });
                 },
                 editarAbono(idAbono) {
-                    
-                    var this_ = this;
-                    console.log(this_.listaAbonos)
                     fetch('/Clientes/VerAbono?idAbono=' + idAbono,
                         {
                             method: 'GET',
@@ -804,6 +872,7 @@
                     //serializar formulario abono
                     var abono = Object.assign({}, vform.formu);
                     abono.idCuota = vform.idCuota;
+                    console.log(abono)
                     //abono.idAbono = vform.idAbono;
                     fetch('/Clientes/ModificarAbono',
                         {
@@ -963,6 +1032,51 @@
                             if (result.success == true) {
                                 setTimeout(refrescar, 1500);
                                 toastr.success('¡Se modificó correctamente el abono!');
+                            }
+                        });
+                },
+                verModificarCuota(idCuota){
+                    vform.idCuota=idCuota;
+                    fetch('/Clientes/VerModificarCuota?idCuota=' + idCuota,
+                        {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(result => result.json())
+                        .then(function (result) {
+                            if (result.success == true) {
+                                vform.formModCuota.idCuota = result.cuota.idCuota;
+                                vform.formModCuota.fechaCuota = result.cuota.fechaCuota;
+                                vform.formModCuota.fechaPago = result.cuota.fechaPago;
+                                vform.formModCuota.montoCuota = result.cuota.montoCuota;
+                                vform.formModCuota.cantidadAbonos = result.cuota.cantidadAbonos;
+                                vform.formModCuota.mora = result.cuota.mora;
+                                vform.formModCuota.diasMora = result.cuota.diasMora;
+                                vform.formModCuota.observaciones = result.cuota.observaciones;
+                            }
+                        });
+                },
+                guardarModificarCuota() {
+                    var _this = this;
+                    _this.disabledBtn = true;
+
+                    //serializar formulario abono
+                    var cuota = Object.assign({}, vform.formModCuota);
+                    fetch('/Clientes/GuardarCuota',
+                        {
+                            method: 'POST',
+                            body: JSON.stringify(cuota),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(result => result.json())
+                        .then(function (result) {
+                            if (result.success == true) {
+                                setTimeout(refrescar, 1500);
+                                toastr.success('¡Se registró correctamente la cuota!');
                             }
                         });
                 }

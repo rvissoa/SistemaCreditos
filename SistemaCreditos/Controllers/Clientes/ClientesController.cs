@@ -335,6 +335,7 @@ namespace SistemaCreditos.Controllers.Clientes
             public decimal montoCuotas { get; set; }
             public string diaPago { get; set; }
         }
+
         [HttpPost]
         public ActionResult NuevoPrestamo([FromBody] PrestamoCliente prestamo)
         {
@@ -579,6 +580,72 @@ namespace SistemaCreditos.Controllers.Clientes
             public int numeroCuotas { get; set; }
             public decimal montoCuotas { get; set; }
             public int diasgracia { get; set; }
+        }
+
+        [HttpGet]
+        public ActionResult VerModificarCuota(int idCuota)
+        {
+            try
+            {
+                var cuota = from c in db.Cuotas.Where(e => e.IdCuota == idCuota)
+                            select new
+                            {
+                                c.IdCuota,
+                                FechaCuota=c.FechaCuota.Value.ToString("yyyy-MM-dd"),
+                                FechaPago = c.FechaPago.Value.ToString("yyyy-MM-dd"),
+                                c.MontoCuota,
+                                c.Mora,
+                                c.DiasMora,
+                                c.Observaciones
+                            };
+                return Json(new { success = true, cuota=cuota.FirstOrDefault() });
+            }
+            catch (Exception e)
+            {
+                return Json(new { success = false, error = e.Message, errorLargo = e.InnerException.Message });
+            }
+        }
+
+        [HttpPost]
+        public ActionResult GuardarCuota([FromBody] formularioCuota cuota)
+        {
+            try
+            {
+                var model = db.Cuotas.Find(cuota.idCuota);
+                model.FechaCuota = cuota.fechaCuota;
+                model.FechaPago = cuota.fechaPago;
+                model.MontoCuota = cuota.montoCuota?? model.MontoCuota;
+                model.CantidadAbonos = cuota.cantidadAbonos?? model.CantidadAbonos;
+                model.Mora = cuota.mora?? model.Mora;
+                model.DiasMora = cuota.diasMora?? model.DiasMora;
+                model.Observaciones = cuota.observaciones?? model.Observaciones;
+
+                var usuario = @User?.Claims.Where(e => e.Type == "preferred_username").Select(e => e.Value).FirstOrDefault();
+                string[] user = usuario.Split("@");
+
+                model.UsuarioModifica = user[0];
+                model.FechaModificacion = DateTime.Now;
+
+                db.SaveChanges();
+                return Json(new { success = true });
+            }
+            catch (Exception e)
+            {
+                return Json(new { success = false, error = e.Message, errorLargo = e.InnerException.Message });
+            }
+
+        }
+        public class formularioCuota
+        {
+            public int idCuota { get; set; }
+            public int idPrestamo { get; set; }
+            public DateTime fechaCuota { get; set; }
+            public DateTime fechaPago { get; set; }
+            public decimal? montoCuota { get; set; }
+            public int? cantidadAbonos { get; set; }
+            public decimal? mora { get; set; }
+            public int? diasMora { get; set; }
+            public string observaciones { get; set; }
         }
         #endregion
 
