@@ -52,6 +52,7 @@
                                 <th>Ver Cuotas</th>
                                 <th>Ver Estado de Cuenta</th>
                                 <th>Refinanciar / Aplazar</th>
+                                <th>Eliminar Préstamo</th>
                                 <th>Capital</th>
                                 <th>Día de pago</th>
                                 <th>Fondo Provicionario</th>
@@ -67,6 +68,7 @@
                                 <td class="text-center"><button class="btn btn-default" id="show-modal" data-toggle="modal" data-target="#modal-lg" v-on:Click="verCuotas(item.idPrestamo)"><i class="fas fa-share text-success"></i> <i class="fas fa-list text-success"></i></button></td>
                                 <td class="text-center"><button title="Descargar Estado de cuenta" v-on:click="verEstado(item)" id="show-modal-estado" data-toggle="modal" data-target="#modal-estado" class="btn btn-default"><i class="fas fa-file-download text-primary fa-2x"></i></button></td>
                                 <td class="text-center"><button title="Aplazar Préstamo" v-on:click="aplazar(item.idPrestamo)" class="btn btn-default" data-toggle="modal" data-target="#modal-aplazar"><i class="far fa-calendar-plus fa-2x text-danger"></i></button></td>
+                                <td class="text-center"><button title="Eliminar Préstamo" v-on:click="verEliminarPrestamo(item.idPrestamo)" class="btn btn-default" data-toggle="modal" data-target="#modal-eliminar-prestamo"><i class="fa fa-trash text-danger"></i></button></td>
                                 <td>{{item.capital}}</td>
                                 <td>{{item.diaPago}}</td>
                                 <td>{{item.fondoProvicional}}</td>
@@ -659,6 +661,34 @@
         <!-- /.modal-dialog -->
     </div>
     @*Mantenimiento Cuotas*@
+    @*Eliminar Préstamo*@
+    <div class="modal fade" id="modal-eliminar-prestamo">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title text-danger">Eliminar Préstamo</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <label for="exampleSelectBorder">¿Estás seguro(a) que deseas eliminar el préstamo? </label>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary" v-on:Click="eliminarPrestamo()" :disabled="disabledBtn"><i class="fa fa-trash"></i> &nbsp; Eliminar</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    @*Eliminar Préstamo*@
 </section>
 @section Scripts {
     <script src="~/adminLte/plugins/datatables/jquery.dataTables.min.js"></script>
@@ -693,6 +723,7 @@
         var vform = new Vue({
             el: '#prestamos',
             data: {
+                idPrestamo:'',
                 dias: [
                     { id: 'LUNES', text: 'LUNES' },
                     { id: 'MARTES', text: 'MARTES' },
@@ -824,6 +855,25 @@
 
             },
             methods: {
+                verEliminarPrestamo(idPrestamo){
+                        vform.idPrestamo = idPrestamo;
+                },
+                eliminarPrestamo(){
+                            fetch('/Clientes/EliminarPrestamo?idPrestamo=' + vform.idPrestamo,
+                            {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json'
+                                }
+                            })
+                            .then(result => result.json())
+                            .then(function (result) {
+                                if (result.success == true) {
+                                    setTimeout(refrescar, 1500);
+                                    toastr.success('¡Se eliminó correctamente el Préstamo seleccionado!');
+                                }
+                            });
+                },
                 verAbonar(idCuota) {
                     vform.idCuota = idCuota;
                 },

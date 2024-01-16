@@ -235,6 +235,39 @@ namespace SistemaCreditos.Controllers.Clientes
         #endregion
 
         #region Cliente prestamo
+        [HttpPost]
+        public ActionResult EliminarPrestamo(int idPrestamo)
+        {
+            try
+            {
+                using (var trans = db.Database.BeginTransaction())
+                {
+                    var model = db.Prestamos.Find(idPrestamo);
+                    var cuotas = db.Cuotas.Where(e => e.IdPrestamo == idPrestamo);
+
+                    foreach (var item in cuotas)
+                    {
+                        var abonos = db.Abonos.Where(e => e.IdCuota == item.IdCuota);
+                        if (abonos != null)
+                        {
+                            db.Abonos.RemoveRange(abonos);
+                            db.SaveChanges();
+                        }
+                    }
+                    if (cuotas != null) db.Cuotas.RemoveRange(cuotas);
+                    db.SaveChanges();
+                    if (model != null) db.Prestamos.Remove(model);
+                    db.SaveChanges();
+
+                    trans.Commit();
+                    return Json(new { success = true });
+                }
+            }
+            catch(Exception e)
+            {
+                return Json(new { success = false, error = e.Message, errorLargo = e.InnerException.Message });
+            }
+        }
         public ActionResult Prestamos(int id)
         {
             try
