@@ -1,0 +1,73 @@
+﻿@*
+    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+*@
+@{
+}
+
+<div class="text-center" id="appSubida">
+    <input id="excel" type="file" class="form-control" />
+    <button v-on:Click="cargar()" class="badge bg-success">Cargar Datos</button>
+</div>
+@section Scripts {
+        <script>
+        var vue = new Vue({
+            el: '#appSubida',
+            data: {
+                tipoFormulario: 1,
+                gestores: '',
+                distritos: '',
+                formulario: {
+
+                }
+            },
+            methods: {
+                cargar() {
+                    alert();
+                    var archivo = $("#excel").val().split('\\').pop();
+                    var this_ = this;
+                    var extension = archivo.substring(archivo.lastIndexOf("."));
+                    var file = document.querySelector('#excel').files[0];
+                    if (extension == '.xls' || extension == '.xlsx') {
+
+                    } else {
+                        alert("Seleccione un archivo excel");
+                    }
+                    function getBase64(file) {
+                        var reader = new FileReader();
+                        reader.readAsDataURL(file);
+                        reader.onload = function () {
+                            var documento = reader.result.replace(/^data:.+;base64,/, '');
+                            console.log(documento)
+                             $.post('/Cargar/Migrar', { excel: documento }).done((result) => {
+                                            if (result.success == true) {
+                                                console.log(result)
+                                            } else {
+                                                console.log(result)
+                                            }
+                            });
+
+                        }
+                    }
+                    getBase64(file);
+                }
+
+            }
+        });
+        function migrar(){
+        fetch('/Cargar/Migrar',
+            {
+                method: 'POST',
+                //body: '',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(result => result.json())
+            .then(function (result) {
+                if (result.success == true) {
+                    alert('OK');
+                }
+            });
+        }
+        </script>
+}

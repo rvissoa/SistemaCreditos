@@ -632,13 +632,13 @@
                             <label for="exampleSelectBorder">Monto de Cuota</label>
                             <input type="number" v-model="formModCuota.montoCuota" class="form-control" maxlength="10" />
                         </div>
+                         <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Días de Mora</label>
+                            <input type="number" v-model="formModCuota.diasMora" class="form-control" maxlength="10" />
+                        </div>
                         <div class="form-group col-lg-4 col-md-6 col-sm-12">
                             <label for="exampleSelectBorder">Mora</label>
                             <input type="number" v-model="formModCuota.mora" class="form-control" maxlength="10" />
-                        </div>
-                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
-                            <label for="exampleSelectBorder">Días de Mora</label>
-                            <input type="number" v-model="formModCuota.diasMora" class="form-control" maxlength="10" />
                         </div>
                     </div>
                     <div class="row">
@@ -1106,6 +1106,9 @@
                     var file = document.querySelector('#voucher').files[0];
                     //Obtener base 64
                     cargarFile(file);
+                }
+                if(this.formModCuota.diasMora>0){
+                    this.formModCuota.mora=this.formModCuota.diasMora*5;
                 }
             }
         });
