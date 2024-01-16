@@ -243,11 +243,11 @@ namespace SistemaCreditos.Controllers.Clientes
                 using (var trans = db.Database.BeginTransaction())
                 {
                     var model = db.Prestamos.Find(idPrestamo);
-                    var cuotas = db.Cuotas.Where(e => e.IdPrestamo == idPrestamo);
+                    var cuotas = db.Cuotas.Where(e => e.IdPrestamo == idPrestamo).ToList();
 
                     foreach (var item in cuotas)
                     {
-                        var abonos = db.Abonos.Where(e => e.IdCuota == item.IdCuota);
+                        var abonos = db.Abonos.Where(e => e.IdCuota == item.IdCuota).ToList();
                         if (abonos != null)
                         {
                             db.Abonos.RemoveRange(abonos);
