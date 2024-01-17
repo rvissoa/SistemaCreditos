@@ -236,6 +236,75 @@ namespace SistemaCreditos.Controllers.Clientes
 
         #region Cliente prestamo
         [HttpPost]
+        public ActionResult GuardarAgregarCuota([FromBody] AgregarCuotas agregar)
+        {
+            try
+            {
+                var prestamo = db.Prestamos.Find(agregar.idPrestamo);
+                var cuotas = db.Cuotas.Where(e => e.IdPrestamo == prestamo.IdPrestamo);
+                var usuario = @User?.Claims.Where(e => e.Type == "preferred_username").Select(e => e.Value).FirstOrDefault();
+                string[] user = usuario.Split("@");
+
+                var fcuota = cuotas.OrderByDescending(e=>e.IdCuota).FirstOrDefault().FechaCuota;
+                fcuota = fcuota.Value.AddDays(7);
+                var mcuota = cuotas.OrderByDescending(e => e.IdCuota).FirstOrDefault().MontoCuota;
+                for (int i = 0; i < agregar.numeroCuotas; i++)
+                {
+                    if (i != 0)
+                    {
+                        fcuota = fcuota.Value.AddDays(7);
+                    }
+                    var modelCuota = new Cuota
+                    {
+                        IdPrestamo = agregar.idPrestamo,
+                        FechaCuota = fcuota,
+                        FechaCreacion = DateTime.Now,
+                        UsuarioIngresa = user[0],
+                        MontoCuota = mcuota
+                    };
+                    db.Cuotas.Add(modelCuota);
+                }
+                db.SaveChanges();
+                return Json(new { success = true });
+            }
+            catch (Exception e)
+            {
+                return Json(new { success = false, error = e.Message, errorLargo = e.InnerException.Message });
+            }
+
+        }
+        public class AgregarCuotas
+        {
+            public int idPrestamo { get; set; }
+            public int numeroCuotas { get; set; }
+        }
+        [HttpPost]
+        public ActionResult EliminarCuota(int idCuota)
+        {
+            try
+            {
+                using (var trans = db.Database.BeginTransaction())
+                {
+                    var cuota = db.Cuotas.Find(idCuota);
+                    var abonos = db.Abonos.Where(e => e.IdCuota == idCuota).ToList();
+                    if (abonos != null)
+                    {
+                        db.Abonos.RemoveRange(abonos);
+                        db.SaveChanges();
+                    }
+                    if (cuota != null) db.Cuotas.Remove(cuota);
+                    db.SaveChanges();
+
+                    trans.Commit();
+                    return Json(new { success = true });
+                }
+            }
+            catch (Exception e)
+            {
+                return Json(new { success = false, error = e.Message, errorLargo = e.InnerException.Message });
+            }
+        }
+        [HttpPost]
         public ActionResult EliminarPrestamo(int idPrestamo)
         {
             try
@@ -547,7 +616,7 @@ namespace SistemaCreditos.Controllers.Clientes
             {
                 //Condición de 7 días para regularizar moras
                 var prestamo=db.Prestamos.Find(idPrestamo);
-                var diasDiferencia=(int)DateTime.Now.Subtract((DateTime)prestamo.FechaCreacion).TotalDays;
+                var diasDiferencia= prestamo.FechaCreacion!=null ? (int)DateTime.Now.Subtract((DateTime)prestamo.FechaCreacion).TotalDays:7;
                 if (diasDiferencia >= 7)
                 {
                     //Calculo de moras
@@ -705,7 +774,7 @@ namespace SistemaCreditos.Controllers.Clientes
                                   g.Key.FechaCuota,
                                   g.Key.MontoCuota,
                                   g.Key.Mora,
-                                  g.Key.DiasMora,
+                                  DiasMora=g.Key.DiasMora>0?g.Key.DiasMora:0,
                                   g.Key.Observaciones,
                                   Abono = g.Sum(e => e.a.MontoAbono),
                                   AbonoMora = g.Sum(e => e.a.MontoMora),
@@ -719,9 +788,9 @@ namespace SistemaCreditos.Controllers.Clientes
                 var diasMoraTotal = modelo.Sum(e => e.DiasMora);
                 return Json(new { success = true, cuotas = modelo, abonoTotal, abonoMoraTotal, moraTotal, diasMoraTotal });
             }
-            catch
+            catch (Exception e)
             {
-                return new StatusCodeResult(StatusCodes.Status500InternalServerError);
+                return Json(new { success = false, error = e.Message, errorLargo = e.InnerException.Message });
             }
         }
         #endregion

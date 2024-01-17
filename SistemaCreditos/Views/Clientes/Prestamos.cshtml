@@ -43,7 +43,7 @@
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
-                     <!-- /.table PRESTAMOS -->
+                    <!-- /.table PRESTAMOS -->
                     <table class="table table-bordered" id="example1">
                         <thead>
                             <tr>
@@ -51,7 +51,7 @@
                                 <th>ID Préstamo</th>
                                 <th>Ver Cuotas</th>
                                 <th>Ver Estado de Cuenta</th>
-                                <th>Refinanciar / Aplazar</th>
+                                <th>Refinanciar / Agregar Cuotas</th>
                                 <th>Eliminar Préstamo</th>
                                 <th>Capital</th>
                                 <th>Día de pago</th>
@@ -67,7 +67,10 @@
                                 <td>{{item.idPrestamo}}</td>
                                 <td class="text-center"><button class="btn btn-default" id="show-modal" data-toggle="modal" data-target="#modal-lg" v-on:Click="verCuotas(item.idPrestamo)"><i class="fas fa-share text-success"></i> <i class="fas fa-list text-success"></i></button></td>
                                 <td class="text-center"><button title="Descargar Estado de cuenta" v-on:click="verEstado(item)" id="show-modal-estado" data-toggle="modal" data-target="#modal-estado" class="btn btn-default"><i class="fas fa-file-download text-primary fa-2x"></i></button></td>
-                                <td class="text-center"><button title="Aplazar Préstamo" v-on:click="aplazar(item.idPrestamo)" class="btn btn-default" data-toggle="modal" data-target="#modal-aplazar"><i class="far fa-calendar-plus fa-2x text-danger"></i></button></td>
+                                <td class="text-center">
+                                    <button title="Aplazar Préstamo" v-on:click="aplazar(item.idPrestamo)" class="btn btn-default" data-toggle="modal" data-target="#modal-aplazar"><i class="far fa-calendar-plus text-warning"></i></button>
+                                    <button title="Agregar Cuotas" v-on:click="verAgregarCuota(item.idPrestamo)" class="btn btn-default" data-toggle="modal" data-target="#modal-agregar-cuotas"><i class="fas fa-plus text-success"></i></button>
+                                </td>
                                 <td class="text-center"><button title="Eliminar Préstamo" v-on:click="verEliminarPrestamo(item.idPrestamo)" class="btn btn-default" data-toggle="modal" data-target="#modal-eliminar-prestamo"><i class="fa fa-trash text-danger"></i></button></td>
                                 <td>{{item.capital}}</td>
                                 <td>{{item.diaPago}}</td>
@@ -97,7 +100,7 @@
                                                 <th>Fecha de Cuota</th>
                                                 <th>Fecha de Pago</th>
                                                 <th>Abonar</th>
-                                                <th>Modificar Cuota</th>
+                                                <th>Modificar / Eliminar</th>
                                                 <th>Lista Abonos</th>
                                                 <th>Mora</th>
                                                 <th>Días de Mora</th>
@@ -114,7 +117,10 @@
                                                 <td>{{item.fechaPago | JsonFecha2}}</td>
                                                 <td v-if="item.fechaPago==null"><button class="btn btn-default" id="show-modal" data-toggle="modal" data-target="#modal-sm" v-on:Click="verAbonar(item.idCuota)"><i class="fas fa-share text-primary"></i> <i class="fab fa-cc-visa text-primary"></i></button></td>
                                                 <td v-else><span class="badge bg-success">Cuota Cancelada</span></td>
-                                                <td><button class="btn btn-default" id="show-modal-m" data-toggle="modal" data-target="#modal-modificar-cuotas" v-on:Click="verModificarCuota(item.idCuota)"><i class="fas fa-share text-warning"></i> <i class="fas fa-edit text-warning"></i></button></td>
+                                                <td>
+                                                    <button title="Modificar" class="btn btn-default" id="show-modal-m" data-toggle="modal" data-target="#modal-modificar-cuotas" v-on:Click="verModificarCuota(item.idCuota)"></i> <i class="fas fa-edit text-warning"></i></button>
+                                                    <button title="Eliminar" class="btn btn-default" id="show-modal-m" data-toggle="modal" data-target="#modal-eliminar-cuota" v-on:Click="verEliminarCuota(item.idCuota)"></i> <i class="fa fa-trash text-danger"></i></button>
+                                                </td>
                                                 <td v-if="item.abono!=0"><button class="btn btn-default" id="show-modal" data-toggle="modal" data-target="#listar-abonos" v-on:Click="listarAbonos(item.idCuota)"><i class="fas fa-share text-default"></i> <i class="fas fa-list-ol text-default"></i></button></td>
                                                 <td v-else><span></span></td>
                                                 <td>{{item.mora}}</td>
@@ -122,7 +128,7 @@
                                                 <td>{{item.observaciones}}</td>
                                                 <td>{{item.abono}}</td>
                                                 <td>{{item.abonoMora}}</td>
-                                                
+
                                             </tr>
                                         </tbody>
                                     </table>
@@ -276,54 +282,56 @@
                                                 <td colspan="9">&nbsp;</td>
                                             </tr>
                                             @*Datos del conyuge*@
-                                            @if(Model.TieneConyuge>0){
-                                            <tr>
-                                                <td>Conyuge: </td>
-                                                <td colspan="5"><b>@Model.NombreConyuge @Model.ApellidosConyuge</b></td>
-                                                <td>DNI: </td>
-                                                <td colspan="2"><b>@Model.DniConyuge</b></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Dirección Conyuge: </td>
-                                                <td colspan="8"><b>@Model.DireccionConyuge</b></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Trabajo: </td>
-                                                <td colspan="5"><b>@Model.TrabajoConyuge</b></td>
-                                                <td>Telefono: </td>
-                                                <td colspan="2"><b>@Model.TelefonoConyuge</b></td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="9">&nbsp;</td>
-                                            </tr>
+                                            @if (Model.TieneConyuge > 0)
+                                            {
+                                                <tr>
+                                                    <td>Conyuge: </td>
+                                                    <td colspan="5"><b>@Model.NombreConyuge @Model.ApellidosConyuge</b></td>
+                                                    <td>DNI: </td>
+                                                    <td colspan="2"><b>@Model.DniConyuge</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Dirección Conyuge: </td>
+                                                    <td colspan="8"><b>@Model.DireccionConyuge</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Trabajo: </td>
+                                                    <td colspan="5"><b>@Model.TrabajoConyuge</b></td>
+                                                    <td>Telefono: </td>
+                                                    <td colspan="2"><b>@Model.TelefonoConyuge</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="9">&nbsp;</td>
+                                                </tr>
                                             }
                                             @*Datos de AVal*@
-                                            @if(Model.TieneAval>0){
-                                            <tr>
-                                                <td>Aval: </td>
-                                                <td colspan="5"><b>@Model.NombreAval @Model.ApellidosAval</b></td>
-                                                <td>DNI: </td>
-                                                <td colspan="2"><b>@Model.DniAval</b></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Dirección Aval: </td>
-                                                <td colspan="8"><b>@Model.DireccionAval</b></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Trabajo Aval: </td>
-                                                <td colspan="5"><b>@Model.TrabajoAval</b></td>
-                                                <td>Telefono Aval: </td>
-                                                <td colspan="2"><b>@Model.TelefonoAval</b></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Parentesco: </td>
-                                                <td colspan="5"><b>@Model.ParentescoAval</b></td>
-                                                <td>Hijos: </td>
-                                                <td colspan="2"><b>@Model.Hijos</b></td>
-                                            </tr>
-                                            <tr>
-                                                <td colspan="9">&nbsp;</td>
-                                            </tr>
+                                            @if (Model.TieneAval > 0)
+                                            {
+                                                <tr>
+                                                    <td>Aval: </td>
+                                                    <td colspan="5"><b>@Model.NombreAval @Model.ApellidosAval</b></td>
+                                                    <td>DNI: </td>
+                                                    <td colspan="2"><b>@Model.DniAval</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Dirección Aval: </td>
+                                                    <td colspan="8"><b>@Model.DireccionAval</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Trabajo Aval: </td>
+                                                    <td colspan="5"><b>@Model.TrabajoAval</b></td>
+                                                    <td>Telefono Aval: </td>
+                                                    <td colspan="2"><b>@Model.TelefonoAval</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Parentesco: </td>
+                                                    <td colspan="5"><b>@Model.ParentescoAval</b></td>
+                                                    <td>Hijos: </td>
+                                                    <td colspan="2"><b>@Model.Hijos</b></td>
+                                                </tr>
+                                                <tr>
+                                                    <td colspan="9">&nbsp;</td>
+                                                </tr>
                                             }
                                             @*Estado de cuenta*@
                                             <tr>
@@ -355,11 +363,9 @@
                                                             <tr>
                                                                 <td>IT</td>
                                                                 <td>FECHA</td>
-                                                                <td>CAPITAL</td>
                                                                 <td>ABONO</td>
                                                                 <td>CAPITAL PENDIENTE</td>
                                                                 <td>ABONO MORA</td>
-                                                                <td>G</td>
                                                                 <td>FECHA PAGO</td>
                                                                 <td>N° OPERACIÓN</td>
                                                                 <td>BANCO</td>
@@ -372,11 +378,9 @@
                                                             <tr v-for="i,numero in cuotas">
                                                                 <td>{{numero+1}}</td>
                                                                 <td>{{i.fechaCuota | JsonFecha2}}</td>
-                                                                <td>{{verPrestamo.capital}}</td>
                                                                 <td>{{i.abono}}</td>
                                                                 <td>{{verPrestamo.capitalPendiente}}</td>
                                                                 <td>{{i.abonoMora}}</td>
-                                                                <td>-</td>
                                                                 <td>{{i.fechaPago | JsonFecha2}}</td>
                                                                 <td>{{i.nroOperacion}}</td>
                                                                 <td>{{i.banco}}</td>
@@ -387,11 +391,9 @@
                                                             <tr>
                                                                 <th>S+</th>
                                                                 <td></td>
-                                                                <td></td>
                                                                 <th>{{estadoCuenta.abonoTotal}}</th>
                                                                 <td></td>
                                                                 <th>{{estadoCuenta.abonoMoraTotal}}</th>
-                                                                <td></td>
                                                                 <td></td>
                                                                 <td></td>
                                                                 <td></td>
@@ -564,7 +566,6 @@
                             <span><font size="4">Id Prestamo : <strong>{{formAplazar.idPrestamo}} </strong></font></span>
                         </div>
                         <div class="col-lg-2 col-sm-12">
-
                         </div>
                         <div class="col-lg-6 col-md-6 col-sm-12">
                             <label for="exampleSelectBorder">Nueva Fecha: </label>
@@ -573,10 +574,10 @@
                     </div>
 
                     <div class="row">
-                        
+
                         <div class="form-group col-lg-6 col-md-6 col-sm-12">
                             <label for="exampleSelectBorder">Monto de Cuotas</label>
-                            <input type="number" v-model="formAplazar.montoCuotas" class="form-control" maxlength="10"/>
+                            <input type="number" v-model="formAplazar.montoCuotas" class="form-control" maxlength="10" />
                         </div>
                         <div class="form-group col-lg-6 col-md-6 col-sm-12">
                             <label for="exampleSelectBorder">Número de cuotas</label>
@@ -605,7 +606,40 @@
         <!-- /.modal-dialog -->
     </div>
     @*Fin Mantenimiento Prestamos*@
-
+    @*Fin Agregar Cuotas al Prestamo*@
+    <div class="modal fade" id="modal-agregar-cuotas">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title text-primary">Agregar Cuotas</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <span><font size="4">Id Prestamo : <strong>{{formAgregarCuota.idPrestamo}} </strong></font></span>
+                        </div>
+                    </div>
+                    <br />
+                    <div class="row">
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Número de cuotas</label>
+                            <input type="number" v-model="formAgregarCuota.numeroCuotas" class="form-control" maxlength="2" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary" v-on:Click="guardarAgregarCuota()" :disabled="disabledBtn"><i class="fa fa-save"></i> &nbsp; Guardar</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    @*Fin Agregar Cuotas al Prestamo*@
     @*Mantenimiento Cuotas*@
     <div class="modal fade" id="modal-modificar-cuotas">
         <div class="modal-dialog modal-lg">
@@ -634,7 +668,7 @@
                             <label for="exampleSelectBorder">Monto de Cuota</label>
                             <input type="number" v-model="formModCuota.montoCuota" class="form-control" maxlength="10" />
                         </div>
-                         <div class="form-group col-lg-4 col-md-6 col-sm-12">
+                        <div class="form-group col-lg-4 col-md-6 col-sm-12">
                             <label for="exampleSelectBorder">Días de Mora</label>
                             <input type="number" v-model="formModCuota.diasMora" class="form-control" maxlength="10" />
                         </div>
@@ -689,6 +723,34 @@
         <!-- /.modal-dialog -->
     </div>
     @*Eliminar Préstamo*@
+    @*Eliminar Cuota*@
+    <div class="modal fade" id="modal-eliminar-cuota">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title text-danger">Eliminar Cuota</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <label for="exampleSelectBorder">¿Estás seguro(a) que deseas eliminar la cuota? </label>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary" v-on:Click="eliminarCuota()" :disabled="disabledBtn"><i class="fa fa-trash"></i> &nbsp; Eliminar</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    @*Eliminar Cuota*@
 </section>
 @section Scripts {
     <script src="~/adminLte/plugins/datatables/jquery.dataTables.min.js"></script>
@@ -723,7 +785,7 @@
         var vform = new Vue({
             el: '#prestamos',
             data: {
-                idPrestamo:'',
+                idPrestamo: '',
                 dias: [
                     { id: 'LUNES', text: 'LUNES' },
                     { id: 'MARTES', text: 'MARTES' },
@@ -738,37 +800,40 @@
                 idCliente: '@Model.IdCliente',
                 showModal: false,
                 cuotas: [],
-                form:[],
+                form: [],
                 formu: {
-                    idAbono : '',
-                    monto : '',
+                    idAbono: '',
+                    monto: '',
                     fechaAbono: '',
-                    banco :'',
+                    banco: '',
                     numeroVoucher: '',
-                    tipoAbono : '',
+                    tipoAbono: '',
                     mora: '',
                     gestor: ''
                 },
                 bancos: [],
                 idCuota: '',
                 disabledBtn: false,
-                estadoCuenta:[],
-                verPrestamo:'',
+                estadoCuenta: [],
+                verPrestamo: '',
                 gestores: [],
-                listaAbonos:[],
-                formAplazar:{
-                    idPrestamo:'',
-                    fecha:''
+                listaAbonos: [],
+                formAplazar: {
+                    idPrestamo: '',
+                    fecha: ''
                 },
                 formModCuota: {
-                    idCuota:'',
-                    fechaCuota:'',
-                    fechaPago:'',
-                    montoCuota:'',
-                    cantidadAbonos:'',
-                    mora:'',
-                    diasMora:'',
-                    observaciones:''
+                    idCuota: '',
+                    fechaCuota: '',
+                    fechaPago: '',
+                    montoCuota: '',
+                    cantidadAbonos: '',
+                    mora: '',
+                    diasMora: '',
+                    observaciones: ''
+                },
+                formAgregarCuota: {
+                    idPrestamo: '',
                 }
             },
             created() {
@@ -855,24 +920,71 @@
 
             },
             methods: {
-                verEliminarPrestamo(idPrestamo){
-                        vform.idPrestamo = idPrestamo;
+                verAgregarCuota(idPrestamo) {
+                    vform.formAgregarCuota.idPrestamo = idPrestamo;
                 },
-                eliminarPrestamo(){
-                            fetch('/Clientes/EliminarPrestamo?idPrestamo=' + vform.idPrestamo,
-                            {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json'
-                                }
-                            })
-                            .then(result => result.json())
-                            .then(function (result) {
-                                if (result.success == true) {
-                                    setTimeout(refrescar, 1500);
-                                    toastr.success('¡Se eliminó correctamente el Préstamo seleccionado!');
-                                }
-                            });
+                guardarAgregarCuota() {
+                    var _this = this;
+                    _this.disabledBtn = true;
+                    //serializar formulario abono
+                    var abono = Object.assign({}, vform.formAgregarCuota);
+                    fetch('/Clientes/GuardarAgregarCuota',
+                        {
+                            method: 'POST',
+                            body: JSON.stringify(abono),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(result => result.json())
+                        .then(function (result) {
+                            if (result.success == true) {
+                                setTimeout(refrescar, 1500);
+                                toastr.success('¡Se agregó las cuotas al préstamo!');
+                            }
+                        });
+                },
+                verEliminarCuota(idCuota) {
+                    vform.idCuota = idCuota;
+                },
+                eliminarCuota() {
+                    var _this = this;
+                    _this.disabledBtn = true;
+                    fetch('/Clientes/EliminarCuota?idCuota=' + vform.idCuota,
+                        {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(result => result.json())
+                        .then(function (result) {
+                            if (result.success == true) {
+                                setTimeout(refrescar, 1500);
+                                toastr.success('¡Se eliminó correctamente la cuota seleccionada!');
+                            }
+                        });
+                },
+                verEliminarPrestamo(idPrestamo) {
+                    vform.idPrestamo = idPrestamo;
+                },
+                eliminarPrestamo() {
+                    var _this = this;
+                    _this.disabledBtn = true;
+                    fetch('/Clientes/EliminarPrestamo?idPrestamo=' + vform.idPrestamo,
+                        {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(result => result.json())
+                        .then(function (result) {
+                            if (result.success == true) {
+                                setTimeout(refrescar, 1500);
+                                toastr.success('¡Se eliminó correctamente el Préstamo seleccionado!');
+                            }
+                        });
                 },
                 verAbonar(idCuota) {
                     vform.idCuota = idCuota;
@@ -1034,8 +1146,8 @@
                             }
                         });
                 },
-                verEstado:(prestamo)=>{
-                    vform.verPrestamo=prestamo;
+                verEstado: (prestamo) => {
+                    vform.verPrestamo = prestamo;
                     fetch('/Clientes/EstadoCuenta?idPrestamo=' + prestamo.idPrestamo,
                         {
                             method: 'POST',
@@ -1062,9 +1174,9 @@
                     window.open('data:application/vnd.ms-excel,' + encodeURI(BOM + html));
                 },
                 aplazar(idPrestamo) {
-                    vform.formAplazar.idPrestamo=idPrestamo;
+                    vform.formAplazar.idPrestamo = idPrestamo;
                 },
-                guardarAplazar(){
+                guardarAplazar() {
                     var _this = this;
                     _this.disabledBtn = true;
                     //serializar formulario abono
@@ -1085,8 +1197,8 @@
                             }
                         });
                 },
-                verModificarCuota(idCuota){
-                    vform.idCuota=idCuota;
+                verModificarCuota(idCuota) {
+                    vform.idCuota = idCuota;
                     fetch('/Clientes/VerModificarCuota?idCuota=' + idCuota,
                         {
                             method: 'GET',
@@ -1157,8 +1269,8 @@
                     //Obtener base 64
                     cargarFile(file);
                 }
-                if(this.formModCuota.diasMora>0){
-                    this.formModCuota.mora=this.formModCuota.diasMora*5;
+                if (this.formModCuota.diasMora > 0) {
+                    this.formModCuota.mora = this.formModCuota.diasMora * 5;
                 }
             }
         });
