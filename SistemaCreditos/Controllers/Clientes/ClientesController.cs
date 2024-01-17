@@ -656,18 +656,18 @@ namespace SistemaCreditos.Controllers.Clientes
         }
         public class formulario
         {
-            public decimal monto { get; set; }
-            public decimal mora { get; set; }
-            public string voucher { get; set; }
-            public string observaciones { get; set; }
-            public string tipo { get; set; }
-            public int idCuota { get; set; }
-            public DateTime fechaAbono { get; set; }
-            public int banco { get; set; }
-            public int idAbono { get; set; }
-            public string numeroVoucher { get; set; }
-            public int tipoAbono { get; set; }
-            public string gestor { get; set; }
+            public decimal? monto { get; set; }
+            public decimal? mora { get; set; }
+            public string? voucher { get; set; }
+            public string? observaciones { get; set; }
+            public string? tipo { get; set; }
+            public int? idCuota { get; set; }
+            public DateTime? fechaAbono { get; set; }
+            public int? banco { get; set; }
+            public int? idAbono { get; set; }
+            public string? numeroVoucher { get; set; }
+            public int? tipoAbono { get; set; }
+            public string? gestor { get; set; }
         }
         public class PrestamoCliente { 
             public int IdCliente { get; set; }

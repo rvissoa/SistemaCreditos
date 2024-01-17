@@ -1034,7 +1034,6 @@
                     //serializar formulario abono
                     var abono = Object.assign({}, vform.formu);
                     abono.idCuota = vform.idCuota;
-                    console.log(abono)
                     //abono.idAbono = vform.idAbono;
                     fetch('/Clientes/ModificarAbono',
                         {
@@ -1161,9 +1160,6 @@
                             if (result.success == true) {
                                 vform.estadoCuenta = result;
                                 vform.cuotas = result.cuotas;
-                                console.log(prestamo)
-                                console.log(vform.cuotas)
-                                console.log('@Model.NombreCliente')
                             }
                         });
                 },
