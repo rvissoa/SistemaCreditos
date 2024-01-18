@@ -760,7 +760,7 @@ namespace SistemaCreditos.Controllers.Clientes
                 //Calculo de moras
                 ActualizarMoras(idPrestamo);
                 //---------------
-
+                var prestamo = db.Prestamos.Find(idPrestamo);
                 //var cuotas = db.Cuotas.Where(e => e.IdPrestamo == idPrestamo).ToList();
                 var modelo = (from c in db.Cuotas.Where(e => e.IdPrestamo == idPrestamo)
                               from a in db.Abonos.Where(e => e.IdCuota == c.IdCuota).DefaultIfEmpty()
@@ -779,7 +779,8 @@ namespace SistemaCreditos.Controllers.Clientes
                                   Abono = g.Sum(e => e.a.MontoAbono),
                                   AbonoMora = g.Sum(e => e.a.MontoMora),
                                   NroOperacion= string.Join(",", g.Select(i => i.a.Codigo)),
-                                  Banco= string.Join(",", g.Select(i => i.b.RazonSocial))
+                                  Banco= string.Join(",", g.Select(i => i.b.RazonSocial)),
+                                  CapitalPendiente=prestamo.CapitalPendiente
 
                               }).OrderBy(a=>a.FechaCuota).ToList();
                 var abonoTotal = modelo.Sum(e => e.Abono);

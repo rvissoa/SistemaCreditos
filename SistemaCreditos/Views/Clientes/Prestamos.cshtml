@@ -234,51 +234,51 @@
                                     </button>
                                 </div>
                                 <div class="modal-body" style="overflow-y: auto; overflow-x: auto;">
-                                    <table class="table table-bordered" id="estado">
+                                    <table style="border:black 1px solid;" class="table table-bordered" id="estado">
                                         <thead></thead>
-                                        <tbody>
+                                        <tbody style="border:black 1px solid;">
                                             @*Datos del Cliente - prestamo*@
-                                            <tr>
+                                            <tr style="border:black 1px solid;">
                                                 <td align="center" colspan="9" style="vertical-align: middle;background-color:royalblue;color:white"><b>DATOS DEL CLIENTE</b></td>
                                             </tr>
-                                            <tr>
+                                            <tr style="border:black 1px solid;">
                                                 <td colspan="4" rowspan="2" align="center" style="vertical-align: middle;"><label class="badge bg-primary">CREDITOS "DIEGO"</label></td>
                                                 <td colspan="3"><b>N° de Créditos</b></td>
                                                 <td colspan="2">{{prestamos.length}}</td>
                                             </tr>
-                                            <tr>
+                                            <tr style="border:black 1px solid;">
                                                 <td>@Model.CodigoCliente</td>
                                                 <td>{{verPrestamo.autorizacion}}</td>
                                                 <td>{{verPrestamo.codigoGestor}}</td>
                                                 <td>{{verPrestamo.capital}}</td>
-                                                <td colspan="2" rowspan="4" align="center" style="vertical-align: middle;">{{verPrestamo.diaPago}}</td>
+                                                <td rowspan="4" align="center" style="vertical-align: middle;">{{verPrestamo.diaPago}}</td>
                                             </tr>
-                                            <tr>
-                                                <td>Nombre: </td>
+                                            <tr style="border:black 1px solid;">
+                                                <td colspan="2">Nombre: </td>
                                                 <td colspan="5"><b>@Model.NombreCliente @Model.ApellidosCliente</b></td>
                                                 <td colspan="2">HCL</td>
                                             </tr>
-                                            <tr>
-                                                <td>Dirección: </td>
+                                            <tr style="border:black 1px solid;">
+                                                <td colspan="2">Dirección: </td>
                                                 <td colspan="7"><b>@Model.Direccion</b></td>
                                             </tr>
-                                            <tr>
-                                                <td>Telefonos: </td>
+                                            <tr style="border:black 1px solid;">
+                                                <td colspan="2">Telefonos: </td>
                                                 <td><b>@Model.Celular</b></td>
                                                 <td>Celular: </td>
                                                 <td><b>@Model.Celular</b></td>
                                                 <td>DNI: </td>
                                                 <td colspan="3"><b>@Model.Dni</b></td>
                                             </tr>
-                                            <tr>
-                                                <td>Ubicación: </td>
-                                                <td colspan="8"><b>@Model.UbicacionReferencia</b></td>
+                                            <tr style="border:black 1px solid;">
+                                                <td colspan="2">Ubicación: </td>
+                                                <td colspan="7"><b>@Model.UbicacionReferencia</b></td>
                                             </tr>
-                                            <tr>
-                                                <td>Trabajo: </td>
-                                                <td colspan="8"><b>@Model.TrabajoOcupacion</b></td>
+                                            <tr style="border:black 1px solid;">
+                                                <td colspan="2">Trabajo: </td>
+                                                <td colspan="7"><b>@Model.TrabajoOcupacion</b></td>
                                             </tr>
-                                            <tr>
+                                            <tr style="border:black 1px solid;">
                                                 <td colspan="9">&nbsp;</td>
                                             </tr>
                                             @*Datos del conyuge*@
@@ -334,10 +334,10 @@
                                                 </tr>
                                             }
                                             @*Estado de cuenta*@
-                                            <tr>
+                                            <tr style="border:black 1px solid;">
                                                 <td colspan="9" style="vertical-align: middle;background-color:royalblue;color:white" align="center"><b>ESTADO DE CUENTA</b></td>
                                             </tr>
-                                            <tr>
+                                            <tr style="border:black 1px solid;">
                                                 <td>Fecha de Entrega: </td>
                                                 <td><b>{{verPrestamo.fechaEntrega | JsonFecha2}}</b></td>
                                                 <td>Modalidad: </td>
@@ -348,19 +348,19 @@
                                                 <td><b>{{verPrestamo.fondoProvisional}}</b></td>
 
                                             </tr>
-                                            <tr>
+                                            <tr style="border:black 1px solid;">
                                                 <td colspan="1">Capital pendiente Inicial: </td>
                                                 <td colspan="2"><b>{{verPrestamo.capitalPendiente}}</b></td>
-                                                <td colspan="2">Número de créditos: </td>
+                                                <td colspan="1">Número de créditos: </td>
                                                 <td colspan="1"><b>{{prestamos.length}}</b></td>
                                                 <td colspan="1">Días de pago: </td>
                                                 <td colspan="3"><b>{{verPrestamo.diaPago}}</b></td>
                                             </tr>
                                             <tr>
                                                 <td colspan="9">
-                                                    <table>
-                                                        <thead>
-                                                            <tr>
+                                                    <table class="table table-bordered" style="border:black 1px solid;">
+                                                        <thead style="border:black 1px solid;">
+                                                            <tr style="border:black 1px solid; font-weight: bold;">
                                                                 <td>IT</td>
                                                                 <td>FECHA</td>
                                                                 <td>ABONO</td>
@@ -374,12 +374,13 @@
                                                                 <td>OBSERVACIÓN</td>
                                                             </tr>
                                                         </thead>
-                                                        <tbody>
-                                                            <tr v-for="i,numero in cuotas">
+                                                        <tbody style="border:black 1px solid;">
+                                                            <tr v-for="i,numero in cuotas" style="border:black 1px solid;">
                                                                 <td>{{numero+1}}</td>
                                                                 <td>{{i.fechaCuota | JsonFecha2}}</td>
                                                                 <td>{{i.abono}}</td>
-                                                                <td>{{verPrestamo.capitalPendiente}}</td>
+                                                                @*<td>{{i==0?capitalPendiente=i.capitalPendiente:capitalPendiente=capitalPendiente-i.abono}}</td>*@
+                                                                <td>{{capitalPendiente[numero]}}</td>
                                                                 <td>{{i.abonoMora}}</td>
                                                                 <td>{{i.fechaPago | JsonFecha2}}</td>
                                                                 <td>{{i.nroOperacion}}</td>
@@ -388,7 +389,7 @@
                                                                 <td>{{i.diasMora}}</td>
                                                                 <td>{{i.observaciones}}</td>
                                                             </tr>
-                                                            <tr>
+                                                            <tr style="border:black 1px solid;">
                                                                 <th>S+</th>
                                                                 <td></td>
                                                                 <th>{{estadoCuenta.abonoTotal}}</th>
@@ -785,6 +786,7 @@
         var vform = new Vue({
             el: '#prestamos',
             data: {
+                capitalPendiente:[],
                 idPrestamo: '',
                 dias: [
                     { id: 'LUNES', text: 'LUNES' },
@@ -1160,6 +1162,17 @@
                             if (result.success == true) {
                                 vform.estadoCuenta = result;
                                 vform.cuotas = result.cuotas;
+                                let valores = Object.values(vform.cuotas)
+                                for (let i = 0; i < valores.length; i++) {
+                                    if(i==0){
+                                        var cap=valores[i].capitalPendiente - valores[i].abono
+                                        vform.capitalPendiente.push(cap);
+                                    }   
+                                    else{
+                                        var cap = vform.capitalPendiente[i-1] - valores[i].abono
+                                        vform.capitalPendiente.push(cap)
+                                    }
+                                }
                             }
                         });
                 },
