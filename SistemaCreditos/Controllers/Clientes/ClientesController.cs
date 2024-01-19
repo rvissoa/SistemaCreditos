@@ -616,9 +616,9 @@ namespace SistemaCreditos.Controllers.Clientes
             {
                 //Condición de 7 días para regularizar moras
                 var prestamo=db.Prestamos.Find(idPrestamo);
-                var diasDiferencia= prestamo.FechaCreacion!=null ? (int)DateTime.Now.Subtract((DateTime)prestamo.FechaCreacion).TotalDays:7;
-                if (diasDiferencia >= 7)
-                {
+                //var diasDiferencia= prestamo.FechaCreacion!=null ? (int)DateTime.Now.Subtract((DateTime)prestamo.FechaCreacion).TotalDays:7;
+                //if (diasDiferencia >= 7)
+                //{
                     //Calculo de moras
                     var cuotas = db.Cuotas.Where(e => e.IdPrestamo == idPrestamo).ToList();
                     var CuotasVencidas = db.Cuotas.Where(a => a.FechaCuota < DateTime.Now && a.FechaPago == null && a.IdPrestamo == idPrestamo).ToList();
@@ -645,7 +645,7 @@ namespace SistemaCreditos.Controllers.Clientes
                     }
                     db.SaveChanges();
                     //---------------
-                }
+                //}
                 return true;
             }
             catch (Exception ex)
