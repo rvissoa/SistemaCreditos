@@ -91,6 +91,11 @@
         //Date picker
         var hoy = new Date();
         var today = moment().format('YYYY-MM-DD');
+        //------------------------
+        var tom = new Date();
+        tom.setDate(tom.getDate() + 1);
+        var tomorrow = moment(tom).format('YYYY-MM-DD');
+        //------------------------
         //Funcion table
         function crearDatatable(idTabla,data) {
             var jsonResult='';
@@ -174,7 +179,7 @@
                 fechaBusqueda: ''
             },
             created() {
-                this.fechaBusqueda = today.toString();
+                this.fechaBusqueda = today.toString() + " - " + tomorrow.toString();
                 var _this = this;
                 $(function () {
                     $('#fechaBusqueda').daterangepicker({

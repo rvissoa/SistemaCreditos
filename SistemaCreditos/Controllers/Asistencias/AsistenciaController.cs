@@ -27,12 +27,21 @@ namespace SistemaCreditos.Controllers.Asistencias
         public IActionResult ReporteAsistencias(string request)
         {
             string[] fechas = request.Split(" - ");
-            var fechaInicio = Util.convertirFecha(fechas[0]);
-            var fechaFin = fechaInicio;
-            if (fechas.Count()>1)
-              fechaFin = Util.convertirFecha(fechas[1]);
+            var fechaInicio = new DateTime();
+            var fechaFin = new DateTime();
+            if (fechas.Count() > 1)
+            {
+                fechaInicio = Util.convertirFecha(fechas[0]);
+                fechaFin = Util.convertirFecha(fechas[1]);
+            }
 
-            var model = (from a in db.Asistencia.Where(e => e.FechaAsistencia>=fechaInicio&&e.FechaAsistencia<=fechaFin)
+            else
+            {
+                fechaInicio = Util.convertirFecha(request);
+                fechaFin = fechaInicio;
+            }
+               
+            var model = (from a in db.Asistencia.Where(e => fechaInicio<=e.FechaAsistencia&&e.FechaAsistencia<=fechaFin)
                         from t in db.Trabajadors.Where(e => e.IdTrabajador == a.IdTrabajador).DefaultIfEmpty()
                         select new
                         {
