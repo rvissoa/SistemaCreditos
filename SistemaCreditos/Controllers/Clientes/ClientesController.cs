@@ -741,13 +741,13 @@ namespace SistemaCreditos.Controllers.Clientes
         {
             public int idCuota { get; set; }
             public int idPrestamo { get; set; }
-            public DateTime fechaCuota { get; set; }
-            public DateTime fechaPago { get; set; }
+            public DateTime? fechaCuota { get; set; }
+            public DateTime? fechaPago { get; set; }
             public decimal? montoCuota { get; set; }
             public int? cantidadAbonos { get; set; }
             public decimal? mora { get; set; }
             public int? diasMora { get; set; }
-            public string observaciones { get; set; }
+            public string? observaciones { get; set; }
         }
         #endregion
 
