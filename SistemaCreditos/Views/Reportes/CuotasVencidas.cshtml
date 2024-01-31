@@ -62,6 +62,12 @@
                             <button v-on:click="buscar" class="btn form-control btn-primary" title="Buscar"><i class="fas fa-search"></i></button>
                         </div>
                     </div>
+                    <div class="row">
+                        <button title="Descargar Reporte" class="btn btn-default" v-on:Click="descargar()">
+                            Descargar &nbsp;
+                            <i class="fas fa-file-download text-success fa-2x"></i>
+                        </button>
+                    </div>
                     <!-- Date and time -->
                 </div>
                 <!-- /.card-header -->
@@ -73,7 +79,7 @@
                                 <th>Nombres Cliente</th>
                                 <th>ID Prestamo</th>
                                 <th>Número de Cuotas Vencidas</th>
-                                <th>Cuotas Vencidas</th>
+                                <th colspan="3">Cuotas Vencidas</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -90,7 +96,6 @@
                                                 <th>DÍAS</th>
                                                 <th>MORA</th>
                                             </tr>
-                                            
                                         </thead>
                                         <tbody>
                                             <tr v-for="(it,j) in item.cuotasVencidasLista">
@@ -135,6 +140,7 @@
         //Vuee
         var vform = new Vue({
             el: '#reporteCuotasVencidas',
+                visible:false,
             data: {
                 visible:false,
                 reporte: [],
@@ -269,7 +275,13 @@
                         });
 
                     
-                }
+                },
+                descargar() {
+                    var BOM = "\uFEFF";
+                    var htmltabel = document.getElementById("example1");
+                    var html = htmltabel.outerHTML;
+                    window.open('data:application/vnd.ms-excel,' + encodeURI(BOM + html));
+                },
             },
             filters: {
                 JsonFecha(val) {

@@ -348,6 +348,7 @@
                         .then(result => result.json())
                         .then(function (result) {
                             if (result.success == true) {
+                                localStorage.clear();
                                 setTimeout(refrescar, 1500);
                                 toastr.success('¡Se registró correctamente el nuevo cliente!');
                             }

@@ -21,6 +21,22 @@ namespace SistemaCreditos.Controllers.Clientes
         }
 
         [HttpPost]
+        public IActionResult EliminarCliente(int idCliente)
+        {
+            try
+            {
+                var cliente = db.Clientes.Find(idCliente);
+                db.Remove(cliente);
+                db.SaveChanges();
+
+                return Json(new { success = true});
+            }catch (Exception e)
+            {
+                return Json(new { success = false, error = e.Message, errorLargo = e.InnerException.Message });
+            }
+        }
+
+        [HttpPost]
         public IActionResult ListaClientes(string valor)
         {
             var model = (from c in db.Clientes

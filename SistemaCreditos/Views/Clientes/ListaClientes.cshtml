@@ -43,10 +43,11 @@
                             <i class="fas fa-4x fa-sync-alt fa-spin"></i>
                             <div class="text-bold pt-2"> &nbsp; Cargando clientes...</div>
                         </div>
-                        <table id="example1" class="table table-bordered table-striped">
+                        <table id="example1" class="table table-bordered">
                             <thead>
                                 <tr>
                                     <th>Préstamos</th>
+                                    <th>Acción</th>
                                     <th>DNI</th>
                                     <th>Cliente</th>
                                     <th>Dirección</th>
@@ -54,14 +55,16 @@
                                     <th>Gestor</th>
                                     <th>Zona</th>
                                     <th>Trabajo</th>
-                                    @*<th>Ubicación</th>*@
-                                    <th>Acción</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr v-for="(item,i) in lista">
                                     <td style="width:10%" class="text-center">
                                         <a class="badge bg-primary" :href="'/Clientes/Prestamos?id='+item.id" title="Ver préstamos"> <i class="fas fa-money-bill-alt text-white"></i> Ver Préstamo</a>
+                                    </td>
+                                    <td style="width:10%">
+                                        <a :href="'/Clientes/EditarCliente?id='+item.id" title="Editar"><i class="fas fa-edit text-warning"></i></a>
+                                        <button title="Eliminar Cliente" v-on:click="verEliminar(item.id)" class="btn btn-default" data-toggle="modal" data-target="#modal-eliminar-cliente"><i class="fa fa-trash text-danger"></i></button>
                                     </td>
                                     <td style="width:15%">{{item.dni}}</td>
                                     <td style="width:10%"><span>{{item.cliente}}</span></td>
@@ -71,15 +74,13 @@
                                     <td style="width:5%">{{item.zona}}</td>
                                     <td style="width:15%">{{item.trabajo}}</td>
                                     @* <td style="width:10%">{{item.ubicacionReferencia}}</td>*@
-                                    <td style="width:10%">
-                                        <a :href="'/Clientes/EditarCliente?id='+item.id" title="Editar"><i class="fas fa-edit text-warning"></i></a>
-                                        <a href="javascript:void(0);alert('Actualmente no se puede ejecutar esta operación')" title="Eliminar"><i class="fas fa-trash-alt text-danger"></i></a>
-                                    </td>
+                                    
                                 </tr>
                             </tbody>
                             <tfoot>
                                 <tr>
                                     <th>Préstamos</th>
+                                    <th>Acción</th>
                                     <th>DNI</th>
                                     <th>Cliente</th>
                                     <th>Dirección</th>
@@ -88,7 +89,6 @@
                                     <th>Zona</th>
                                     <th>Trabajo</th>
                                     @*<th>Ubicación</th>*@
-                                    <th>Acción</th>
                                 </tr>
                             </tfoot>
                         </table>
@@ -99,6 +99,35 @@
 
         </div>
     </div>
+
+    @*Eliminar Cliente*@
+    <div class="modal fade" id="modal-eliminar-cliente">
+        <div class="modal-dialog modal-sm">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title text-danger">Eliminar Cliente</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <label for="exampleSelectBorder">¿Estás seguro(a) que deseas eliminar el cliente seleccionado? </label>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary" v-on:Click="eliminarCliente()" :disabled="disabledBtn"><i class="fa fa-trash"></i> &nbsp; Eliminar</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    @*Eliminar Cliente*@
 </section>
 @section Scripts {
     <script src="~/adminLte/plugins/datatables/jquery.dataTables.min.js"></script>
@@ -114,7 +143,9 @@
     <script src="~/adminLte/plugins/datatables-buttons/js/buttons.print.min.js"></script>
     <script src="~/adminLte/plugins/datatables-buttons/js/buttons.colVis.min.js"></script>
     <script language="javascript">
-        
+        function refrescar() {
+            location.reload();
+        }
         //Date picker
         //var hoy = new Date();
         //var today = moment().format('YYYY-MM-DD');
@@ -126,7 +157,9 @@
                 lista: [],
                 buscarCliente: '',
                 cargando:true,
-                overlay: 'overlay'
+                overlay: 'overlay',
+                disabledBtn: false,
+                idCliente:''
             },
             created() {
                 var _this = this;
@@ -258,8 +291,34 @@
                                 vform.lista = result.model;
                             }
                         });
+                },
+                eliminarCliente(){
+                    var _this = this;
+                    _this.disabledBtn = true;
+                    fetch('/Clientes/EliminarCliente?idCliente='+vform.idCliente,
+                        {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(result => result.json())
+                        .then(function (result) {
+                            if (result.success == true) {
+                                localStorage.clear();
+                                setTimeout(refrescar, 1500);
+                                toastr.success('¡Se eliminó el cliente seleccionado!');
+                            }
+                            else if (result.success == false) {
+                                toastr.error('Por favor, elimine primero los préstamos del cliente.');
+                                toastr.error('¡No se puede eliminar el cliente seleccionado, porque tiene préstamos asociados!');
+                                _this.disabledBtn = false;
+                            }
+                        });
+                },
+                verEliminar(idCliente){
+                    vform.idCliente = idCliente;
                 }
-
             }
         });
     </script>
