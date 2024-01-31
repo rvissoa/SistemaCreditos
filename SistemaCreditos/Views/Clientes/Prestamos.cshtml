@@ -52,13 +52,14 @@
                                 <th>Ver Cuotas</th>
                                 <th>Ver Estado de Cuenta</th>
                                 <th>Refinanciar / Agregar Cuotas</th>
-                                <th>Eliminar Préstamo</th>
+                                <th>Eliminar / modificar Préstamo</th>
                                 <th>Capital</th>
                                 <th>Día de pago</th>
                                 <th>Fondo Provicionario</th>
                                 <th>Fecha de Entrega</th>
                                 <th>Fecha de Termino</th>
                                 <th>Número de cuotas</th>
+                                <th>Estado del Préstamo</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -71,13 +72,17 @@
                                     <button title="Aplazar Préstamo" v-on:click="aplazar(item.idPrestamo)" class="btn btn-default" data-toggle="modal" data-target="#modal-aplazar"><i class="far fa-calendar-plus text-warning"></i></button>
                                     <button title="Agregar Cuotas" v-on:click="verAgregarCuota(item.idPrestamo)" class="btn btn-default" data-toggle="modal" data-target="#modal-agregar-cuotas"><i class="fas fa-plus text-success"></i></button>
                                 </td>
-                                <td class="text-center"><button title="Eliminar Préstamo" v-on:click="verEliminarPrestamo(item.idPrestamo)" class="btn btn-default" data-toggle="modal" data-target="#modal-eliminar-prestamo"><i class="fa fa-trash text-danger"></i></button></td>
+                                <td class="text-center">
+                                    <button title="Eliminar Préstamo" v-on:click="verEliminarPrestamo(item.idPrestamo)" class="btn btn-default" data-toggle="modal" data-target="#modal-eliminar-prestamo"><i class="fa fa-trash text-danger"></i></button>
+                                    <button title="Modificar Préstamo" v-on:click="verModificarPrestamo(item)" class="btn btn-default" data-toggle="modal" data-target="#modal-modificar-prestamo"><i class="fas fa-edit text-warning"></i></button>
+                                </td>
                                 <td>{{item.capital}}</td>
                                 <td>{{item.diaPago}}</td>
                                 <td>{{item.fondoProvisional}}</td>
                                 <td>{{item.fechaEntrega | JsonFecha2}}</td>
                                 <td>{{item.fechaTermino | JsonFecha2}}</td>
                                 <td>{{item.numeroCuotas}}</td>
+                                <td>{{item.liquidacion}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -550,7 +555,80 @@
         <!-- /.modal-dialog -->
     </div>
     @*Fin antenimiento Abonos*@
+    @*Modificar datos Prestamos*@
+    <div class="modal fade" id="modal-modificar-prestamo">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title text-warning">Modificar Préstamo</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-4 col-md-6 col-sm-12">
+                            <span><font size="4">Id Prestamo : <strong>{{formModificarPrestamo.idPrestamo}} </strong></font></span>
+                        </div>
+                        <div class="col-lg-2 col-sm-12">
+                        </div>
+                    </div>
+                    <div class="row">
 
+                        <div class="col-lg-6 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Fecha Entrega: </label>
+                            <input type="date" v-model="formModificarPrestamo.fechaEntrega" class="form-control" maxlength="250" />
+                        </div>
+                        <div class="col-lg-6 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Fecha Termino: </label>
+                            <input type="date" v-model="formModificarPrestamo.fechaTermino" class="form-control" maxlength="250" />
+                        </div>
+                    </div>
+                    <div class="row">
+
+                        <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Fondo Provisional</label>
+                            <input type="number" v-model="formModificarPrestamo.fondoProvisional" class="form-control" maxlength="10" />
+                        </div>
+                         <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Día de Pago</label>
+                            <select v-model="formModificarPrestamo.diaPago" class="custom-select form-control-border" required>
+                                <option v-for="(sel,cix) in dias" :value="sel.id">{{sel.text}}</option>
+                                <option selected="true" value="" disabled>Seleccione...</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Capital</label>
+                            <input type="number" v-model="formModificarPrestamo.capital" class="form-control" maxlength="10" />
+                        </div>
+                        <div class="form-group col-lg-6 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Capital Pendiente</label>
+                            <input type="number" v-model="formModificarPrestamo.capitalPendiente" class="form-control" maxlength="10" />
+                        </div>
+                    </div>
+                    <div class="row">
+                         <div class="form-group col-lg-12 col-md-12 col-sm-12">
+                            <label for="exampleSelectBorder">Estado del Préstamo</label>
+                            <select v-model="formModificarPrestamo.liquidacion" class="custom-select form-control-border" required>
+                                <option v-for="(sel,cix) in liquidacion" :value="sel.id">{{sel.text}}</option>
+                                <option selected="selected" value="" disabled>Seleccione...</option>
+                            </select>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-primary" v-on:Click="guardarModificarPrestamo()" :disabled="disabledBtn"><i class="fa fa-save"></i> &nbsp; Guardar</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    @*Fin Modificar datos Prestamos*@
     @*Mantenimiento Prestamos*@
     <div class="modal fade" id="modal-aplazar">
         <div class="modal-dialog modal-md">
@@ -836,7 +914,25 @@
                 },
                 formAgregarCuota: {
                     idPrestamo: '',
-                }
+                },
+                formModificarPrestamo: {
+                    idPrestamo: '',
+                    fechaEntrega: '',
+                    fechaTermino:'',
+                    diaPago:'',
+                    capital:'',
+                    capitalPendiente:'',
+                    fondoProvisional:'',
+                    liquidacion:''
+                },
+                liquidacion: [
+                    { id: 'VIGENTE', text: 'VIGENTE' },
+                    { id: 'DETERIORO', text: 'DETERIORO' },
+                    { id: 'CARTERA', text: 'CARTERA' },
+                    { id: 'PENDIENTE', text: 'LIQUIDACIÓN PENDIENTE' },
+                    { id: 'TOTAL', text: 'LIQUIDACIÓN TOTAL' }
+
+                ],
             },
             created() {
                 var _this = this;
@@ -922,6 +1018,38 @@
 
             },
             methods: {
+                verModificarPrestamo(prestamo) {
+                    console.log(prestamo)
+                    vform.formModificarPrestamo.idPrestamo = prestamo.idPrestamo;
+                    vform.formModificarPrestamo.fechaEntrega=prestamo.fechaEntrega!=null?moment(prestamo.fechaEntrega).format('YYYY-MM-DD'):'';
+                    vform.formModificarPrestamo.fechaTermino = prestamo.fechaTermino != null ? moment(prestamo.fechaTermino).format('YYYY-MM-DD') : '';
+                    vform.formModificarPrestamo.fondoProvisional = prestamo.fondoProvisional;
+                    vform.formModificarPrestamo.diaPago=prestamo.diaPago;
+                    vform.formModificarPrestamo.capital=prestamo.capital;
+                    vform.formModificarPrestamo.capitalPendiente = prestamo.capitalPendiente;
+                    vform.formModificarPrestamo.liquidacion = prestamo.liquidacion;
+                },
+                guardarModificarPrestamo(idPrestamo) {
+                    var _this = this;
+                    _this.disabledBtn = true;
+                    //serializar formulario abono
+                    var prestamo = Object.assign({}, vform.formModificarPrestamo);
+                    fetch('/Clientes/GuardarModificarPrestamo',
+                        {
+                            method: 'POST',
+                            body: JSON.stringify(prestamo),
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        })
+                        .then(result => result.json())
+                        .then(function (result) {
+                            if (result.success == true) {
+                                setTimeout(refrescar, 1500);
+                                toastr.success('¡Se modificó correctamente el Préstamo!');
+                            }
+                        });
+                },
                 verAgregarCuota(idPrestamo) {
                     vform.formAgregarCuota.idPrestamo = idPrestamo;
                 },
@@ -1262,6 +1390,12 @@
                 JsonFecha2(val) {
                     return val != null ?
                         moment(val).format('DD/MM/YYYY') :
+                        ''
+                        ;
+                },
+                JsonFecha3(val) {
+                    return val != null ?
+                        moment(val).format('YYYY-MM-DD') :
                         ''
                         ;
                 }

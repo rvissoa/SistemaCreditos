@@ -235,6 +235,40 @@ namespace SistemaCreditos.Controllers.Clientes
         #endregion
 
         #region Cliente prestamo
+        public class formularioModificarPrestamo
+        {
+            public int idPrestamo { get; set; }
+            public DateTime? fechaEntrega { get; set; }
+            public DateTime? fechaTermino { get; set; }
+            public decimal? fondoProvisional { get; set; }
+            public string? diaPago { get; set; }
+            public decimal? capital { get; set; }
+            public decimal? capitalPendiente { get; set; }
+            public string? liquidacion { get; set; }
+        }
+        [HttpPost]
+        public ActionResult GuardarModificarPrestamo([FromBody] formularioModificarPrestamo modificar)
+        {
+            try
+            {
+                var prestamo = db.Prestamos.Find(modificar.idPrestamo);
+                prestamo.FechaEntrega = modificar.fechaEntrega;
+                prestamo.FechaTermino = modificar.fechaTermino;
+                prestamo.FondoProvisional= modificar.fondoProvisional;
+                prestamo.DiaPago = modificar.diaPago;
+                prestamo.Capital = modificar.capital;
+                prestamo.CapitalPendiente = modificar.capitalPendiente;
+                prestamo.Liquidacion = modificar.liquidacion;
+
+                db.SaveChanges();
+                return Json(new { success = true });
+            }
+            catch (Exception e)
+            {
+                return Json(new { success = false, error = e.Message, errorLargo = e.InnerException.Message });
+            }
+
+        }
         [HttpPost]
         public ActionResult GuardarAgregarCuota([FromBody] AgregarCuotas agregar)
         {
