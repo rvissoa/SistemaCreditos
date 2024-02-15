@@ -1033,6 +1033,7 @@
                     var _this = this;
                     _this.disabledBtn = true;
                     //serializar formulario abono
+                    if (vform.formModificarPrestamo.fechaTermino == '') vform.formModificarPrestamo.fechaTermino =vform.formModificarPrestamo.fechaEntrega;
                     var prestamo = Object.assign({}, vform.formModificarPrestamo);
                     fetch('/Clientes/GuardarModificarPrestamo',
                         {

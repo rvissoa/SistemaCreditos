@@ -269,7 +269,7 @@ namespace SistemaCreditos.Controllers.Clientes
             {
                 var prestamo = db.Prestamos.Find(modificar.idPrestamo);
                 prestamo.FechaEntrega = modificar.fechaEntrega;
-                prestamo.FechaTermino = modificar.fechaTermino;
+                if(modificar.fechaTermino!= modificar.fechaEntrega) prestamo.FechaTermino = modificar.fechaTermino;
                 prestamo.FondoProvisional= modificar.fondoProvisional;
                 prestamo.DiaPago = modificar.diaPago;
                 prestamo.Capital = modificar.capital;
