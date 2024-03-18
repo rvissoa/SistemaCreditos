@@ -671,7 +671,7 @@ namespace SistemaCreditos.Controllers.Clientes
                 //{
                     //Calculo de moras
                     var cuotas = db.Cuotas.Where(e => e.IdPrestamo == idPrestamo).ToList();
-                    var CuotasVencidas = db.Cuotas.Where(a => a.FechaCuota < DateTime.Now && a.FechaPago == null && a.IdPrestamo == idPrestamo).ToList();
+                    var CuotasVencidas = db.Cuotas.Where(a => a.FechaCuota < DateTime.Now && a.FechaPago == null && a.IdPrestamo == idPrestamo && (db.Abonos.Where(v=>v.IdCuota==a.IdCuota).Select(m=>m.MontoAbono).Sum().Value<a.MontoCuota/2)).ToList();
                     var diasMora = 0;
                     decimal Mora = 0;
                     foreach (var item in CuotasVencidas)
