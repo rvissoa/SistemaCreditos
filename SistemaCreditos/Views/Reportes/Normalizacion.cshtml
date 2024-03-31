@@ -26,7 +26,15 @@
                 <div class="card-header">
                     <!-- Date -->
                     <div class="row">
-                        <div class="form-group col-lg-3 col-md-6 col-sm-12">
+                        <div class="form-group col-lg-2 col-md-6 col-sm-12">
+                            <label for="exampleSelectBorder">Captador</label>
+                            <select class="custom-select form-control-border" v-model="form.gestor">
+                                <option v-for="item in gestores" :value="item.codigoTrabajador" :key="item.codigoTrabajador">
+                                    {{item.nombres}}
+                                </option>
+                            </select>
+                        </div>
+                        <div class="form-group col-lg-2 col-md-6 col-sm-12">
                             <label for="exampleSelectBorder">Distrito</label>
                             <select class="custom-select form-control-border" v-model="form.idDistrito">
                                 <option v-for="item in distritos" :value="item.idDistrito" :key="item.idDistrito">
@@ -34,7 +42,7 @@
                                 </option>
                             </select>
                         </div>
-                        <div class="form-group col-lg-3 col-md-6 col-sm-12">
+                        <div class="form-group col-lg-2 col-md-6 col-sm-12">
                             <label for="exampleSelectBorder">Zona</label>
                             <select class="custom-select form-control-border" v-model="form.zona">
                                 <option v-for="item in zonas" :value="item.id" :key="item.id">
@@ -56,10 +64,21 @@
                             </div>
                             <!-- /.form group -->
                         </div>
-                        <div class="col-lg-1 text-end"></div>
-                        <div class="col-lg-1 text-end">
-                            <label for="exampleSelectBorder">&nbsp;</label>
-                            <button v-on:click="buscar" class="btn form-control btn-primary" title="Buscar"><i class="fas fa-search"></i></button>
+                        <div class="col-lg-1">
+                            <div class="row">
+                                <label for="exampleSelectBorder">&nbsp;</label>
+                                <button v-on:click="buscar" class="btn form-control btn-primary" title="Buscar"><i class="fas fa-search"></i></button>
+                            </div>
+                            
+                        </div>
+                        <div class="col-lg-1">
+                        </div>
+                        <div class="col-lg-1">
+                            <div class="row">
+                                <label for="exampleSelectBorder">&nbsp;</label>
+                                <button onclick="location.reload()" class="btn form-control btn-default" title="Recargar"><i class="fas fa-sync"></i></button>
+                            </div>
+
                         </div>
                     </div>
                     <!-- Date and time -->
@@ -67,10 +86,98 @@
                 <!-- /.card-header -->
                 <div class="card-body">
                     <!-- PIE CHART -->
-                    <div v-show="visible" class="card card-danger">
+                    <div v-show="visible" class="card card-info" id="visible">
+                        <div class="card card-outline card-info">
+                            <div class="card-header">
+                                <h3>Normalización {{reporte.rangoFechas}}</h3>
+                                @*<button title="Descargar" class="btn btn-default" onclick="printDiv('visible')">
+                                    <i class="fas fa-file-download text-success fa-2x"></i>
+                                </button>*@
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-lg-6">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>NORMALIDAD</th>
+                                                    <th>CUENTA CLIENTE</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>12 a más Sem.</td>
+                                                    <td>{{reporte.contador12}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>2 a 3 Sem.</td>
+                                                    <td>{{reporte.contador2}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>4 a 7 Sem.</td>
+                                                    <td>{{reporte.contador4}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>8 a 11 Sem.</td>
+                                                    <td>{{reporte.contador8}}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Normalización</td>
+                                                    <td>{{reporte.contadorN}}</td>
+                                                </tr>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <th>Total General</th>
+                                                    <th>{{reporte.total}}</th>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                    <div class="col-lg-6">
+                                        <table class="table table-bordered">
+                                            <thead>
+                                                <tr>
+                                                    <th>NORMALIDAD</th>
+                                                    <th>CUENTA CLIENTE</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>12 a más Sem.</td>
+                                                    <td>{{reporte.porcentajeContador12}} %</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>2 a 3 Sem.</td>
+                                                    <td>{{reporte.porcentajeContador8}} %</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>4 a 7 Sem.</td>
+                                                    <td>{{reporte.porcentajeContador4}} %</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>8 a 11 Sem.</td>
+                                                    <td>{{reporte.porcentajeContador2}} %</td>
+                                                </tr>
+                                                <tr>
+                                                    <td>Normalización</td>
+                                                    <td>{{reporte.porcentajeContadorN}} %</td>
+                                                </tr>
+                                            </tbody>
+                                            <tfoot>
+                                                <tr>
+                                                    <th>Total General</th>
+                                                    <th>100%</th>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+                                
+                            </div>
+                        </div>
                         <div class="card-header">
                             <h3 class="card-title">Gráfico de torta Resumen</h3>
-
                             <div class="card-tools">
                                 <button type="button" class="btn btn-tool" data-card-widget="collapse">
                                     <i class="fas fa-minus"></i>
@@ -87,7 +194,7 @@
                     </div>
                     <!-- /.card -->
                     <!-- STACKED BAR CHART -->
-                    <div v-show="visible" class="card card-success">
+                    @*<div v-show="visible" class="card card-success">
                         <div class="card-header">
                             <h3 class="card-title">Cumplimiento por meses</h3>
 
@@ -106,7 +213,7 @@
                             </div>
                         </div>
                         <!-- /.card-body -->
-                    </div>
+                    </div>*@
 
                 </div>
                 <!-- /.card-body -->
@@ -124,18 +231,28 @@
     <script src="~/adminLte/plugins/chart.js/Chart.min.js"></script>
 
     <script language="javascript">
+        function printDiv(nombreDiv) {
+            var contenido = document.getElementById(nombreDiv).innerHTML;
+            var contenidoOriginal = document.body.innerHTML;
+            document.body.innerHTML = contenido;
+            window.print();
+            document.body.innerHTML = contenidoOriginal;
+        }
         //Date range picker with time picker
-        function torta(cumple,noCumple){
+        function torta(contadorN, contador2, contador4, contador8, contador12) {
             var donutData = {
                 labels: [
-                    'No Cumple',
-                    'Cumple',
+                    'Normalización',
+                    '2 a 3 semanas',
+                    '4 a 7 semanas',
+                    '8 a 11 semanas',
+                    '12 a más semanas',
                     //'Neutro',
                 ],
                 datasets: [
                     {
-                        data: [noCumple, cumple],
-                        backgroundColor: ['#f56954', '#00a65a'],
+                        data: [contadorN, contador2,contador4,contador8,contador12],
+                        backgroundColor: ['#14a654', '#64E70A', '#FDEF0F', '#FD9C0F', '#F31308'],
                         //backgroundColor: ['#f56954', '#00a65a', '#f39c12'],
                     }
                 ]
@@ -300,7 +417,8 @@
 
                 ],
                 form:[],
-                distritos:[]
+                distritos:[],
+                gestores:[]
             },
             created() {
                
@@ -356,6 +474,20 @@
                             _this.distritos = result.distritos;
                         }
                     });
+                fetch('/Clientes/Gestores',
+                    {
+                        method: 'POST',
+                        body: '',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(result => result.json())
+                    .then(function (result) {
+                        if (result.success == true) {
+                            _this.gestores = result.gestores;
+                        }
+                    });
             },
             methods: {
                 buscar(){
@@ -375,8 +507,15 @@
                             if (result.success == true) {
                                 vform.visible = true;
                                 vform.reporte=result.reporte;
-                                console.log(result.reporte);
-                                torta(vform.reporte.normalizacion, vform.reporte.noNorma);
+                                var total = vform.reporte.contadorN + vform.reporte.contador2 + vform.reporte.contador4 + vform.reporte.contador8 + vform.reporte.contador12;
+                                vform.reporte.total=total;
+                                vform.reporte.porcentajeContadorN = ((vform.reporte.contadorN / total) * 100).toFixed(2);
+                                vform.reporte.porcentajeContador2 = ((vform.reporte.contador2 / total) * 100).toFixed(2);
+                                vform.reporte.porcentajeContador4 = ((vform.reporte.contador4 / total) * 100).toFixed(2);
+                                vform.reporte.porcentajeContador8 = ((vform.reporte.contador8 / total) * 100).toFixed(2);
+                                vform.reporte.porcentajeContador12 = ((vform.reporte.contador12 / total) * 100).toFixed(2);
+                                vform.reporte.rangoFechas = form.rangoFechas;
+                                torta(vform.reporte.porcentajeContadorN, vform.reporte.porcentajeContador2, vform.reporte.porcentajeContador4, vform.reporte.porcentajeContador8, vform.reporte.porcentajeContador12);
                             }
                         });
 

@@ -30,26 +30,97 @@ namespace SistemaCreditos.Controllers.Reportes
                 var fechaInicio = Util.convertirFecha(fechas[0]);
                 var fechaFin = Util.convertirFecha(fechas[1]);
 
+
+
+
+                #region Normallizacion-antiguo
                 //var cuotas = db.Cuotas.Where(e=>e.FechaCuota>=fechaInicio&&e.FechaCuota<=fechaFin).ToList();
-                var cuotas = (from cl in db.Clientes
+                //var cuotas = (from cl in db.Clientes
+                //              from p in db.Prestamos.Where(e => e.IdCliente == cl.IdCliente)
+                //              from c in db.Cuotas.Where(e => e.IdPrestamo == p.IdPrestamo && e.FechaCuota >= fechaInicio && e.FechaCuota <= fechaFin)
+                //              where form.zona != null ? cl.Zona == form.zona : true
+                //              where form.idDistrito != 0 ? cl.Distrito == form.idDistrito : true
+                //              where form.gestor != null ? cl.CodigoGestor == form.gestor : true
+                //              select (c)).ToList();
+                //decimal contador = 0;
+                //var dif = (int)DateTime.Now.Subtract((DateTime)item.FechaCuota).TotalDays;
+                //foreach (var item in cuotas)
+                //{
+                //    if (DateTime.Now > item.FechaCuota && item.FechaPago == null)
+                //    {
+                //        contador++;
+                //    }
+                //}
+                //var resultado = 100 - (contador / cuotas.Count()) * 100;
+                //var normalizacion = (int)resultado;
+                //var NoNorma = 100 - (int)resultado;
+
+                //return Json(new { success = true, reporte = new { normalizacion,NoNorma } });
+                #endregion
+
+                var prestamos1 = (from cl in db.Clientes
                               from p in db.Prestamos.Where(e => e.IdCliente == cl.IdCliente)
                               from c in db.Cuotas.Where(e => e.IdPrestamo == p.IdPrestamo && e.FechaCuota >= fechaInicio && e.FechaCuota <= fechaFin)
-                              where form.zona!=null?cl.Zona== form.zona:true
+                              where form.zona != null ? cl.Zona == form.zona : true
                               where form.idDistrito != 0 ? cl.Distrito == form.idDistrito : true
-                              select (c)).ToList();
-                decimal contador = 0;
-                foreach (var item in cuotas)
-                {
-                    if (DateTime.Now > item.FechaCuota && item.FechaPago == null)
-                    {
-                        contador++;
-                    }
-                }
-                var resultado = 100 - (contador / cuotas.Count()) * 100;
-                var normalizacion = (int)resultado;
-                var NoNorma = 100 - (int)resultado;
+                              where form.gestor != null ? cl.CodigoGestor == form.gestor : true
+                              group new {p,c } by new {p.IdPrestamo} into g
+                              select new
+                              {
+                                sumaMoras=g.Sum(e=>e.c.DiasMora),
+                                IdPrestamo=g.Key.IdPrestamo
+                              }).ToList();
 
-                return Json(new { success = true, reporte = new { normalizacion,NoNorma } });
+                decimal contadorN = 0;
+                
+                foreach (var item in prestamos1)
+                {
+                    
+                    if (item.sumaMoras < 8)
+                    {
+                        contadorN++;
+                    }
+
+                }
+
+                var prestamos2 = (from cl in db.Clientes
+                                 from p in db.Prestamos.Where(e => e.IdCliente == cl.IdCliente)
+                                 from c in db.Cuotas.Where(e => e.IdPrestamo == p.IdPrestamo && e.FechaCuota >= fechaInicio && e.FechaCuota <= fechaFin &&e.FechaPago==null)
+                                 where form.zona != null ? cl.Zona == form.zona : true
+                                 where form.idDistrito != 0 ? cl.Distrito == form.idDistrito : true
+                                 where form.gestor != null ? cl.CodigoGestor == form.gestor : true
+                                 group new { p, c } by new { p.IdPrestamo } into g
+                                 select new
+                                 {
+                                     sumaMoras = g.Sum(e => e.c.DiasMora),
+                                     IdPrestamo = g.Key.IdPrestamo
+                                 }).ToList();
+                decimal contador2 = 0;
+                decimal contador4 = 0;
+                decimal contador8 = 0;
+                decimal contador12 = 0;
+                foreach (var item in prestamos2)
+                {
+                    if (item.sumaMoras > 8 && item.sumaMoras <= 21)
+                    {
+                        contador2++;
+                    }
+                    else if (item.sumaMoras > 21 && item.sumaMoras <= 49)
+                    {
+                        contador4++;
+                    }
+                    else if (item.sumaMoras > 49 && item.sumaMoras <= 84)
+                    {
+                        contador8++;
+                    }
+                    else if (item.sumaMoras > 84)
+                    {
+                        contador12++;
+                    }
+
+                }
+
+                return Json(new { success = true, reporte = new { contadorN, contador2, contador4, contador8, contador12 } });
             }
             catch
             {
@@ -100,6 +171,7 @@ namespace SistemaCreditos.Controllers.Reportes
             public int idDistrito { get; set; }
             public string zona { get; set; }
             public string rangoFechas { get; set; }
+            public string gestor { get; set; }
         }
         public class ListaVencidos
         {
