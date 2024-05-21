@@ -64,6 +64,7 @@ namespace SistemaCreditos.Controllers.Reportes
                               where form.zona != null ? cl.Zona == form.zona : true
                               where form.idDistrito != 0 ? cl.Distrito == form.idDistrito : true
                               where form.gestor != null ? cl.CodigoGestor == form.gestor : true
+                              where form.autorizador != null ? p.Autorizacion == form.autorizador : true
                               group new {p,c } by new {p.IdPrestamo} into g
                               select new
                               {
@@ -172,6 +173,7 @@ namespace SistemaCreditos.Controllers.Reportes
             public string zona { get; set; }
             public string rangoFechas { get; set; }
             public string gestor { get; set; }
+            public string autorizador { get; set; }
         }
         public class ListaVencidos
         {
