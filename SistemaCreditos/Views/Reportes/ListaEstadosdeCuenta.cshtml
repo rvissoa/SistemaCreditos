@@ -7,12 +7,12 @@
     <div class="container-fluid">
         <div class="row mb-2">
             <div class="col-sm-6">
-                <h1>Reporte de Normalización</h1>
+                <h1>Estados de Cuenta</h1>
             </div>
             <div class="col-sm-6">
                 <ol class="breadcrumb float-sm-right">
                     <li class="breadcrumb-item"><a asp-controller="Home" asp-action="Index">Inicio</a></li>
-                    <li class="breadcrumb-item active">Reporte de Normalización</li>
+                    <li class="breadcrumb-item active">Reporte de Estados de Cuenta (50)</li>
                 </ol>
             </div>
         </div>
@@ -90,139 +90,6 @@
                     <!-- Date and time -->
                 </div>
                 <!-- /.card-header -->
-                <div class="card-body">
-                    <!-- PIE CHART -->
-                    <div v-show="visible" class="card card-info" id="visible">
-                        <div class="card card-outline card-info">
-                            <div class="card-header">
-                                <h3>Normalización {{reporte.rangoFechas}}</h3>
-                                @*<button title="Descargar" class="btn btn-default" onclick="printDiv('visible')">
-                                    <i class="fas fa-file-download text-success fa-2x"></i>
-                                </button>*@
-                            </div>
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-lg-6">
-                                        <table class="table table-bordered">
-                                            <thead>
-                                                <tr>
-                                                    <th>NORMALIDAD</th>
-                                                    <th>CUENTA CLIENTE</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>12 a más Sem.</td>
-                                                    <td>{{reporte.contador12}}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>2 a 3 Sem.</td>
-                                                    <td>{{reporte.contador2}}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>4 a 7 Sem.</td>
-                                                    <td>{{reporte.contador4}}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>8 a 11 Sem.</td>
-                                                    <td>{{reporte.contador8}}</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Normalización</td>
-                                                    <td>{{reporte.contadorN}}</td>
-                                                </tr>
-                                            </tbody>
-                                            <tfoot>
-                                                <tr>
-                                                    <th>Total General</th>
-                                                    <th>{{reporte.total}}</th>
-                                                </tr>
-                                            </tfoot>
-                                        </table>
-                                    </div>
-                                    <div class="col-lg-6">
-                                        <table class="table table-bordered">
-                                            <thead>
-                                                <tr>
-                                                    <th>NORMALIDAD</th>
-                                                    <th>CUENTA CLIENTE</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>12 a más Sem.</td>
-                                                    <td>{{reporte.porcentajeContador12}} %</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>2 a 3 Sem.</td>
-                                                    <td>{{reporte.porcentajeContador2}} %</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>4 a 7 Sem.</td>
-                                                    <td>{{reporte.porcentajeContador4}} %</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>8 a 11 Sem.</td>
-                                                    <td>{{reporte.porcentajeContador8}} %</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Normalización</td>
-                                                    <td>{{reporte.porcentajeContadorN}} %</td>
-                                                </tr>
-                                            </tbody>
-                                            <tfoot>
-                                                <tr>
-                                                    <th>Total General</th>
-                                                    <th>100%</th>
-                                                </tr>
-                                            </tfoot>
-                                        </table>
-                                    </div>
-                                </div>
-                                
-                            </div>
-                        </div>
-                        <div class="card-header">
-                            <h3 class="card-title">Gráfico de torta Resumen</h3>
-                            <div class="card-tools">
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                                <button type="button" class="btn btn-tool" data-card-widget="remove">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <canvas id="pieChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                        </div>
-                        <!-- /.card-body -->
-                    </div>
-                    <!-- /.card -->
-                    <!-- STACKED BAR CHART -->
-                    @*<div v-show="visible" class="card card-success">
-                        <div class="card-header">
-                            <h3 class="card-title">Cumplimiento por meses</h3>
-
-                            <div class="card-tools">
-                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                                    <i class="fas fa-minus"></i>
-                                </button>
-                                <button type="button" class="btn btn-tool" data-card-widget="remove">
-                                    <i class="fas fa-times"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="chart">
-                                <canvas id="stackedBarChart" style="min-height: 250px; height: 250px; max-height: 250px; max-width: 100%;"></canvas>
-                            </div>
-                        </div>
-                        <!-- /.card-body -->
-                    </div>*@
-
-                </div>
-                <!-- /.card-body -->
             </div>
             <!-- /.card -->
 

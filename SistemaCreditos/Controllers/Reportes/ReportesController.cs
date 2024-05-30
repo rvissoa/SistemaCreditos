@@ -21,6 +21,10 @@ namespace SistemaCreditos.Controllers.Reportes
         {
             return View();
         }
+        public IActionResult ListaEstadosdeCuenta()
+        {
+            return View();
+        }
         [HttpPost]
         public ActionResult VerNormalizacion([FromBody] FormularioNormalizacion form )
         {
@@ -57,15 +61,16 @@ namespace SistemaCreditos.Controllers.Reportes
 
                 //return Json(new { success = true, reporte = new { normalizacion,NoNorma } });
                 #endregion
-
+                //Normalizados
                 var prestamos1 = (from cl in db.Clientes
-                              from p in db.Prestamos.Where(e => e.IdCliente == cl.IdCliente)
-                              from c in db.Cuotas.Where(e => e.IdPrestamo == p.IdPrestamo && e.FechaCuota >= fechaInicio && e.FechaCuota <= fechaFin)
-                              where form.zona != null ? cl.Zona == form.zona : true
-                              where form.idDistrito != 0 ? cl.Distrito == form.idDistrito : true
-                              where form.gestor != null ? cl.CodigoGestor == form.gestor : true
-                              where form.autorizador != null ? p.Autorizacion == form.autorizador : true
-                              group new {p,c } by new {p.IdPrestamo} into g
+                                  from p in db.Prestamos.Where(e => e.IdCliente == cl.IdCliente && e.FechaTermino==null && e.FechaEntrega >= fechaInicio && e.FechaEntrega <= fechaFin)
+                                  from c in db.Cuotas.Where(e => e.IdPrestamo == p.IdPrestamo)
+                                  where form.zona != null ? cl.Zona == form.zona : true
+                                  where form.idDistrito != 0 ? cl.Distrito == form.idDistrito : true
+                                  where form.gestor != null ? cl.CodigoGestor == form.gestor : true
+                                  where form.autorizador != null ? p.Autorizacion == form.autorizador : true
+                                  where c.FechaPago!=null ? false : true
+                                  group new {p,c } by new {p.IdPrestamo} into g
                               select new
                               {
                                 sumaMoras=g.Sum(e=>e.c.DiasMora),
@@ -73,7 +78,11 @@ namespace SistemaCreditos.Controllers.Reportes
                               }).ToList();
 
                 decimal contadorN = 0;
-                
+                decimal contador2 = 0;
+                decimal contador4 = 0;
+                decimal contador8 = 0;
+                decimal contador12 = 0;
+
                 foreach (var item in prestamos1)
                 {
                     
@@ -81,28 +90,7 @@ namespace SistemaCreditos.Controllers.Reportes
                     {
                         contadorN++;
                     }
-
-                }
-
-                var prestamos2 = (from cl in db.Clientes
-                                 from p in db.Prestamos.Where(e => e.IdCliente == cl.IdCliente)
-                                 from c in db.Cuotas.Where(e => e.IdPrestamo == p.IdPrestamo && e.FechaCuota >= fechaInicio && e.FechaCuota <= fechaFin &&e.FechaPago==null)
-                                 where form.zona != null ? cl.Zona == form.zona : true
-                                 where form.idDistrito != 0 ? cl.Distrito == form.idDistrito : true
-                                 where form.gestor != null ? cl.CodigoGestor == form.gestor : true
-                                 group new { p, c } by new { p.IdPrestamo } into g
-                                 select new
-                                 {
-                                     sumaMoras = g.Sum(e => e.c.DiasMora),
-                                     IdPrestamo = g.Key.IdPrestamo
-                                 }).ToList();
-                decimal contador2 = 0;
-                decimal contador4 = 0;
-                decimal contador8 = 0;
-                decimal contador12 = 0;
-                foreach (var item in prestamos2)
-                {
-                    if (item.sumaMoras > 8 && item.sumaMoras <= 21)
+                    else if (item.sumaMoras >= 8 && item.sumaMoras <= 21)
                     {
                         contador2++;
                     }
@@ -166,6 +154,11 @@ namespace SistemaCreditos.Controllers.Reportes
                            CuotasVencidasLista = db.Cuotas.Where(a => a.FechaCuota.Value < DateTime.Now && a.FechaPago.Value == null && a.IdPrestamo == p.IdPrestamo).ToList()
                        }).Where(e=>e.NroCuotasVencidas>0).ToList();
             return Json(new { success = true, cuotasVencidas=sql });
+        }
+        [HttpPost]
+        public ActionResult ListaEstadosDeCuenta([FromBody] FormularioNormalizacion form)
+        {
+            return Json(new { success = true});
         }
         public class FormularioNormalizacion
         {
