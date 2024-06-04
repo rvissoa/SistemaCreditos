@@ -63,12 +63,12 @@ namespace SistemaCreditos.Controllers.Reportes
                 #endregion
                 //Normalizados
                 var prestamos1 = (from cl in db.Clientes
-                                  from p in db.Prestamos.Where(e => e.IdCliente == cl.IdCliente && e.FechaTermino==null && e.FechaEntrega >= fechaInicio && e.FechaEntrega <= fechaFin)
+                                  from p in db.Prestamos.Where(e => e.IdCliente == cl.IdCliente && e.FechaTermino==null && e.FechaEntrega >= fechaInicio && e.FechaEntrega <= fechaFin &&(form.autorizador != null ? e.Autorizacion == form.autorizador : true))
                                   from c in db.Cuotas.Where(e => e.IdPrestamo == p.IdPrestamo)
                                   where form.zona != null ? cl.Zona == form.zona : true
                                   where form.idDistrito != 0 ? cl.Distrito == form.idDistrito : true
                                   where form.gestor != null ? cl.CodigoGestor == form.gestor : true
-                                  where form.autorizador != null ? p.Autorizacion == form.autorizador : true
+                                  //where form.autorizador != null ? p.Autorizacion == form.autorizador : true
                                   where c.FechaPago!=null ? false : true
                                   group new {p,c } by new {p.IdPrestamo} into g
                               select new
