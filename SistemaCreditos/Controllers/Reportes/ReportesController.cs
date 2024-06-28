@@ -1,7 +1,12 @@
-﻿using Microsoft.AspNetCore.Authorization;
+﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Spreadsheet;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
+using Microsoft.CodeAnalysis.CSharp;
 using SistemaCreditos.Models;
+using System.Data;
+
 namespace SistemaCreditos.Controllers.Reportes
 {
     [Authorize]
@@ -24,6 +29,187 @@ namespace SistemaCreditos.Controllers.Reportes
         public IActionResult ListaEstadosdeCuenta()
         {
             return View();
+        }
+
+        [HttpPost]
+        public ActionResult ExportarEstadosExcel([FromBody] FormularioNormalizacion form)
+        {
+            string[] fechas = form.rangoFechas.Split(" - ");
+            var fechaInicio = Util.convertirFecha(fechas[0]);
+            var fechaFin = Util.convertirFecha(fechas[1]);
+            //---------------------------------------------
+            var ListaPrestamos = (from cl in db.Clientes
+                                  from p in db.Prestamos.Where(e => e.IdCliente == cl.IdCliente && e.FechaTermino == null && e.FechaEntrega >= fechaInicio && e.FechaEntrega <= fechaFin && (form.autorizador != null ? e.Autorizacion == form.autorizador : true))
+
+                                  where form.zona != null ? cl.Zona == form.zona : true
+                                  where form.idDistrito != 0 ? cl.Distrito == form.idDistrito : true
+                                  where form.gestor != null ? cl.CodigoGestor == form.gestor : true
+                                  select p
+                                  ).Take(50).ToList();
+
+            var prestamo = GetPrestamo(ListaPrestamos);
+
+            using (XLWorkbook wb = new XLWorkbook())
+            {
+                var shet1 = wb.AddWorksheet(prestamo, "Estado Cuenta");
+
+                using (MemoryStream ms=new MemoryStream())
+                {
+                    wb.SaveAs(ms);
+                    //byte[] bindata = System.Text.Encoding.ASCII.GetBytes(ms.ToString());
+                    return File(ms.ToArray(), "application/ms-excel", "Sample.xlsx");
+                }
+            }
+        }
+
+        private DataTable GetPrestamo(List<Prestamo> prestamos)
+        {
+            DataTable dt = new DataTable();
+            dt.TableName = "Prestamo Cliente";
+            //--numero de columnas
+            dt.Columns.Add("", typeof(string));
+            dt.Columns.Add("", typeof(string));
+            dt.Columns.Add("", typeof(string));
+            dt.Columns.Add("", typeof(string));
+            dt.Columns.Add("", typeof(string));
+            dt.Columns.Add("", typeof(string));
+            dt.Columns.Add("", typeof(string));
+            dt.Columns.Add("", typeof(string));
+            dt.Columns.Add("", typeof(string));
+            dt.Columns.Add("", typeof(string));
+            dt.Columns.Add("", typeof(string));
+
+            //Recorrer prestamos
+            foreach (var p in prestamos)
+            {
+                dt.Rows.Add();
+                //DataRow clienteRow = dt.NewRow();
+                
+                dt.Rows.Add("DATOS DEL CLIENTE");
+                dt.Rows.Add();
+                //cliente
+                var cliente = db.Clientes.Find(p.IdCliente);
+                dt.Rows.Add("Número de créditos: ", "1");
+                dt.Rows.Add("Nombre: ",cliente.NombreCliente+ " "+cliente.ApellidosCliente);
+                dt.Rows.Add("Dirección: ",cliente.Direccion);
+                dt.Rows.Add("Celular: ",cliente.Celular,"DNI: ", cliente.Dni);
+                dt.Rows.Add("Ubicación: ", cliente.UbicacionReferencia);
+                dt.Rows.Add("Trabajo: ", cliente.TrabajoOcupacion);
+                dt.Rows.Add();
+                dt.Rows.Add("ESTADO DE CUENTA");
+                dt.Rows.Add();
+                dt.Rows.Add("Fecha entrega: ", p.FechaEntrega,"Modalidad","","Capital: ", p.Capital,"Fondo Provisional", p.FondoProvisional);
+                dt.Rows.Add("Capital Inicial: ", p.CapitalPendiente, "Número de créditos", "1", "Días de Pago: ",p.DiaPago);
+                dt.Rows.Add();
+                dt.Rows.Add("IT", "FECHA", "ABONO", "CAPITAL PENDIENTE", "ABONO MORA", "FECHA PAGO", "NRO OPERACIÓN", "BANCO", "MORAS PENDIENTES", "DÍAS MORA", "OBSERVACIÓN");
+
+                //dt.Columns.Add("IT", typeof(int));
+                //dt.Columns.Add("FECHA", typeof(string));
+                //dt.Columns.Add("ABONO", typeof(decimal));
+                //dt.Columns.Add("CAPITAL PENDIENTE", typeof(decimal));
+                //dt.Columns.Add("ABONO MORA", typeof(decimal));
+                //dt.Columns.Add("FECHA PAGO", typeof(string));
+                //dt.Columns.Add("NRO OPERACIÓN", typeof(string));
+                //dt.Columns.Add("BANCO", typeof(string));
+                //dt.Columns.Add("MORAS PENDIENTES", typeof(int));
+                //dt.Columns.Add("DÍAS MORA", typeof(int));
+                //dt.Columns.Add("OBSERVACIÓN", typeof(string));
+
+                //------
+                var prestamo = db.Prestamos.Find(p.IdPrestamo);
+                //var cuotas = db.Cuotas.Where(e => e.IdPrestamo == idPrestamo).ToList();
+                var modelo = (from c in db.Cuotas.Where(e => e.IdPrestamo == p.IdPrestamo)
+                              from a in db.Abonos.Where(e => e.IdCuota == c.IdCuota).DefaultIfEmpty()
+                              from b in db.Bancos.Where(e => e.IdBanco == a.Banco).DefaultIfEmpty()
+
+                              group new { c, a, b } by new { c.DiasMora, c.FechaPago, c.IdCuota, c.FechaCuota, c.MontoCuota, c.Mora, c.Observaciones, } into g
+                              select new
+                              {
+                                  g.Key.FechaPago,
+                                  g.Key.IdCuota,
+                                  g.Key.FechaCuota,
+                                  g.Key.MontoCuota,
+                                  g.Key.Mora,
+                                  DiasMora = g.Key.DiasMora > 0 ? g.Key.DiasMora : 0,
+                                  g.Key.Observaciones,
+                                  Abono = g.Sum(e => e.a.MontoAbono),
+                                  AbonoMora = g.Sum(e => e.a.MontoMora),
+                                  NroOperacion = string.Join(",", g.Select(i => i.a.Codigo)),
+                                  Banco = string.Join(",", g.Select(i => i.b.RazonSocial)),
+                                  CapitalPendiente = prestamo.CapitalPendiente
+
+                              }).OrderBy(a => a.FechaCuota).ToList();
+                var abonoTotal = modelo.Sum(e => e.Abono);
+                var abonoMoraTotal = modelo.Sum(e => e.AbonoMora);
+                var moraTotal = modelo.Sum(e => e.Mora);
+                var diasMoraTotal = modelo.Sum(e => e.DiasMora);
+                //------
+                if (modelo.Count > 0)
+                {
+                    var it = 0;
+                    foreach (var item in modelo)
+                    {
+                        it++;
+                        dt.Rows.Add(it, item.FechaCuota, item.Abono, item.CapitalPendiente, item.AbonoMora, item.FechaPago, item.NroOperacion, item.Banco, item.Mora, item.DiasMora, item.Observaciones);
+
+                    }
+                }
+            }
+
+
+
+            //dt.Columns.Add("IT", typeof(int));
+            //dt.Columns.Add("FECHA", typeof(string));
+            //dt.Columns.Add("ABONO", typeof(decimal));
+            //dt.Columns.Add("CAPITAL PENDIENTE", typeof(decimal));
+            //dt.Columns.Add("ABONO MORA", typeof(decimal));
+            //dt.Columns.Add("FECHA PAGO", typeof(string));
+            //dt.Columns.Add("NRO OPERACIÓN", typeof(string));
+            //dt.Columns.Add("BANCO", typeof(string));
+            //dt.Columns.Add("MORAS PENDIENTES", typeof(int));
+            //dt.Columns.Add("DÍAS MORA", typeof(int));
+            //dt.Columns.Add("OBSERVACIÓN", typeof(string));
+
+            //------
+            //var prestamo = db.Prestamos.Find(idPrestamo);
+            ////var cuotas = db.Cuotas.Where(e => e.IdPrestamo == idPrestamo).ToList();
+            //var modelo = (from c in db.Cuotas.Where(e => e.IdPrestamo == idPrestamo)
+            //              from a in db.Abonos.Where(e => e.IdCuota == c.IdCuota).DefaultIfEmpty()
+            //              from b in db.Bancos.Where(e => e.IdBanco == a.Banco).DefaultIfEmpty()
+
+            //              group new { c, a, b } by new { c.DiasMora, c.FechaPago, c.IdCuota, c.FechaCuota, c.MontoCuota, c.Mora, c.Observaciones, } into g
+            //              select new
+            //              {
+            //                  g.Key.FechaPago,
+            //                  g.Key.IdCuota,
+            //                  g.Key.FechaCuota,
+            //                  g.Key.MontoCuota,
+            //                  g.Key.Mora,
+            //                  DiasMora = g.Key.DiasMora > 0 ? g.Key.DiasMora : 0,
+            //                  g.Key.Observaciones,
+            //                  Abono = g.Sum(e => e.a.MontoAbono),
+            //                  AbonoMora = g.Sum(e => e.a.MontoMora),
+            //                  NroOperacion = string.Join(",", g.Select(i => i.a.Codigo)),
+            //                  Banco = string.Join(",", g.Select(i => i.b.RazonSocial)),
+            //                  CapitalPendiente = prestamo.CapitalPendiente
+
+            //              }).OrderBy(a => a.FechaCuota).ToList();
+            //var abonoTotal = modelo.Sum(e => e.Abono);
+            //var abonoMoraTotal = modelo.Sum(e => e.AbonoMora);
+            //var moraTotal = modelo.Sum(e => e.Mora);
+            //var diasMoraTotal = modelo.Sum(e => e.DiasMora);
+            ////------
+            //if (modelo.Count > 0)
+            //{
+            //    var it = 0;
+            //    foreach (var item in modelo)
+            //    { 
+            //        it++;
+            //        dt.Rows.Add(it,item.FechaCuota,item.Abono,item.CapitalPendiente,item.AbonoMora,item.FechaPago,item.NroOperacion,item.Banco,item.Mora,item.DiasMora,item.Observaciones);
+
+            //    }
+            //}
+            return dt;
         }
         [HttpPost]
         public ActionResult VerNormalizacion([FromBody] FormularioNormalizacion form )

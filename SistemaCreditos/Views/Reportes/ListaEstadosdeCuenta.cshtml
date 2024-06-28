@@ -78,13 +78,18 @@
                         </div>
                         <div class="col-lg-2">
                                 <label for="exampleSelectBorder">&nbsp;</label>
-                                <button v-on:click="buscar" class="btn form-control btn-primary" title="Buscar"><i class="fas fa-search"></i></button>                          
+                            <button :disabled="disabledBtn" v-on:click="descargarExcel()" class="btn form-control btn-primary" title="Buscar"><i class="fas fa-search"></i></button>
                         </div>
                         <div class="col-lg-2">
                                 <label for="exampleSelectBorder">&nbsp;</label>
                                 <button onclick="location.reload()" class="btn form-control btn-default" title="Recargar"><i class="fas fa-sync"></i></button>
                         </div>
                         <div class="col-lg-4">
+                        </div>
+                        <div v-show="cargando" v-bind:class="overlay">
+                            <br /><br />
+                            <i class="fas fa-4x fa-sync-alt fa-spin"></i>
+                            <div class="text-bold pt-2"> &nbsp; Generando (50 Estados de Cuenta)... Esto puede tardar 2 minutos aproximadamente</div>
                         </div>
                     </div>
                     <!-- Date and time -->
@@ -292,7 +297,10 @@
                 form:[],
                 distritos:[],
                 gestores:[],
-                autorizadores:[]
+                autorizadores:[],
+                overlay: 'overlay',
+                disabledBtn: false,
+                cargando: false,
             },
             created() {
                
@@ -378,38 +386,42 @@
                     });
             },
             methods: {
-                buscar(){
+                descargarExcel() {
+                    vform.disabledBtn = true;
+                    vform.cargando = true;
                     var form = Object.assign({}, vform.form);
                     form.rangoFechas = $('#reservationtime').val();
                     console.log(form);
-                    fetch('/Reportes/VerNormalizacion',
+                    fetch('/Reportes/ExportarEstadosExcel',
                         {
                             method: 'POST',
                             body: JSON.stringify(form),
                             headers: {
                                 'Content-Type': 'application/json'
-                            }
+                            },
+                            responseType: 'blob'
                         })
-                        .then(result => result.json())
-                        .then(function (result) {
-                            if (result.success == true) {
-                                vform.visible = true;
-                                vform.reporte=result.reporte;
-                                var total = vform.reporte.contadorN + vform.reporte.contador2 + vform.reporte.contador4 + vform.reporte.contador8 + vform.reporte.contador12;
-                                vform.reporte.total=total;
-                                vform.reporte.porcentajeContadorN = ((vform.reporte.contadorN / total) * 100).toFixed(2);
-                                vform.reporte.porcentajeContador2 = ((vform.reporte.contador2 / total) * 100).toFixed(2);
-                                vform.reporte.porcentajeContador4 = ((vform.reporte.contador4 / total) * 100).toFixed(2);
-                                vform.reporte.porcentajeContador8 = ((vform.reporte.contador8 / total) * 100).toFixed(2);
-                                vform.reporte.porcentajeContador12 = ((vform.reporte.contador12 / total) * 100).toFixed(2);
-                                vform.reporte.rangoFechas = form.rangoFechas;
-                                torta(vform.reporte.porcentajeContadorN, vform.reporte.porcentajeContador2, vform.reporte.porcentajeContador4, vform.reporte.porcentajeContador8, vform.reporte.porcentajeContador12);
-                            }
+                        .then(res => res.blob())
+                        .then(blob => {
+                            const urlArchivo = window.URL.createObjectURL(blob);
+                            const enlaceDescarga = document.createElement('a');
+                            enlaceDescarga.href = urlArchivo;
+                            enlaceDescarga.download = "reporte.xlsx";
+                            document.body.appendChild(enlaceDescarga);
+                            enlaceDescarga.click();
+                            document.body.removeChild(enlaceDescarga);
+                            toastr.success('¡Se descargó los estados de cuenta!');
+                            vform.disabledBtn = false;
+                            vform.overlay = '';
+                            vform.cargando = false;
+                        })
+                        .catch(error => {
+                            toastr.danger('¡Error al descargar!');
                         });
 
-                    
                 }
             }
         });
+
     </script>
 }
