@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.EntityFrameworkCore;
 using SistemaCreditos.Models;
 using System.Data;
 
@@ -38,14 +39,28 @@ namespace SistemaCreditos.Controllers.Reportes
             var fechaInicio = Util.convertirFecha(fechas[0]);
             var fechaFin = Util.convertirFecha(fechas[1]);
             //---------------------------------------------
-            var ListaPrestamos = (from cl in db.Clientes
-                                  from p in db.Prestamos.Where(e => e.IdCliente == cl.IdCliente && e.FechaTermino == null && e.FechaEntrega >= fechaInicio && e.FechaEntrega <= fechaFin && (form.autorizador != null ? e.Autorizacion == form.autorizador : true))
+            //var ListaPrestamos1 = (from cl in db.Clientes
+            //                      from p in db.Prestamos.Where(e => e.IdCliente == cl.IdCliente && e.FechaTermino == null && e.FechaEntrega >= fechaInicio && e.FechaEntrega <= fechaFin && (form.autorizador != null ? e.Autorizacion == form.autorizador : true ) && form.TipoMora==e.Liquidacion)
 
-                                  where form.zona != null ? cl.Zona == form.zona : true
-                                  where form.idDistrito != 0 ? cl.Distrito == form.idDistrito : true
-                                  where form.gestor != null ? cl.CodigoGestor == form.gestor : true
-                                  select p
-                                  ).Take(50).ToList();
+            //                      where form.zona != null ? cl.Zona == form.zona : true
+            //                      where form.idDistrito != 0 ? cl.Distrito == form.idDistrito : true
+            //                      where form.gestor != null ? cl.CodigoGestor == form.gestor : true
+            //                      select p
+            //                      ).Take(50).ToList();
+
+            var ListaPrestamos = (from p in db.Prestamos
+                                  join cl in db.Clientes on p.IdCliente equals cl.IdCliente
+
+                                  where p.FechaEntrega >= fechaInicio && p.FechaEntrega <= fechaFin
+                                      && p.FechaTermino == null
+
+                                      && (form.zona != null ? cl.Zona == form.zona : true)
+                                      && (form.idDistrito != 0 ? cl.Distrito == form.idDistrito : true)
+                                      && (form.gestor != null ? cl.CodigoGestor == form.gestor : true)
+                                      && (form.autorizador != null ? p.Autorizacion == form.autorizador : true)
+                                      && (form.TipoMora != null ? form.TipoMora == p.Liquidacion:true)
+                                      select p
+                                  ).ToList();
 
             var prestamo = GetPrestamo(ListaPrestamos);
 
@@ -55,7 +70,7 @@ namespace SistemaCreditos.Controllers.Reportes
 
                 using (MemoryStream ms=new MemoryStream())
                 {
-                    wb.SaveAs(ms);
+                    wb.SaveAs(ms); 
                     //byte[] bindata = System.Text.Encoding.ASCII.GetBytes(ms.ToString());
                     return File(ms.ToArray(), "application/ms-excel", "Sample.xlsx");
                 }
@@ -122,7 +137,7 @@ namespace SistemaCreditos.Controllers.Reportes
                               from a in db.Abonos.Where(e => e.IdCuota == c.IdCuota).DefaultIfEmpty()
                               from b in db.Bancos.Where(e => e.IdBanco == a.Banco).DefaultIfEmpty()
 
-                              group new { c, a, b } by new { c.DiasMora, c.FechaPago, c.IdCuota, c.FechaCuota, c.MontoCuota, c.Mora, c.Observaciones, } into g
+                              group new { a, b } by new { c.DiasMora, c.FechaPago, c.IdCuota, c.FechaCuota, c.MontoCuota, c.Mora, c.Observaciones, } into g
                               select new
                               {
                                   g.Key.FechaPago,
@@ -139,6 +154,8 @@ namespace SistemaCreditos.Controllers.Reportes
                                   CapitalPendiente = prestamo.CapitalPendiente
 
                               }).OrderBy(a => a.FechaCuota).ToList();
+
+
                 var abonoTotal = modelo.Sum(e => e.Abono);
                 var abonoMoraTotal = modelo.Sum(e => e.AbonoMora);
                 var moraTotal = modelo.Sum(e => e.Mora);
@@ -248,21 +265,41 @@ namespace SistemaCreditos.Controllers.Reportes
                 //return Json(new { success = true, reporte = new { normalizacion,NoNorma } });
                 #endregion
                 //Normalizados
-                var prestamos1 = (from cl in db.Clientes
-                                  from p in db.Prestamos.Where(e => e.IdCliente == cl.IdCliente && e.FechaTermino==null && e.FechaEntrega >= fechaInicio && e.FechaEntrega <= fechaFin &&(form.autorizador != null ? e.Autorizacion == form.autorizador : true))
-                                  from c in db.Cuotas.Where(e => e.IdPrestamo == p.IdPrestamo)
-                                  where form.zona != null ? cl.Zona == form.zona : true
-                                  where form.idDistrito != 0 ? cl.Distrito == form.idDistrito : true
-                                  where form.gestor != null ? cl.CodigoGestor == form.gestor : true
-                                  //where form.autorizador != null ? p.Autorizacion == form.autorizador : true
-                                  where c.FechaPago!=null ? false : true
-                                  group new {p,c } by new {p.IdPrestamo} into g
-                              select new
-                              {
-                                sumaMoras=g.Sum(e=>e.c.DiasMora),
-                                IdPrestamo=g.Key.IdPrestamo
-                              }).ToList();
+                //var prestamos10= (from cl in db.Clientes.Where(e => form.zona != null ? e.Zona == form.zona : true && form.idDistrito != 0 ? e.Distrito == form.idDistrito : true && form.gestor != null ? e.CodigoGestor == form.gestor : true)
+                //                  from p in db.Prestamos.Where(e => e.IdCliente == cl.IdCliente && e.FechaTermino == null && e.FechaEntrega >= fechaInicio && e.FechaEntrega <= fechaFin && (form.autorizador != null ? e.Autorizacion == form.autorizador : true))
+                //                  from c in db.Cuotas.Where(e => e.IdPrestamo == p.IdPrestamo && e.FechaPago == null)
+                //                      //where form.zona != null ? cl.Zona == form.zona : true
+                //                      //where form.idDistrito != 0 ? cl.Distrito == form.idDistrito : true
+                //                      //where form.gestor != null ? cl.CodigoGestor == form.gestor : true
+                //                      //where form.autorizador != null ? p.Autorizacion == form.autorizador : true
+                //                      //where c.FechaPago!=null ? false : true
+                //                  group new { p, c } by new { p.IdPrestamo } into g
+                //                  select new
+                //                  {
+                //                      sumaMoras = g.Sum(e => e.c.DiasMora),
+                //                      IdPrestamo = g.Key.IdPrestamo
+                //                  });
 
+                var prestamos1 = (
+                                    from p in db.Prestamos
+                                    join c in db.Cuotas on p.IdPrestamo equals c.IdPrestamo
+                                    join cl in db.Clientes on p.IdCliente equals cl.IdCliente
+                                    where p.FechaEntrega >= fechaInicio && p.FechaEntrega <= fechaFin
+                                        && c.FechaPago == null && p.FechaTermino == null
+                                        && (form.zona != null ? cl.Zona == form.zona : true)
+                                        && (form.idDistrito != 0 ? cl.Distrito == form.idDistrito : true)
+                                        && (form.gestor != null ? cl.CodigoGestor == form.gestor : true)
+                                        && (form.autorizador != null ? p.Autorizacion == form.autorizador : true)
+                                    group c by new
+                                    {
+                                        p.IdPrestamo
+                                    } into g
+                                    select new
+                                    {
+                                        sumaMoras = g.Sum(c => c.DiasMora),
+                                        IdPrestamo = g.Key.IdPrestamo
+                                    });
+                //---------------------------------
                 decimal contadorN = 0;
                 decimal contador2 = 0;
                 decimal contador4 = 0;
@@ -272,7 +309,7 @@ namespace SistemaCreditos.Controllers.Reportes
                 foreach (var item in prestamos1)
                 {
                     
-                    if (item.sumaMoras < 8)
+                    if (item.sumaMoras > 0 && item.sumaMoras < 8 )
                     {
                         contadorN++;
                     }
@@ -353,6 +390,7 @@ namespace SistemaCreditos.Controllers.Reportes
             public string rangoFechas { get; set; }
             public string gestor { get; set; }
             public string autorizador { get; set; }
+            public string TipoMora { get; set; }
         }
         public class ListaVencidos
         {
